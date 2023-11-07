@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Formats.Asn1;
 using System.IO;
 using System.Linq;
@@ -44,6 +45,14 @@ namespace ZombieSharp
 			g_iCountdown = 15;
 			g_hCountdown = AddTimer(1.0f, Timer_Countdown, TimerFlags.REPEAT);
 			g_hInfectMZ = AddTimer(15.0f, MotherZombieInfect);
+
+			for(int i = 0; i < Server.MaxPlayers; i++)
+			{
+				var client = Utilities.GetPlayerFromSlot(i);
+
+				if(client.IsValid)
+					client.PrintToCenter($" First Infection in {g_iCountdown} seconds");
+			}
 		}
 
 		public void Timer_Countdown()
@@ -54,11 +63,33 @@ namespace ZombieSharp
 			}
 
 			g_iCountdown--;
+
+			for(int i = 0; i < Server.MaxPlayers; i++)
+			{
+				var client = Utilities.GetPlayerFromSlot(i);
+
+				if(client.IsValid)
+					client.PrintToCenter($" First Infection in {g_iCountdown} seconds");
+			}
 		}
 
 		public void MotherZombieInfect()
 		{
-			g_bZombieSpawned = true;
+			if(g_bZombieSpawned)
+				return;
+
+			ArrayList candidate = new ArrayList();
+
+			int allplayer;
+
+			for(int i = 0; i < Server.MaxPlayers; i++)
+			{
+				var client = Utilities.GetPlayerFromSlot(i);
+				if(_player.g_MotherZombieStatus[client] == ZombiePlayer.MotherZombieFlags.NONE)
+				{
+					candidate.Add(client);
+				}
+			}
 		}
 
 		public void InfectClient(CCSPlayerController client, CCSPlayerController attacker = null, bool motherzombie = false, bool force = false)
@@ -92,7 +123,7 @@ namespace ZombieSharp
 
 			for(int i = 0; i < Server.MaxPlayers; i++)
 			{
-				var client = Utilities.GetPlayerFromUserid(i);
+				var client = Utilities.GetPlayerFromSlot(i);
 
 				if(_player.IsClientInfect(client) && client.PawnIsAlive)
 					zombie++;
@@ -135,7 +166,7 @@ namespace ZombieSharp
 		//public bool[] g_bZombie = new bool[128];
 
 		public Dictionary<CCSPlayerController, bool> g_bZombie = new Dictionary<CCSPlayerController, bool>();
-		public MotherZombieFlags g_MotherZombieStatus;
+		public Dictionary<CCSPlayerController, MotherZombieFlags> g_MotherZombieStatus = new Dictionary<CCSPlayerController, MotherZombieFlags>();
 
 		public bool IsClientInfect(CCSPlayerController player)
 		{
