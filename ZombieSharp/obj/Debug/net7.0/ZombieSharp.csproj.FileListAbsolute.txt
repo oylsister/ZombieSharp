@@ -1,0 +1,14 @@
+D:\ZE-Config\ZombieSharp\ZombieSharp\bin\Debug\net7.0\ZombieSharp.deps.json
+D:\ZE-Config\ZombieSharp\ZombieSharp\bin\Debug\net7.0\ZombieSharp.dll
+D:\ZE-Config\ZombieSharp\ZombieSharp\bin\Debug\net7.0\ZombieSharp.pdb
+D:\ZE-Config\ZombieSharp\ZombieSharp\bin\Debug\net7.0\CounterStrikeSharp.API.dll
+D:\ZE-Config\ZombieSharp\ZombieSharp\obj\Debug\net7.0\ZombieSharp.csproj.AssemblyReference.cache
+D:\ZE-Config\ZombieSharp\ZombieSharp\obj\Debug\net7.0\ZombieSharp.GeneratedMSBuildEditorConfig.editorconfig
+D:\ZE-Config\ZombieSharp\ZombieSharp\obj\Debug\net7.0\ZombieSharp.AssemblyInfoInputs.cache
+D:\ZE-Config\ZombieSharp\ZombieSharp\obj\Debug\net7.0\ZombieSharp.AssemblyInfo.cs
+D:\ZE-Config\ZombieSharp\ZombieSharp\obj\Debug\net7.0\ZombieSharp.csproj.CoreCompileInputs.cache
+D:\ZE-Config\ZombieSharp\ZombieSharp\obj\Debug\net7.0\ZombieSharp.csproj.CopyComplete
+D:\ZE-Config\ZombieSharp\ZombieSharp\obj\Debug\net7.0\ZombieSharp.dll
+D:\ZE-Config\ZombieSharp\ZombieSharp\obj\Debug\net7.0\refint\ZombieSharp.dll
+D:\ZE-Config\ZombieSharp\ZombieSharp\obj\Debug\net7.0\ZombieSharp.pdb
+D:\ZE-Config\ZombieSharp\ZombieSharp\obj\Debug\net7.0\ref\ZombieSharp.dll
