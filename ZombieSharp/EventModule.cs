@@ -24,6 +24,7 @@ namespace ZombieSharp
 			_Core.RegisterEventHandler<EventPlayerHurt>(OnPlayerHurt);
 			_Core.RegisterEventHandler<EventPlayerDeath>(OnPlayerDeath);
 			_Core.RegisterEventHandler<EventPlayerSpawn>(OnPlayerSpawn);
+			_Core.RegisterEventHandler<EventItemPickup>(OnItemPickup, HookMode.Pre);
 
 			_Core.RegisterListener<Listeners.OnClientPutInServer>(OnClientPutInServerHandler);
 			_Core.RegisterListener<Listeners.OnClientDisconnect>(OnClientDisconnectHandler);
@@ -84,9 +85,12 @@ namespace ZombieSharp
 			CCSPlayerController client = @event.Userid;
 			CCSPlayerController attacker = @event.Attacker;
 			string weapon = @event.Weapon;
+			int dmg_health = @event.DmgHealth;
 
 			if(_Player.IsClientInfect(attacker) && _Player.IsClientHuman(client) && string.Equals(weapon, "knife"))
 				_Core.InfectClient(client, attacker);
+
+			_Core.KnockbackClient(client, attacker, (float)dmg_health);
 
 			return HookResult.Continue;
 		}
@@ -107,6 +111,18 @@ namespace ZombieSharp
 
 			// else they're human!
 			_Core.HumanizeClient(client);
+
+			return HookResult.Continue;
+		}
+
+		private HookResult OnItemPickup(EventItemPickup @event, GameEventInfo info)
+		{
+			CCSPlayerController client = @event.Userid;
+			string weapon = @event.Item;
+
+			// if client is zombie and it's not a knife, then no pickup
+			if(_Player.IsClientInfect(client) && !string.Equals(weapon, "knife"))
+				return HookResult.Handled;
 
 			return HookResult.Continue;
 		}

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Formats.Asn1;
 using System.IO;
 using System.Linq;
+//using System.Numerics;
 using System.Reflection.Metadata;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
@@ -189,6 +190,9 @@ namespace ZombieSharp
 			CCSPlayerPawn clientpawn = client.PlayerPawn.Value;
 			clientpawn.ArmorValue = 0;
 
+			// will apply this in class system later
+			clientpawn.Health = 10000;
+
 			// if force then tell them that they has been punnished.
 			if(force)
 			{
@@ -214,6 +218,22 @@ namespace ZombieSharp
 			{
 				client.PrintToChat("[Z:Sharp] You have been resurrected by the god! (Knowing as Admin.) Find yourself a cover!");
 			}
+		}
+
+		public void KnockbackClient(CCSPlayerController client, CCSPlayerController attacker, float damage)
+		{
+			if(!_player.IsClientInfect(client) || _player.IsClientHuman(attacker))
+				return;
+
+			// Get eye angle
+			QAngle eyeangle = client.PlayerPawn.Value.EyeAngles;
+
+			Vector clientpos = client.Pawn.Value.CBodyComponent!.SceneNode.AbsOrigin;
+			Vector attackerpos = attacker.Pawn.Value.CBodyComponent!.SceneNode.AbsOrigin;
+			Vector direction = attackerpos - clientpos;
+			Vector velocity = direction * damage;
+
+			client.Teleport(null, null, velocity);
 		}
 
 		public void CheckGameStatus()
