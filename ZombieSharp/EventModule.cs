@@ -23,6 +23,7 @@ namespace ZombieSharp
 			_Core.RegisterEventHandler<EventRoundEnd>(OnRoundEnd);
 			_Core.RegisterEventHandler<EventPlayerHurt>(OnPlayerHurt);
 			_Core.RegisterEventHandler<EventPlayerDeath>(OnPlayerDeath);
+			_Core.RegisterEventHandler<EventPlayerSpawn>(OnPlayerSpawn);
 
 			_Core.RegisterListener<Listeners.OnClientPutInServer>(OnClientPutInServerHandler);
 			_Core.RegisterListener<Listeners.OnClientDisconnect>(OnClientDisconnectHandler);
@@ -93,6 +94,20 @@ namespace ZombieSharp
 		private HookResult OnPlayerDeath(EventPlayerDeath @event, GameEventInfo info)
 		{
 			_Core.CheckGameStatus();
+			return HookResult.Continue;
+		}
+
+		private HookResult OnPlayerSpawn(EventPlayerSpawn @event, GameEventInfo info)
+		{
+			CCSPlayerController client = @event.Userid;
+
+			// if zombie already spawned then they become zombie.
+			if(_Core.g_bZombieSpawned)
+				_Core.InfectClient(client);
+
+			// else they're human!
+			_Core.HumanizeClient(client);
+
 			return HookResult.Continue;
 		}
 	}

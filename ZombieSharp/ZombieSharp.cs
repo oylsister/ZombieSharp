@@ -151,17 +151,21 @@ namespace ZombieSharp
 
 		public void InfectClient(CCSPlayerController client, CCSPlayerController attacker = null, bool motherzombie = false, bool force = false)
 		{
+			// if zombie hasn't spawned yet, then make it true.
 			if(!g_bZombieSpawned)
 				g_bZombieSpawned = true;
 
+			// if all human died then let's end the round.
 			if(g_bZombieSpawned)
 				CheckGameStatus();
 
+			// make zombie status be true.
 			if(_player.IsClientHuman(client))
 			{
 				_player.g_bZombie[client] = true;
 			}
 
+			// if has attacker then let's show them in kill feed.
 			if(attacker != null)
 			{
 				EventPlayerDeath _event = new EventPlayerDeath(true);
@@ -172,9 +176,43 @@ namespace ZombieSharp
 				_event.FireEvent(true);
 			}
 
+			// if they from the motherzombie infection put status here to prevent being chosen for it again.
 			if(motherzombie)
 			{
 				_player.g_MotherZombieStatus[client] = ZombiePlayer.MotherZombieFlags.CHOSEN;
+			}
+
+			// swith to terrorist side.
+			client.SwitchTeam(CsTeam.Terrorist);
+
+			// no armor
+			CCSPlayerPawn clientpawn = client.PlayerPawn.Value;
+			clientpawn.ArmorValue = 0;
+
+			// if force then tell them that they has been punnished.
+			if(force)
+			{
+				client.PrintToChat("[Z:Sharp] You have been punished by the god! (Knowing as Admin.) Now plauge all human!");
+			}
+
+			client.PrintToChat("[Z:Sharp] You have been infected! Go pass it on to as many other players as you can.");
+		}
+
+		public void HumanizeClient(CCSPlayerController client, bool force = false)
+		{
+			// zombie status to false
+			if(_player.IsClientInfect(client))
+			{
+				_player.g_bZombie[client] = false;
+			}
+
+			// switch client to CT
+			client.SwitchTeam(CsTeam.CounterTerrorist);
+
+			// if force tell them that they has been resurrected.
+			if(force)
+			{
+				client.PrintToChat("[Z:Sharp] You have been resurrected by the god! (Knowing as Admin.) Find yourself a cover!");
 			}
 		}
 
