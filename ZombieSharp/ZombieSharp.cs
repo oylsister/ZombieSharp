@@ -46,9 +46,9 @@ namespace ZombieSharp
 			g_hCountdown = AddTimer(1.0f, Timer_Countdown, TimerFlags.REPEAT);
 			g_hInfectMZ = AddTimer(15.0f, MotherZombieInfect);
 
-			for(int i = 0; i < Server.MaxPlayers; i++)
+			for(int i = 1; i < Server.MaxPlayers; i++)
 			{
-				var client = Utilities.GetPlayerFromSlot(i);
+				var client = Utilities.GetPlayerFromIndex(i);
 
 				if(client.IsValid)
 					client.PrintToCenter($" First Infection in {g_iCountdown} seconds");
@@ -64,9 +64,9 @@ namespace ZombieSharp
 
 			g_iCountdown--;
 
-			for(int i = 0; i < Server.MaxPlayers; i++)
+			for(int i = 1; i < Server.MaxPlayers; i++)
 			{
-				var client = Utilities.GetPlayerFromSlot(i);
+				var client = Utilities.GetPlayerFromIndex(i);
 
 				if(client.IsValid)
 					client.PrintToCenter($" First Infection in {g_iCountdown} seconds");
@@ -80,14 +80,71 @@ namespace ZombieSharp
 
 			ArrayList candidate = new ArrayList();
 
-			int allplayer;
+			int allplayer = 0;
 
-			for(int i = 0; i < Server.MaxPlayers; i++)
+			for(int i = 1; i < Server.MaxPlayers; i++)
 			{
-				var client = Utilities.GetPlayerFromSlot(i);
-				if(_player.g_MotherZombieStatus[client] == ZombiePlayer.MotherZombieFlags.NONE)
+				var client = Utilities.GetPlayerFromIndex(i);
+				if(client.PawnIsAlive && client.IsValid)
 				{
-					candidate.Add(client);
+					if(_player.g_MotherZombieStatus[client] == ZombiePlayer.MotherZombieFlags.NONE)
+						candidate.Add(client);
+
+					allplayer++;
+				}
+			}
+
+			int alreadymade = 0;
+
+			int maxmz = (int)Math.Round((float)allplayer / 7.0f);
+
+			if(candidate.Count < maxmz)
+			{
+				Server.PrintToChatAll("[Z:Sharp] Mother zombie cycle has been reset!");
+
+				if(candidate.Count > 0)
+				{
+					for(int i = 0; i < candidate.Count; i++)
+					{
+						CCSPlayerController client = (CCSPlayerController)candidate[i];
+						InfectClient(client, null, true);
+						alreadymade++;
+					}
+				}
+
+				candidate.Clear();
+
+				for(int i = 1; i < Server.MaxPlayers;i++)
+				{
+					var client = Utilities.GetPlayerFromIndex(i);
+
+					if(_player.g_MotherZombieStatus[client] == ZombiePlayer.MotherZombieFlags.LAST)
+					{
+						_player.g_MotherZombieStatus[client] = ZombiePlayer.MotherZombieFlags.NONE;
+						candidate.Add(client);
+					}
+				}
+
+				for(int i = 0; i < candidate.Count; i++)
+				{
+					if(alreadymade >= maxmz)
+						break;
+
+					CCSPlayerController client = (CCSPlayerController)candidate[i];
+					InfectClient(client, null, true);
+					alreadymade++;
+				}
+			}
+			else
+			{
+				for(int i = 0; i < candidate.Count; i++)
+				{
+					if(alreadymade >= maxmz)
+						break;
+
+					CCSPlayerController client = (CCSPlayerController)candidate[i];
+					InfectClient(client, null, true);
+					alreadymade++;
 				}
 			}
 		}
@@ -114,6 +171,11 @@ namespace ZombieSharp
 				_event.Set<string>("weapon", "knife");
 				_event.FireEvent(true);
 			}
+
+			if(motherzombie)
+			{
+				_player.g_MotherZombieStatus[client] = ZombiePlayer.MotherZombieFlags.CHOSEN;
+			}
 		}
 
 		public void CheckGameStatus()
@@ -121,9 +183,9 @@ namespace ZombieSharp
 			int human = 0;
 			int zombie = 0;
 
-			for(int i = 0; i < Server.MaxPlayers; i++)
+			for(int i = 1; i < Server.MaxPlayers; i++)
 			{
-				var client = Utilities.GetPlayerFromSlot(i);
+				var client = Utilities.GetPlayerFromIndex(i);
 
 				if(_player.IsClientInfect(client) && client.PawnIsAlive)
 					zombie++;

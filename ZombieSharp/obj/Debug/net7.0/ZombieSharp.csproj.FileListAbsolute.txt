@@ -12,3 +12,17 @@ D:\ZE-Config\ZombieSharp\ZombieSharp\obj\Debug\net7.0\ZombieSharp.dll
 D:\ZE-Config\ZombieSharp\ZombieSharp\obj\Debug\net7.0\refint\ZombieSharp.dll
 D:\ZE-Config\ZombieSharp\ZombieSharp\obj\Debug\net7.0\ZombieSharp.pdb
 D:\ZE-Config\ZombieSharp\ZombieSharp\obj\Debug\net7.0\ref\ZombieSharp.dll
+D:\windowsgsm\csharp\ZombieSharp\ZombieSharp\ZombieSharp\bin\Debug\net7.0\ZombieSharp.deps.json
+D:\windowsgsm\csharp\ZombieSharp\ZombieSharp\ZombieSharp\bin\Debug\net7.0\ZombieSharp.dll
+D:\windowsgsm\csharp\ZombieSharp\ZombieSharp\ZombieSharp\bin\Debug\net7.0\ZombieSharp.pdb
+D:\windowsgsm\csharp\ZombieSharp\ZombieSharp\ZombieSharp\bin\Debug\net7.0\CounterStrikeSharp.API.dll
+D:\windowsgsm\csharp\ZombieSharp\ZombieSharp\ZombieSharp\obj\Debug\net7.0\ZombieSharp.csproj.AssemblyReference.cache
+D:\windowsgsm\csharp\ZombieSharp\ZombieSharp\ZombieSharp\obj\Debug\net7.0\ZombieSharp.GeneratedMSBuildEditorConfig.editorconfig
+D:\windowsgsm\csharp\ZombieSharp\ZombieSharp\ZombieSharp\obj\Debug\net7.0\ZombieSharp.AssemblyInfoInputs.cache
+D:\windowsgsm\csharp\ZombieSharp\ZombieSharp\ZombieSharp\obj\Debug\net7.0\ZombieSharp.AssemblyInfo.cs
+D:\windowsgsm\csharp\ZombieSharp\ZombieSharp\ZombieSharp\obj\Debug\net7.0\ZombieSharp.csproj.CoreCompileInputs.cache
+D:\windowsgsm\csharp\ZombieSharp\ZombieSharp\ZombieSharp\obj\Debug\net7.0\ZombieSharp.csproj.CopyComplete
+D:\windowsgsm\csharp\ZombieSharp\ZombieSharp\ZombieSharp\obj\Debug\net7.0\ZombieSharp.dll
+D:\windowsgsm\csharp\ZombieSharp\ZombieSharp\ZombieSharp\obj\Debug\net7.0\refint\ZombieSharp.dll
+D:\windowsgsm\csharp\ZombieSharp\ZombieSharp\ZombieSharp\obj\Debug\net7.0\ZombieSharp.pdb
+D:\windowsgsm\csharp\ZombieSharp\ZombieSharp\ZombieSharp\obj\Debug\net7.0\ref\ZombieSharp.dll

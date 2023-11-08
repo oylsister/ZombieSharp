@@ -30,13 +30,13 @@ namespace ZombieSharp
 
 		private void OnClientPutInServerHandler(int clientindex)
 		{
-			CCSPlayerController client = Utilities.GetPlayerFromUserid(clientindex);
+			CCSPlayerController client = Utilities.GetPlayerFromSlot(clientindex);
 			_Player.g_bZombie.Add(client, false);
 		}
 
 		private void OnClientDisconnectHandler(int clientindex)
 		{
-			CCSPlayerController client = Utilities.GetPlayerFromUserid(clientindex);
+			CCSPlayerController client = Utilities.GetPlayerFromSlot(clientindex);
 			_Player.g_bZombie.Remove(client);
 		}
 
@@ -67,14 +67,14 @@ namespace ZombieSharp
 		private void Timer_ResetZombieStatus()
 		{
 			// Reset Client Status
-			for(int i = 0; i < Server.MaxPlayers; i++)
+			for(int i = 1; i < Server.MaxPlayers; i++)
 			{
 				// Reset Client Status.
-				_Player.g_bZombie[Utilities.GetPlayerFromUserid(i)] = false;
+				_Player.g_bZombie[Utilities.GetPlayerFromIndex(i)] = false;
 
 				// if they were chosen as motherzombie then let's make them not to get chosen again.
-				if(_Player.g_MotherZombieStatus[Utilities.GetPlayerFromUserid(i)] == ZombiePlayer.MotherZombieFlags.CHOSEN)
-					_Player.g_MotherZombieStatus[Utilities.GetPlayerFromUserid(i)] = ZombiePlayer.MotherZombieFlags.LAST;
+				if(_Player.g_MotherZombieStatus[Utilities.GetPlayerFromIndex(i)] == ZombiePlayer.MotherZombieFlags.CHOSEN)
+					_Player.g_MotherZombieStatus[Utilities.GetPlayerFromIndex(i)] = ZombiePlayer.MotherZombieFlags.LAST;
 			}
 		}
 
