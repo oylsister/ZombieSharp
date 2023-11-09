@@ -29,6 +29,7 @@ namespace ZombieSharp
 
 		private EventModule _event;
 		private ZombiePlayer _player; 
+		private CommandModule _command;
 
 		public bool g_bZombieSpawned;
 		public int g_iCountdown;
@@ -39,6 +40,7 @@ namespace ZombieSharp
 		public override void Load(bool HotReload)
 		{
 			_event.Initialize();
+			_command.Initialize();
 		}
 
 		public void InfectOnRoundFreezeEnd()
@@ -270,6 +272,45 @@ namespace ZombieSharp
 
 			_event.Set<int>("winner", (int)team);
 			_event.FireEvent(true);
+		}
+
+		public ArrayList FindTargetByName(string name)
+		{
+			ArrayList clientlist = new ArrayList();
+
+			for(int i = 1; i <= Server.MaxPlayers; i++)
+			{
+				CCSPlayerController client = Utilities.GetPlayerFromIndex(i);
+
+				if(string.Equals(name, "@all"))
+				{
+					clientlist.Add(client);
+				}
+
+				else if(string.Equals(name, "@ct"))
+				{
+					if((CsTeam)client.TeamNum == CsTeam.CounterTerrorist)
+						clientlist.Add(client);
+				}
+
+				else if(string.Equals(name, "@t"))
+				{
+					if((CsTeam)client.TeamNum == CsTeam.Terrorist)
+						clientlist.Add(client);
+				}
+
+				else
+				{
+					StringComparison compare = StringComparison.OrdinalIgnoreCase;
+
+					if(client.PlayerName.Contains(name, compare))
+					{
+						clientlist.Add(client);
+					}
+				}
+			}
+
+			return clientlist;
 		}
 	}
 
