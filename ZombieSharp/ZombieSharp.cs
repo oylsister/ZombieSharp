@@ -18,6 +18,8 @@ using CounterStrikeSharp.API.Modules.Memory;
 using CounterStrikeSharp.API.Modules.Menu;
 using CounterStrikeSharp.API.Modules.Timers;
 using CounterStrikeSharp.API.Modules.Utils;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace ZombieSharp
 {
@@ -30,9 +32,22 @@ namespace ZombieSharp
 		private EventModule _event;
 		private ZombiePlayer _player; 
 		private CommandModule _command;
+		private WeaponModule _weapon;
 
-		public bool g_bZombieSpawned;
-		public int g_iCountdown;
+		public ZombieSharp() : base()
+		{
+			PluginHost = Host.CreateDefaultBuilder().ConfigureServices(services => 
+			{
+				services.AddSingleton <IWeaponModule, WeaponModule>();
+			}).Build();
+
+			_weapon = PluginHost.Services.GetRequiredService<WeaponModule>();
+		}
+
+		public IHost PluginHost { get; init; }
+
+		public bool ZombieSpawned;
+		public int Countdown;
 
 		private CounterStrikeSharp.API.Modules.Timers.Timer g_hCountdown = null;
 		private CounterStrikeSharp.API.Modules.Timers.Timer g_hInfectMZ = null;
@@ -41,11 +56,12 @@ namespace ZombieSharp
 		{
 			_event.Initialize();
 			_command.Initialize();
+			_weapon.Initialize();
 		}
 
 		public void InfectOnRoundFreezeEnd()
 		{
-			g_iCountdown = 15;
+			Countdown = 15;
 			g_hCountdown = AddTimer(1.0f, Timer_Countdown, TimerFlags.REPEAT);
 			g_hInfectMZ = AddTimer(15.0f, MotherZombieInfect);
 
@@ -54,34 +70,35 @@ namespace ZombieSharp
 				var client = Utilities.GetPlayerFromIndex(i);
 
 				if(client.IsValid)
-					client.PrintToCenter($" First Infection in {g_iCountdown} seconds");
+					client.PrintToCenter($" First Infection in {Countdown} seconds");
 			}
 		}
 
 		public void Timer_Countdown()
 		{
-			if(g_iCountdown <= 0 && g_hCountdown != null)
+			if(Countdown <= 0 && g_hCountdown != null)
 			{
 				g_hCountdown.Kill();
 			}
 
-			g_iCountdown--;
+			Countdown--;
 
 			for(int i = 1; i < Server.MaxPlayers; i++)
 			{
 				var client = Utilities.GetPlayerFromIndex(i);
 
 				if(client.IsValid)
-					client.PrintToCenter($" First Infection in {g_iCountdown} seconds");
+					client.PrintToCenter($" First Infection in {Countdown} seconds");
 			}
 		}
 
 		public void MotherZombieInfect()
 		{
-			if(g_bZombieSpawned)
+			if(ZombieSpawned)
 				return;
 
-			ArrayList candidate = new ArrayList();
+			//ArrayList candidate = new ArrayList();
+			List<CCSPlayerController> candidate = new List<CCSPlayerController>();
 
 			int allplayer = 0;
 
@@ -154,12 +171,12 @@ namespace ZombieSharp
 
 		public void InfectClient(CCSPlayerController client, CCSPlayerController attacker = null, bool motherzombie = false, bool force = false)
 		{
-			// if zombie hasn't spawned yet, then make it true.
-			if(!g_bZombieSpawned)
-				g_bZombieSpawned = true;
+            // if zombie hasn't spawned yet, then make it true.
+            if (!ZombieSpawned)
+                ZombieSpawned = true;
 
-			// if all human died then let's end the round.
-			if(g_bZombieSpawned)
+            // if all human died then let's end the round.
+			if(ZombieSpawned)
 				CheckGameStatus();
 
 			// make zombie status be true.

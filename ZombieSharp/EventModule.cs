@@ -57,7 +57,7 @@ namespace ZombieSharp
 		private HookResult OnRoundEnd(EventRoundEnd @event, GameEventInfo info)
 		{
 			// Reset Zombie Spawned here.
-			_Core.g_bZombieSpawned = false;
+			_Core.ZombieSpawned = false;
 
 			// Reset Client Status
 			_Core.AddTimer(0.3f, Timer_ResetZombieStatus);
@@ -106,7 +106,7 @@ namespace ZombieSharp
 			CCSPlayerController client = @event.Userid;
 
 			// if zombie already spawned then they become zombie.
-			if(_Core.g_bZombieSpawned)
+			if(_Core.ZombieSpawned)
 				_Core.InfectClient(client);
 
 			// else they're human!

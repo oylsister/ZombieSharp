@@ -26,3 +26,4 @@ D:\windowsgsm\csharp\ZombieSharp\ZombieSharp\ZombieSharp\obj\Debug\net7.0\Zombie
 D:\windowsgsm\csharp\ZombieSharp\ZombieSharp\ZombieSharp\obj\Debug\net7.0\refint\ZombieSharp.dll
 D:\windowsgsm\csharp\ZombieSharp\ZombieSharp\ZombieSharp\obj\Debug\net7.0\ZombieSharp.pdb
 D:\windowsgsm\csharp\ZombieSharp\ZombieSharp\ZombieSharp\obj\Debug\net7.0\ref\ZombieSharp.dll
+D:\windowsgsm\csharp\ZombieSharp\ZombieSharp\ZombieSharp\obj\Debug\net7.0\ZombieSharp.sourcelink.json

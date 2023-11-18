@@ -8,4 +8,6 @@ build_property.PlatformNeutralAssembly =
 build_property.EnforceExtendedAnalyzerRules = 
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = ZombieSharp
-build_property.ProjectDir = D:\ZE-Config\ZombieSharp\ZombieSharp\
+build_property.ProjectDir = D:\windowsgsm\csharp\ZombieSharp\ZombieSharp\ZombieSharp\
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = 

@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\ZE-Config\\ZombieSharp\\ZombieSharp\\ZombieSharp.csproj": {}
+    "D:\\windowsgsm\\csharp\\ZombieSharp\\ZombieSharp\\ZombieSharp\\ZombieSharp.csproj": {}
   },
   "projects": {
-    "D:\\ZE-Config\\ZombieSharp\\ZombieSharp\\ZombieSharp.csproj": {
+    "D:\\windowsgsm\\csharp\\ZombieSharp\\ZombieSharp\\ZombieSharp\\ZombieSharp.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\ZE-Config\\ZombieSharp\\ZombieSharp\\ZombieSharp.csproj",
+        "projectUniqueName": "D:\\windowsgsm\\csharp\\ZombieSharp\\ZombieSharp\\ZombieSharp\\ZombieSharp.csproj",
         "projectName": "ZombieSharp",
-        "projectPath": "D:\\ZE-Config\\ZombieSharp\\ZombieSharp\\ZombieSharp.csproj",
+        "projectPath": "D:\\windowsgsm\\csharp\\ZombieSharp\\ZombieSharp\\ZombieSharp\\ZombieSharp.csproj",
         "packagesPath": "C:\\Users\\Oylsister\\.nuget\\packages\\",
-        "outputPath": "D:\\ZE-Config\\ZombieSharp\\ZombieSharp\\obj\\",
+        "outputPath": "D:\\windowsgsm\\csharp\\ZombieSharp\\ZombieSharp\\ZombieSharp\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Oylsister\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -39,6 +39,16 @@
       "frameworks": {
         "net7.0": {
           "targetAlias": "net7.0",
+          "dependencies": {
+            "Microsoft.Extensions.DependencyInjection": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
+            "Microsoft.Extensions.Hosting": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            }
+          },
           "imports": [
             "net461",
             "net462",
@@ -50,12 +60,26 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[7.0.14, 7.0.14]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[7.0.14, 7.0.14]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Ref",
+              "version": "[7.0.14, 7.0.14]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.403\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.100\\RuntimeIdentifierGraph.json"
         }
       }
     }
