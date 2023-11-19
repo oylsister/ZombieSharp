@@ -6,6 +6,8 @@ namespace ZombieSharp
 	{
 		private readonly ZombieSharp _core;
 		private ZombiePlayer _player;
+		private ZTeleModule _zTeleModule;
+		
 		public CommandModule(ZombieSharp plugin)
 		{
 			_core = plugin;
@@ -15,6 +17,7 @@ namespace ZombieSharp
 		{
 			_core.AddCommand("css_zs_infect", "Infect Client Command", InfectClientCommand);
 			_core.AddCommand("css_zs_human", "Humanize Client Command", HumanizeClientCommand);
+			_core.AddCommand("css_zs_ztele", "Teleport Client to spawn Command", ZTeleClientCommand);
 		}
 
 		private void InfectClientCommand(CCSPlayerController client, CommandInfo info)
@@ -91,6 +94,26 @@ namespace ZombieSharp
 				_core.HumanizeClient(target, true);
 				info.ReplyToCommand($"[Z:Sharp] Successfully humanized {target.PlayerName}");
 			}
+		}
+
+		private void ZTeleClientCommand(CCSPlayerController client, CommandInfo info)
+		{
+			if (info.ArgCount <= 1)
+			{
+				info.ReplyToCommand("[Z:Sharp] Usage: css_ztele.");
+				return;
+			}
+
+			if (!client.IsValid)
+				return;
+			
+			if (!client.PawnIsAlive)
+			{
+				info.ReplyToCommand("[Z:Sharp] This feature requires that you are alive.");
+				return;
+			}
+			
+			_zTeleModule.ZTele_TeleportClientToSpawn(client);
 		}
 	}
 }
