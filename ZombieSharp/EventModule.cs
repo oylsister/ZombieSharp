@@ -35,6 +35,7 @@ namespace ZombieSharp
 		{
 			var client = Utilities.GetPlayerFromSlot(clientindex);
 			_player.g_bZombie.Remove(client);
+			_zTeleModule.ClientSpawnDatas.Remove(client);
 		}
 
 		private HookResult OnRoundStart(EventRoundStart @event, GameEventInfo info)

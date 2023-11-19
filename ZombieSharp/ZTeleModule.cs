@@ -2,7 +2,7 @@
 {
     public class ZTeleModule
     {
-        private struct ClientSpawnData
+        public struct ClientSpawnData
         {
             public Vector PlayerPosition;
             public QAngle PlayerAngle;
@@ -10,7 +10,7 @@
         
         private ZombieSharp _core;
 
-        private readonly Dictionary<CCSPlayerController, ClientSpawnData> _clientSpawnDatas = new();
+        public readonly Dictionary<CCSPlayerController, ClientSpawnData> ClientSpawnDatas = new();
 
         public ZTeleModule(ZombieSharp plugin)
         {
@@ -19,7 +19,7 @@
 
         public void ZTele_GetClientSpawnPoint(CCSPlayerController client, Vector position, QAngle angle)
         {
-            _clientSpawnDatas.Add(client, new ClientSpawnData
+            ClientSpawnDatas.Add(client, new ClientSpawnData
             {
                 PlayerAngle = angle,
                 PlayerPosition = position
@@ -30,8 +30,8 @@
         {
             var playerpawn = client.PlayerPawn.Value;
 
-            var position = _clientSpawnDatas[client].PlayerPosition;
-            var angle = _clientSpawnDatas[client].PlayerAngle;
+            var position = ClientSpawnDatas[client].PlayerPosition;
+            var angle = ClientSpawnDatas[client].PlayerAngle;
 
             playerpawn.Teleport(position, angle, null!);
         }
