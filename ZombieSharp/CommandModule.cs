@@ -19,9 +19,9 @@ namespace ZombieSharp
 
 		private void InfectClientCommand(CCSPlayerController client, CommandInfo info)
 		{
-			if(info == null)
+			if(info.ArgCount <= 1)
 			{
-				Utilities.ReplyToCommand(client, "[Z:Sharp] Usage: css_zs_infect <playername>.");
+				info.ReplyToCommand("[Z:Sharp] Usage: css_zs_infect [<playername>].");
 				return;
 			}
 
@@ -29,7 +29,7 @@ namespace ZombieSharp
 
 			if(targets.Count == 0)
 			{
-				Utilities.ReplyToCommand(client, "[Z:Sharp] Couldn't find any client contain with that name.");
+				info.ReplyToCommand("[Z:Sharp] Couldn't find any client contain with that name.");
 				return;
 			}
 
@@ -40,26 +40,26 @@ namespace ZombieSharp
 
 				if(!target.PawnIsAlive)
 				{
-					Utilities.ReplyToCommand(client, $"[Z:Sharp] target {target.PlayerName} is not alive.");
+					info.ReplyToCommand($"[Z:Sharp] target {target.PlayerName} is not alive.");
 					continue;
 				}
 
 				if(_player.IsClientInfect(target))
 				{
-					Utilities.ReplyToCommand(client, $"[Z:Sharp] target {target.PlayerName} is already zombie.");
+					info.ReplyToCommand($"[Z:Sharp] target {target.PlayerName} is already zombie.");
 					continue;
 				}
 
 				_core.InfectClient(target, null, false, true);
-				Utilities.ReplyToCommand(client, $"[Z:Sharp] Successfully infected {target.PlayerName}");
+				info.ReplyToCommand($"[Z:Sharp] Successfully infected {target.PlayerName}");
 			}
 		}
 
 		private void HumanizeClientCommand(CCSPlayerController client, CommandInfo info)
 		{
-			if(info == null)
+			if(info.ArgCount <= 1)
 			{
-				Utilities.ReplyToCommand(client, "[Z:Sharp] Usage: css_zs_human <playername>.");
+				info.ReplyToCommand("[Z:Sharp] Usage: css_zs_human <playername>.");
 				return;
 			}
 
@@ -67,7 +67,7 @@ namespace ZombieSharp
 
 			if(targets.Count == 0)
 			{
-				Utilities.ReplyToCommand(client, "[Z:Sharp] Couldn't find any client contain with that name.");
+				info.ReplyToCommand("[Z:Sharp] Couldn't find any client contain with that name.");
 				return;
 			}
 
@@ -78,18 +78,18 @@ namespace ZombieSharp
 
 				if(!target.PawnIsAlive)
 				{
-					Utilities.ReplyToCommand(client, $"[Z:Sharp] target {target.PlayerName} is not alive.");
+					info.ReplyToCommand($"[Z:Sharp] target {target.PlayerName} is not alive.");
 					continue;
 				}
 
 				if(_player.IsClientHuman(target))
 				{
-					Utilities.ReplyToCommand(client, $"[Z:Sharp] target {target.PlayerName} is already human.");
+					info.ReplyToCommand($"[Z:Sharp] target {target.PlayerName} is already human.");
 					continue;
 				}
 
 				_core.HumanizeClient(target, true);
-				Utilities.ReplyToCommand(client, $"[Z:Sharp] Successfully humanized {target.PlayerName}");
+				info.ReplyToCommand($"[Z:Sharp] Successfully humanized {target.PlayerName}");
 			}
 		}
 	}
