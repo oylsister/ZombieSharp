@@ -4,17 +4,17 @@ namespace ZombieSharp
 {
 	public class CommandModule
 	{
-		private ZombieSharp _Core;
-		private ZombiePlayer _Player;
+		private readonly ZombieSharp _core;
+		private ZombiePlayer _player;
 		public CommandModule(ZombieSharp plugin)
 		{
-			_Core = plugin;
+			_core = plugin;
 		}
 
 		public void Initialize()
 		{
-			_Core.AddCommand("css_zs_infect", "Infect Client Command", InfectClientCommand);
-			_Core.AddCommand("css_zs_human", "Humanize Client Command", HumanizeClientCommand);
+			_core.AddCommand("css_zs_infect", "Infect Client Command", InfectClientCommand);
+			_core.AddCommand("css_zs_human", "Humanize Client Command", HumanizeClientCommand);
 		}
 
 		private void InfectClientCommand(CCSPlayerController client, CommandInfo info)
@@ -25,35 +25,33 @@ namespace ZombieSharp
 				return;
 			}
 
-			ArrayList target = _Core.FindTargetByName(info.ArgString);
+			var targets = _core.FindTargetByName(info.ArgString);
 
-			if(target.Count == 0)
+			if(targets.Count == 0)
 			{
 				Utilities.ReplyToCommand(client, "[Z:Sharp] Couldn't find any client contain with that name.");
 				return;
 			}
 
-			for(int i = 0; i < target.Count; i++)
+			foreach (CCSPlayerController target in targets)
 			{
-				CCSPlayerController targetindex = (CCSPlayerController)target[i];
-
-				if(!targetindex.IsValid)
+				if(!target.IsValid)
 					continue;
 
-				if(!targetindex.PawnIsAlive)
+				if(!target.PawnIsAlive)
 				{
-					Utilities.ReplyToCommand(client, $"[Z:Sharp] target {targetindex.PlayerName} is not alive.");
+					Utilities.ReplyToCommand(client, $"[Z:Sharp] target {target.PlayerName} is not alive.");
 					continue;
 				}
 
-				if(_Player.IsClientInfect(targetindex))
+				if(_player.IsClientInfect(target))
 				{
-					Utilities.ReplyToCommand(client, $"[Z:Sharp] target {targetindex.PlayerName} is already zombie.");
+					Utilities.ReplyToCommand(client, $"[Z:Sharp] target {target.PlayerName} is already zombie.");
 					continue;
 				}
 
-				_Core.InfectClient(targetindex, null, false, true);
-				Utilities.ReplyToCommand(client, $"[Z:Sharp] Successfully infected {targetindex.PlayerName}");
+				_core.InfectClient(target, null, false, true);
+				Utilities.ReplyToCommand(client, $"[Z:Sharp] Successfully infected {target.PlayerName}");
 			}
 		}
 
@@ -65,35 +63,33 @@ namespace ZombieSharp
 				return;
 			}
 
-			ArrayList target = _Core.FindTargetByName(info.ArgString);
+			var targets = _core.FindTargetByName(info.ArgString);
 
-			if(target.Count == 0)
+			if(targets.Count == 0)
 			{
 				Utilities.ReplyToCommand(client, "[Z:Sharp] Couldn't find any client contain with that name.");
 				return;
 			}
 
-			for(int i = 0; i < target.Count; i++)
+			foreach (CCSPlayerController target in targets)
 			{
-				CCSPlayerController targetindex = (CCSPlayerController)target[i];
-
-				if(!targetindex.IsValid)
+				if(!target.IsValid)
 					continue;
 
-				if(!targetindex.PawnIsAlive)
+				if(!target.PawnIsAlive)
 				{
-					Utilities.ReplyToCommand(client, $"[Z:Sharp] target {targetindex.PlayerName} is not alive.");
+					Utilities.ReplyToCommand(client, $"[Z:Sharp] target {target.PlayerName} is not alive.");
 					continue;
 				}
 
-				if(_Player.IsClientHuman(targetindex))
+				if(_player.IsClientHuman(target))
 				{
-					Utilities.ReplyToCommand(client, $"[Z:Sharp] target {targetindex.PlayerName} is already human.");
+					Utilities.ReplyToCommand(client, $"[Z:Sharp] target {target.PlayerName} is already human.");
 					continue;
 				}
 
-				_Core.HumanizeClient(targetindex, true);
-				Utilities.ReplyToCommand(client, $"[Z:Sharp] Successfully humanized {targetindex.PlayerName}");
+				_core.HumanizeClient(target, true);
+				Utilities.ReplyToCommand(client, $"[Z:Sharp] Successfully humanized {target.PlayerName}");
 			}
 		}
 	}
