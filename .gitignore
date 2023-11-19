@@ -1,4 +1,4 @@
-
+ZombieSharp/bin/*
 ZombieSharp/obj/*
 ZombieSharp/obj/ZombieSharp.csproj.nuget.g.props
 ZombieSharp/obj/ZombieSharp.csproj.nuget.dgspec.json
