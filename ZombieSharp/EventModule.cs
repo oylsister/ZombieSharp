@@ -10,6 +10,7 @@ namespace ZombieSharp
 	{
 		private ZombieSharp _Core;
 		private ZombiePlayer _Player;
+		private ZTeleModule _ZTeleModule;
 
 		public EventModule(ZombieSharp plugin)
 		{
@@ -105,8 +106,13 @@ namespace ZombieSharp
 		{
 			CCSPlayerController client = @event.Userid;
 
-			// if zombie already spawned then they become zombie.
-			if(_Core.ZombieSpawned)
+			Vector spawnPos = @event.Userid.PlayerPawn.Value.AbsOrigin;
+			QAngle spawnAngle = @event.Userid.PlayerPawn.Value.AbsRotation;
+
+			_ZTeleModule.ZTele_GetClientSpawnPoint(client, spawnPos, spawnAngle);
+
+            // if zombie already spawned then they become zombie.
+            if (_Core.ZombieSpawned)
 				_Core.InfectClient(client);
 
 			// else they're human!

@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ZombieSharp")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+49e6d639e65a3ca37c33fc5c7c9700c1dc00db7a")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a973478b95300d3ca5534b93c1437dded7a373cc")]
 [assembly: System.Reflection.AssemblyProductAttribute("ZombieSharp")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ZombieSharp")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

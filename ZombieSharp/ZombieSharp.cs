@@ -26,13 +26,14 @@ namespace ZombieSharp
 	public class ZombieSharp : BasePlugin
 	{
 		public override string ModuleName => "Zombie Sharp";
-		public override string ModuleAuthor => "Oylsister";
+		public override string ModuleAuthor => "Oylsister, Kurumi";
 		public override string ModuleVersion => "1.0";
 
 		private EventModule _event;
 		private ZombiePlayer _player; 
 		private CommandModule _command;
 		private WeaponModule _weapon;
+		private ZTeleModule _ztele;
 
 		public ZombieSharp() : base()
 		{
@@ -200,6 +201,7 @@ namespace ZombieSharp
 			if(motherzombie)
 			{
 				_player.g_MotherZombieStatus[client] = ZombiePlayer.MotherZombieFlags.CHOSEN;
+				_ztele.ZTele_TeleportClientToSpawn(client);
 			}
 
 			// swith to terrorist side.
