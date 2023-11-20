@@ -108,7 +108,7 @@ namespace ZombieSharp
 			}
 			
 			_zTeleModule.ZTele_TeleportClientToSpawn(client);
-			info.ReplyToCommand("Teleported back to spawn.");
+			info.ReplyToCommand("[Z:Sharp] Teleported back to spawn.");
 		}
 	}
 }
