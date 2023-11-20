@@ -1,106 +1,114 @@
-using System;
 using System.Collections;
-using CounterStrikeSharp.API;
-using CounterStrikeSharp.API.Core;
-using CounterStrikeSharp.API.Modules.Commands;
-using CounterStrikeSharp.API.Modules.Events;
-using CounterStrikeSharp.API.Modules.Utils;
 
 namespace ZombieSharp
 {
 	public class CommandModule
 	{
-		private ZombieSharp _Core;
-		private ZombiePlayer _Player;
+		private readonly ZombieSharp _core;
+		private ZombiePlayer _player;
+		private ZTeleModule _zTeleModule;
+		
 		public CommandModule(ZombieSharp plugin)
 		{
-			_Core = plugin;
+			_core = plugin;
 		}
 
 		public void Initialize()
 		{
-			_Core.AddCommand("css_zs_infect", "Infect Client Command", InfectClientCommand);
-			_Core.AddCommand("css_zs_human", "Humanize Client Command", HumanizeClientCommand);
+			_core.AddCommand("css_zs_infect", "Infect Client Command", InfectClientCommand);
+			_core.AddCommand("css_zs_human", "Humanize Client Command", HumanizeClientCommand);
+			_core.AddCommand("css_zs_ztele", "Teleport Client to spawn Command", ZTeleClientCommand);
 		}
 
 		private void InfectClientCommand(CCSPlayerController client, CommandInfo info)
 		{
-			if(info == null)
+			if(info.ArgCount <= 1)
 			{
-				Utilities.ReplyToCommand(client, "[Z:Sharp] Usage: css_zs_infect <playername>.");
+				info.ReplyToCommand("[Z:Sharp] Usage: css_zs_infect [<playername>].");
 				return;
 			}
 
-			ArrayList target = _Core.FindTargetByName(info.ArgString);
+			var targets = _core.FindTargetByName(info.ArgString);
 
-			if(target.Count == 0)
+			if(targets.Count == 0)
 			{
-				Utilities.ReplyToCommand(client, "[Z:Sharp] Couldn't find any client contain with that name.");
+				info.ReplyToCommand("[Z:Sharp] Couldn't find any client contain with that name.");
 				return;
 			}
 
-			for(int i = 0; i < target.Count; i++)
+			foreach (CCSPlayerController target in targets)
 			{
-				CCSPlayerController targetindex = (CCSPlayerController)target[i];
-
-				if(!targetindex.IsValid)
+				if(!target.IsValid)
 					continue;
 
-				if(!targetindex.PawnIsAlive)
+				if(!target.PawnIsAlive)
 				{
-					Utilities.ReplyToCommand(client, $"[Z:Sharp] target {targetindex.PlayerName} is not alive.");
+					info.ReplyToCommand($"[Z:Sharp] target {target.PlayerName} is not alive.");
 					continue;
 				}
 
-				if(_Player.IsClientInfect(targetindex))
+				if(_player.IsClientInfect(target))
 				{
-					Utilities.ReplyToCommand(client, $"[Z:Sharp] target {targetindex.PlayerName} is already zombie.");
+					info.ReplyToCommand($"[Z:Sharp] target {target.PlayerName} is already zombie.");
 					continue;
 				}
 
-				_Core.InfectClient(targetindex, null, false, true);
-				Utilities.ReplyToCommand(client, $"[Z:Sharp] Successfully infected {targetindex.PlayerName}");
+				_core.InfectClient(target, null, false, true);
+				info.ReplyToCommand($"[Z:Sharp] Successfully infected {target.PlayerName}");
 			}
 		}
 
 		private void HumanizeClientCommand(CCSPlayerController client, CommandInfo info)
 		{
-			if(info == null)
+			if(info.ArgCount <= 1)
 			{
-				Utilities.ReplyToCommand(client, "[Z:Sharp] Usage: css_zs_human <playername>.");
+				info.ReplyToCommand("[Z:Sharp] Usage: css_zs_human <playername>.");
 				return;
 			}
 
-			ArrayList target = _Core.FindTargetByName(info.ArgString);
+			var targets = _core.FindTargetByName(info.ArgString);
 
-			if(target.Count == 0)
+			if(targets.Count == 0)
 			{
-				Utilities.ReplyToCommand(client, "[Z:Sharp] Couldn't find any client contain with that name.");
+				info.ReplyToCommand("[Z:Sharp] Couldn't find any client contain with that name.");
 				return;
 			}
 
-			for(int i = 0; i < target.Count; i++)
+			foreach (CCSPlayerController target in targets)
 			{
-				CCSPlayerController targetindex = (CCSPlayerController)target[i];
-
-				if(!targetindex.IsValid)
+				if(!target.IsValid)
 					continue;
 
-				if(!targetindex.PawnIsAlive)
+				if(!target.PawnIsAlive)
 				{
-					Utilities.ReplyToCommand(client, $"[Z:Sharp] target {targetindex.PlayerName} is not alive.");
+					info.ReplyToCommand($"[Z:Sharp] target {target.PlayerName} is not alive.");
 					continue;
 				}
 
-				if(_Player.IsClientHuman(targetindex))
+				if(_player.IsClientHuman(target))
 				{
-					Utilities.ReplyToCommand(client, $"[Z:Sharp] target {targetindex.PlayerName} is already human.");
+					info.ReplyToCommand($"[Z:Sharp] target {target.PlayerName} is already human.");
 					continue;
 				}
 
-				_Core.HumanizeClient(targetindex, true);
-				Utilities.ReplyToCommand(client, $"[Z:Sharp] Successfully humanized {targetindex.PlayerName}");
+				_core.HumanizeClient(target, true);
+				info.ReplyToCommand($"[Z:Sharp] Successfully humanized {target.PlayerName}");
 			}
+		}
+
+		private void ZTeleClientCommand(CCSPlayerController client, CommandInfo info)
+		{
+			if (!client.IsValid)
+				return;
+			
+			if (!client.PawnIsAlive)
+			{
+				info.ReplyToCommand("[Z:Sharp] This feature requires that you are alive.");
+				return;
+			}
+			
+			_zTeleModule.ZTele_TeleportClientToSpawn(client);
+			info.ReplyToCommand("[Z:Sharp] Teleported back to spawn.");
 		}
 	}
 }

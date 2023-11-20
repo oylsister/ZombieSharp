@@ -1,23 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Formats.Asn1;
-using System.IO;
-using System.Linq;
-//using System.Numerics;
-using System.Reflection.Metadata;
-using System.Runtime.CompilerServices;
-using System.Security.Cryptography.X509Certificates;
-using CounterStrikeSharp.API;
-using CounterStrikeSharp.API.Core;
-using CounterStrikeSharp.API.Core.Attributes.Registration;
-using CounterStrikeSharp.API.Modules.Commands;
-using CounterStrikeSharp.API.Modules.Cvars;
-using CounterStrikeSharp.API.Modules.Entities;
-using CounterStrikeSharp.API.Modules.Events;
-using CounterStrikeSharp.API.Modules.Memory;
-using CounterStrikeSharp.API.Modules.Menu;
-using CounterStrikeSharp.API.Modules.Timers;
-using CounterStrikeSharp.API.Modules.Utils;
+﻿using System.Collections;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
