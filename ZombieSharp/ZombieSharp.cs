@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using CounterStrikeSharp.API.Modules.Entities.Constants;
+using CounterStrikeSharp.API.Core;
 
 namespace ZombieSharp
 {
@@ -34,7 +36,9 @@ namespace ZombieSharp
 		private CounterStrikeSharp.API.Modules.Timers.Timer g_hCountdown = null;
 		private CounterStrikeSharp.API.Modules.Timers.Timer g_hInfectMZ = null;
 
-		public override void Load(bool HotReload)
+		public CCSGameRules gameRules;
+
+        public override void Load(bool HotReload)
 		{
 			_event.Initialize();
 			_command.Initialize();
@@ -102,7 +106,7 @@ namespace ZombieSharp
 
 			if(candidate.Count < maxmz)
 			{
-				Server.PrintToChatAll("[Z:Sharp] Mother zombie cycle has been reset!");
+				Server.PrintToChatAll($"{ChatColors.Green}[Z:Sharp]{ChatColors.Default} Mother zombie cycle has been reset!");
 
 				if(candidate.Count > 0)
 				{
@@ -198,10 +202,10 @@ namespace ZombieSharp
 			// if force then tell them that they has been punnished.
 			if(force)
 			{
-				client.PrintToChat("[Z:Sharp] You have been punished by the god! (Knowing as Admin.) Now plauge all human!");
+				client.PrintToChat($"{ChatColors.Green}[Z:Sharp]{ChatColors.Default} You have been punished by the god! (Knowing as Admin.) Now plauge all human!");
 			}
 
-			client.PrintToChat("[Z:Sharp] You have been infected! Go pass it on to as many other players as you can.");
+			client.PrintToChat($"{ChatColors.Green}[Z:Sharp]{ChatColors.Default} You have been infected! Go pass it on to as many other players as you can.");
 		}
 
 		public void HumanizeClient(CCSPlayerController client, bool force = false)
@@ -218,7 +222,7 @@ namespace ZombieSharp
 			// if force tell them that they has been resurrected.
 			if(force)
 			{
-				client.PrintToChat("[Z:Sharp] You have been resurrected by the god! (Knowing as Admin.) Find yourself a cover!");
+				client.PrintToChat($"{ChatColors.Green}[Z:Sharp]{ChatColors.Default} You have been resurrected by the god! (Knowing as Admin.) Find yourself a cover!");
 			}
 		}
 
@@ -256,22 +260,14 @@ namespace ZombieSharp
 
 			if(human <= 0)
 			{
-				// round end.
-				TerminateRound(CsTeam.Terrorist);
+                // round end.
+                gameRules.TerminateRound(5.0f, RoundEndReason.TerroristsWin);
 			}
 			else if(zombie <= 0)
 			{
-				// round end.
-				TerminateRound(CsTeam.CounterTerrorist);
-			}
-		}
-
-		public void TerminateRound(CsTeam team)
-		{
-			EventRoundEnd _event = new EventRoundEnd(true);
-
-			_event.Set<int>("winner", (int)team);
-			_event.FireEvent(true);
+                // round end.
+                gameRules.TerminateRound(5.0f, RoundEndReason.CTsWin);
+            }
 		}
 
 		public ArrayList FindTargetByName(string name)

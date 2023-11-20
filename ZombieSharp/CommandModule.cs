@@ -24,7 +24,7 @@ namespace ZombieSharp
 		{
 			if(info.ArgCount <= 1)
 			{
-				info.ReplyToCommand("[Z:Sharp] Usage: css_zs_infect [<playername>].");
+				info.ReplyToCommand($"{ChatColors.Green}[Z:Sharp]{ChatColors.Default} Usage: css_zs_infect [<playername>].");
 				return;
 			}
 
@@ -32,7 +32,7 @@ namespace ZombieSharp
 
 			if(targets.Count == 0)
 			{
-				info.ReplyToCommand("[Z:Sharp] Couldn't find any client contain with that name.");
+				info.ReplyToCommand($"{ChatColors.Green}[Z:Sharp]{ChatColors.Default} Couldn't find any client contain with that name.");
 				return;
 			}
 
@@ -43,18 +43,18 @@ namespace ZombieSharp
 
 				if(!target.PawnIsAlive)
 				{
-					info.ReplyToCommand($"[Z:Sharp] target {target.PlayerName} is not alive.");
+					info.ReplyToCommand($"{ChatColors.Green}[Z:Sharp]{ChatColors.Default} target {target.PlayerName} is not alive.");
 					continue;
 				}
 
 				if(_player.IsClientInfect(target))
 				{
-					info.ReplyToCommand($"[Z:Sharp] target {target.PlayerName} is already zombie.");
+					info.ReplyToCommand($"{ChatColors.Green}[Z:Sharp]{ChatColors.Default} target {target.PlayerName} is already zombie.");
 					continue;
 				}
 
 				_core.InfectClient(target, null, false, true);
-				info.ReplyToCommand($"[Z:Sharp] Successfully infected {target.PlayerName}");
+				info.ReplyToCommand($"{ChatColors.Green}[Z:Sharp]{ChatColors.Default} Successfully infected {target.PlayerName}");
 			}
 		}
 
@@ -62,7 +62,7 @@ namespace ZombieSharp
 		{
 			if(info.ArgCount <= 1)
 			{
-				info.ReplyToCommand("[Z:Sharp] Usage: css_zs_human <playername>.");
+				info.ReplyToCommand($"{ChatColors.Green}[Z:Sharp]{ChatColors.Default} Usage: css_zs_human <playername>.");
 				return;
 			}
 
@@ -70,7 +70,7 @@ namespace ZombieSharp
 
 			if(targets.Count == 0)
 			{
-				info.ReplyToCommand("[Z:Sharp] Couldn't find any client contain with that name.");
+				info.ReplyToCommand($"{ChatColors.Green}[Z:Sharp]{ChatColors.Default} Couldn't find any client contain with that name.");
 				return;
 			}
 
@@ -81,18 +81,18 @@ namespace ZombieSharp
 
 				if(!target.PawnIsAlive)
 				{
-					info.ReplyToCommand($"[Z:Sharp] target {target.PlayerName} is not alive.");
+					info.ReplyToCommand($"{ChatColors.Green}[Z:Sharp]{ChatColors.Default} target {target.PlayerName} is not alive.");
 					continue;
 				}
 
 				if(_player.IsClientHuman(target))
 				{
-					info.ReplyToCommand($"[Z:Sharp] target {target.PlayerName} is already human.");
+					info.ReplyToCommand($"{ChatColors.Green}[Z:Sharp]{ChatColors.Default} target {target.PlayerName} is already human.");
 					continue;
 				}
 
 				_core.HumanizeClient(target, true);
-				info.ReplyToCommand($"[Z:Sharp] Successfully humanized {target.PlayerName}");
+				info.ReplyToCommand($"{ChatColors.Green}[Z:Sharp]{ChatColors.Default} Successfully humanized {target.PlayerName}");
 			}
 		}
 
@@ -103,12 +103,12 @@ namespace ZombieSharp
 			
 			if (!client.PawnIsAlive)
 			{
-				info.ReplyToCommand("[Z:Sharp] This feature requires that you are alive.");
+				info.ReplyToCommand($"{ChatColors.Green}[Z:Sharp]{ChatColors.Default} This feature requires that you are alive.");
 				return;
 			}
 			
 			_zTeleModule.ZTele_TeleportClientToSpawn(client);
-			info.ReplyToCommand("[Z:Sharp] Teleported back to spawn.");
+			info.ReplyToCommand($"{ChatColors.Green}[Z:Sharp]{ChatColors.Default} Teleported back to spawn.");
 		}
 	}
 }

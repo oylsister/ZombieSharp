@@ -40,7 +40,7 @@ namespace ZombieSharp
 
 		private HookResult OnRoundStart(EventRoundStart @event, GameEventInfo info)
 		{
-			Server.PrintToChatAll("[Z:Sharp] The current game mode is the Human vs. Zombie, the zombie goal is to infect all human before time is running out.");
+			Server.PrintToChatAll($"{ChatColors.Green}[Z:Sharp]{ChatColors.Default} The current game mode is the Human vs. Zombie, the zombie goal is to infect all human before time is running out.");
 			return HookResult.Continue;
 		}
 
