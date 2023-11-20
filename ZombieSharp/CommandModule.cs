@@ -98,12 +98,6 @@ namespace ZombieSharp
 
 		private void ZTeleClientCommand(CCSPlayerController client, CommandInfo info)
 		{
-			if (info.ArgCount <= 1)
-			{
-				info.ReplyToCommand("[Z:Sharp] Usage: css_ztele.");
-				return;
-			}
-
 			if (!client.IsValid)
 				return;
 			
@@ -114,6 +108,7 @@ namespace ZombieSharp
 			}
 			
 			_zTeleModule.ZTele_TeleportClientToSpawn(client);
+			info.ReplyToCommand("Teleported back to spawn.");
 		}
 	}
 }
