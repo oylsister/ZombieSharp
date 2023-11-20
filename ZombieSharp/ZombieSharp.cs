@@ -199,8 +199,21 @@ namespace ZombieSharp
 			// will apply this in class system later
 			clientpawn.Health = 10000;
 
-			// if force then tell them that they has been punnished.
-			if(force)
+			// Remove all weapon.
+			var weapons = clientpawn.WeaponServices.MyWeapons;
+
+			foreach(var weapon in weapons)
+			{
+				if(weapon == null)
+					continue;
+
+				weapon.Value.Remove();
+			}
+
+			client.GiveNamedItem("weapon_knife");
+
+            // if force then tell them that they has been punnished.
+            if (force)
 			{
 				client.PrintToChat($"{ChatColors.Green}[Z:Sharp]{ChatColors.Default} You have been punished by the god! (Knowing as Admin.) Now plauge all human!");
 			}
@@ -231,12 +244,9 @@ namespace ZombieSharp
 			if(!_player.IsClientInfect(client) || _player.IsClientHuman(attacker))
 				return;
 
-			// Get eye angle
-			QAngle eyeangle = client.PlayerPawn.Value.EyeAngles;
-
 			Vector clientpos = client.Pawn.Value.CBodyComponent!.SceneNode.AbsOrigin;
 			Vector attackerpos = attacker.Pawn.Value.CBodyComponent!.SceneNode.AbsOrigin;
-			Vector direction = attackerpos - clientpos;
+			Vector direction = clientpos - attackerpos;
 			Vector velocity = direction * damage;
 
 			client.Teleport(null, null, velocity);
