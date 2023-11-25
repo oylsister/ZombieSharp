@@ -262,8 +262,21 @@ namespace ZombieSharp
 			Vector direction = (clientpos - attackerpos).NormalizeVector();
 
 			var clientVelocity = clientPawn.AbsVelocity;
-			var weaponKnockback = _weapon.WeaponDatas.WeaponConfigs[weapon].Knockback * _weapon.WeaponDatas.KnockbackMultiply;
-			Vector pushVelocity = direction * damage * weaponKnockback;
+
+			float weaponKnockback;
+
+			// try to find the key then the knockback
+			if(_weapon.WeaponDatas.WeaponConfigs.ContainsKey(weapon)) 
+			{
+                weaponKnockback = _weapon.WeaponDatas.WeaponConfigs[weapon].Knockback;
+            }
+			// if key isn't find then set the default one.
+			else
+			{
+				weaponKnockback = 1f;
+            }
+
+			Vector pushVelocity = direction * damage * weaponKnockback * _weapon.WeaponDatas.KnockbackMultiply;
 
 			Vector velocity = clientVelocity + pushVelocity;
 
