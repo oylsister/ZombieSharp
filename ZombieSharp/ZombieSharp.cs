@@ -3,29 +3,40 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using CounterStrikeSharp.API.Modules.Entities.Constants;
 using CounterStrikeSharp.API.Core;
+using ZombieSharp.Helpers;
 
 namespace ZombieSharp
 {
 	public class ZombieSharp : BasePlugin
 	{
 		public override string ModuleName => "Zombie Sharp";
-		public override string ModuleAuthor => "Oylsister, Kurumi";
-		public override string ModuleVersion => "1.0";
+		public override string ModuleAuthor => "Oylsister, Kurumi, Sparky";
+		public override string ModuleVersion => "1.0 Alpha";
 
-		private EventModule _event;
-		private ZombiePlayer _player; 
-		private CommandModule _command;
-		private WeaponModule _weapon;
-		private ZTeleModule _ztele;
+		private IEventModule _event;
+		private IZombiePlayer _player; 
+		private ICommandModule _command;
+		private IWeaponModule _weapon;
+		private IZTeleModule _ztele;
 
 		public ZombieSharp() : base()
 		{
 			PluginHost = Host.CreateDefaultBuilder().ConfigureServices(services => 
 			{
-				services.AddSingleton <IWeaponModule, WeaponModule>();
+				services
+					.AddSingleton<ZombieSharp>()
+					.AddSingleton<IEventModule, EventModule>()
+					.AddSingleton<IWeaponModule, WeaponModule>()
+					.AddSingleton<IZTeleModule, ZTeleModule>()
+					.AddSingleton<ICommandModule, CommandModule>()
+					.AddSingleton<IZombiePlayer, ZombiePlayer>();
 			}).Build();
 
-			_weapon = PluginHost.Services.GetRequiredService<WeaponModule>();
+            _event = PluginHost.Services.GetRequiredService<IEventModule>();
+            _weapon = PluginHost.Services.GetRequiredService<IWeaponModule>();
+			_ztele = PluginHost.Services.GetRequiredService<IZTeleModule>();
+			_command = PluginHost.Services.GetRequiredService<ICommandModule>();
+			_player = PluginHost.Services.GetRequiredService<IZombiePlayer>();
 		}
 
 		public IHost PluginHost { get; init; }
@@ -35,8 +46,6 @@ namespace ZombieSharp
 
 		private CounterStrikeSharp.API.Modules.Timers.Timer g_hCountdown = null;
 		private CounterStrikeSharp.API.Modules.Timers.Timer g_hInfectMZ = null;
-
-		public CCSGameRules gameRules;
 
         public override void Load(bool HotReload)
 		{
@@ -239,17 +248,26 @@ namespace ZombieSharp
 			}
 		}
 
-		public void KnockbackClient(CCSPlayerController client, CCSPlayerController attacker, float damage)
+		public void KnockbackClient(CCSPlayerController client, CCSPlayerController attacker, float damage, string weapon)
 		{
 			if(!_player.IsClientInfect(client) || _player.IsClientHuman(attacker))
 				return;
 
-			Vector clientpos = client.Pawn.Value.CBodyComponent!.SceneNode.AbsOrigin;
-			Vector attackerpos = attacker.Pawn.Value.CBodyComponent!.SceneNode.AbsOrigin;
-			Vector direction = clientpos - attackerpos;
-			Vector velocity = direction * damage;
+			var clientPawn = client.PlayerPawn.Value;
+			var attackerPawn = attacker.PlayerPawn.Value;
 
-			client.Teleport(null, null, velocity);
+            Vector clientpos = clientPawn.AbsOrigin ?? new(0f, 0f, 0f);
+			Vector attackerpos = attackerPawn.AbsOrigin ?? new(0f, 0f, 0f);
+
+			Vector direction = (clientpos - attackerpos).NormalizeVector();
+
+			var clientVelocity = clientPawn.AbsVelocity;
+			var weaponKnockback = _weapon.WeaponDatas.WeaponConfigs[weapon].Knockback * _weapon.WeaponDatas.KnockbackMultiply;
+			Vector pushVelocity = direction * damage * weaponKnockback;
+
+			Vector velocity = clientVelocity + pushVelocity;
+
+			client.Teleport(new(0f, 0f, 0f), new(0f, 0f, 0f), velocity);
 		}
 
 		public void CheckGameStatus()
@@ -270,12 +288,14 @@ namespace ZombieSharp
 
 			if(human <= 0)
 			{
-                // round end.
+				// round end.
+				CCSGameRules gameRules = GetGameRules();
                 gameRules.TerminateRound(5.0f, RoundEndReason.TerroristsWin);
 			}
 			else if(zombie <= 0)
 			{
                 // round end.
+                CCSGameRules gameRules = GetGameRules();
                 gameRules.TerminateRound(5.0f, RoundEndReason.CTsWin);
             }
 		}
@@ -318,31 +338,45 @@ namespace ZombieSharp
 
 			return clientlist;
 		}
-	}
 
-	public class ZombiePlayer
-	{
-		[Flags]
-		public enum MotherZombieFlags
+		public static CCSGameRules GetGameRules()
 		{
-			NONE = (1 << 0),
-			CHOSEN = (1 << 1),
-			LAST = (1 << 2)
+			return Utilities.FindAllEntitiesByDesignerName<CCSGameRulesProxy>("cs_gamerules").First().GameRules!;
 		}
+    }
 
-		//public bool[] g_bZombie = new bool[128];
+    public interface IZombiePlayer
+    {
+        Dictionary<CCSPlayerController, bool> g_bZombie { get; set; }
+        Dictionary<CCSPlayerController, ZombiePlayer.MotherZombieFlags> g_MotherZombieStatus { get; set; }
 
-		public Dictionary<CCSPlayerController, bool> g_bZombie = new Dictionary<CCSPlayerController, bool>();
-		public Dictionary<CCSPlayerController, MotherZombieFlags> g_MotherZombieStatus = new Dictionary<CCSPlayerController, MotherZombieFlags>();
+        bool IsClientHuman(CCSPlayerController player);
+        bool IsClientInfect(CCSPlayerController player);
+    }
 
-		public bool IsClientInfect(CCSPlayerController player)
-		{
-			return g_bZombie[player];
-		}
+    public class ZombiePlayer : IZombiePlayer
+    {
+        [Flags]
+        public enum MotherZombieFlags
+        {
+            NONE = (1 << 0),
+            CHOSEN = (1 << 1),
+            LAST = (1 << 2)
+        }
 
-		public bool IsClientHuman(CCSPlayerController player)
-		{
-			return !g_bZombie[player];
-		}
-	}
+        //public bool[] g_bZombie = new bool[128];
+
+        public Dictionary<CCSPlayerController, bool> g_bZombie { get; set; } = new Dictionary<CCSPlayerController, bool>();
+        public Dictionary<CCSPlayerController, MotherZombieFlags> g_MotherZombieStatus { get; set; } = new Dictionary<CCSPlayerController, MotherZombieFlags>();
+
+        public bool IsClientInfect(CCSPlayerController player)
+        {
+            return g_bZombie[player];
+        }
+
+        public bool IsClientHuman(CCSPlayerController player)
+        {
+            return !g_bZombie[player];
+        }
+    }
 }   

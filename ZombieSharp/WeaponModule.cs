@@ -1,10 +1,14 @@
 using System.Text.Json;
+using CounterStrikeSharp.API.Core.Logging;
+using Microsoft.Extensions.Logging;
 
 namespace ZombieSharp
 {
     public class WeaponModule : IWeaponModule
     {
         private ZombieSharp _Core;
+
+        private ILogger _logger = CoreLogging.Factory.CreateLogger("WeaponConfgLog");
 
         public WeaponModule(ZombieSharp plugin)
         {
@@ -15,29 +19,24 @@ namespace ZombieSharp
 
         public void Initialize()
         {
-            var configPath = Path.Combine(_Core.ModulePath, "zs/weapons.json");
+            var configPath = Path.Combine(_Core.ModuleDirectory, "weapons.json");
 
-            if(!File.Exists(configPath))
+            if (!File.Exists(configPath))
             {
-                CreateConfigFile(configPath);
+                _logger.LogWarning("Cannot found weapons.json file!");
+                return;
             }
 
             WeaponDatas = JsonSerializer.Deserialize<WeaponConfig>(File.ReadAllText(configPath));
-        }
-
-        private void CreateConfigFile(string configPath) 
-        {
-            WeaponDatas = new WeaponConfig();
-
-            File.WriteAllText(configPath, 
-                JsonSerializer.Serialize(WeaponDatas, new JsonSerializerOptions { WriteIndented = true }));
         }
     }
 }
 
 public class WeaponConfig
 {
-    public Dictionary<string, WeaponData>WeaponConfigs = new Dictionary<string, WeaponData>();
+    public Dictionary<string, WeaponData> WeaponConfigs { get; set; } = new Dictionary<string, WeaponData>();
+
+    public float KnockbackMultiply { get; set; } = 1.0f;
 
     public WeaponConfig()
     {

@@ -2,113 +2,118 @@ using System.Collections;
 
 namespace ZombieSharp
 {
-	public class CommandModule
-	{
-		private readonly ZombieSharp _core;
-		private ZombiePlayer _player;
-		private ZTeleModule _zTeleModule;
-		
-		public CommandModule(ZombieSharp plugin)
-		{
-			_core = plugin;
-		}
+    public interface ICommandModule
+    {
+        void Initialize();
+    }
 
-		public void Initialize()
-		{
-			_core.AddCommand("css_zs_infect", "Infect Client Command", InfectClientCommand);
-			_core.AddCommand("css_zs_human", "Humanize Client Command", HumanizeClientCommand);
-			_core.AddCommand("css_zs_ztele", "Teleport Client to spawn Command", ZTeleClientCommand);
-		}
+    public class CommandModule : ICommandModule
+    {
+        private readonly ZombieSharp _core;
+        private IZombiePlayer _player;
+        private IZTeleModule _zTeleModule;
 
-		private void InfectClientCommand(CCSPlayerController client, CommandInfo info)
-		{
-			if(info.ArgCount <= 1)
-			{
-				info.ReplyToCommand($"{ChatColors.Green}[Z:Sharp]{ChatColors.Default} Usage: css_zs_infect [<playername>].");
-				return;
-			}
+        public CommandModule(ZombieSharp plugin)
+        {
+            _core = plugin;
+        }
 
-			var targets = _core.FindTargetByName(info.ArgString);
+        public void Initialize()
+        {
+            _core.AddCommand("css_zs_infect", "Infect Client Command", InfectClientCommand);
+            _core.AddCommand("css_zs_human", "Humanize Client Command", HumanizeClientCommand);
+            _core.AddCommand("css_zs_ztele", "Teleport Client to spawn Command", ZTeleClientCommand);
+        }
 
-			if(targets.Count == 0)
-			{
-				info.ReplyToCommand($"{ChatColors.Green}[Z:Sharp]{ChatColors.Default} Couldn't find any client contain with that name.");
-				return;
-			}
+        private void InfectClientCommand(CCSPlayerController client, CommandInfo info)
+        {
+            if (info.ArgCount <= 1)
+            {
+                info.ReplyToCommand($"{ChatColors.Green}[Z:Sharp]{ChatColors.Default} Usage: css_zs_infect [<playername>].");
+                return;
+            }
 
-			foreach (CCSPlayerController target in targets)
-			{
-				if(!target.IsValid)
-					continue;
+            var targets = _core.FindTargetByName(info.ArgString);
 
-				if(!target.PawnIsAlive)
-				{
-					info.ReplyToCommand($"{ChatColors.Green}[Z:Sharp]{ChatColors.Default} target {target.PlayerName} is not alive.");
-					continue;
-				}
+            if (targets.Count == 0)
+            {
+                info.ReplyToCommand($"{ChatColors.Green}[Z:Sharp]{ChatColors.Default} Couldn't find any client contain with that name.");
+                return;
+            }
 
-				if(_player.IsClientInfect(target))
-				{
-					info.ReplyToCommand($"{ChatColors.Green}[Z:Sharp]{ChatColors.Default} target {target.PlayerName} is already zombie.");
-					continue;
-				}
+            foreach (CCSPlayerController target in targets)
+            {
+                if (!target.IsValid)
+                    continue;
 
-				_core.InfectClient(target, null, false, true);
-				info.ReplyToCommand($"{ChatColors.Green}[Z:Sharp]{ChatColors.Default} Successfully infected {target.PlayerName}");
-			}
-		}
+                if (!target.PawnIsAlive)
+                {
+                    info.ReplyToCommand($"{ChatColors.Green}[Z:Sharp]{ChatColors.Default} target {target.PlayerName} is not alive.");
+                    continue;
+                }
 
-		private void HumanizeClientCommand(CCSPlayerController client, CommandInfo info)
-		{
-			if(info.ArgCount <= 1)
-			{
-				info.ReplyToCommand($"{ChatColors.Green}[Z:Sharp]{ChatColors.Default} Usage: css_zs_human <playername>.");
-				return;
-			}
+                if (_player.IsClientInfect(target))
+                {
+                    info.ReplyToCommand($"{ChatColors.Green}[Z:Sharp]{ChatColors.Default} target {target.PlayerName} is already zombie.");
+                    continue;
+                }
 
-			var targets = _core.FindTargetByName(info.ArgString);
+                _core.InfectClient(target, null, false, true);
+                info.ReplyToCommand($"{ChatColors.Green}[Z:Sharp]{ChatColors.Default} Successfully infected {target.PlayerName}");
+            }
+        }
 
-			if(targets.Count == 0)
-			{
-				info.ReplyToCommand($"{ChatColors.Green}[Z:Sharp]{ChatColors.Default} Couldn't find any client contain with that name.");
-				return;
-			}
+        private void HumanizeClientCommand(CCSPlayerController client, CommandInfo info)
+        {
+            if (info.ArgCount <= 1)
+            {
+                info.ReplyToCommand($"{ChatColors.Green}[Z:Sharp]{ChatColors.Default} Usage: css_zs_human <playername>.");
+                return;
+            }
 
-			foreach (CCSPlayerController target in targets)
-			{
-				if(!target.IsValid)
-					continue;
+            var targets = _core.FindTargetByName(info.ArgString);
 
-				if(!target.PawnIsAlive)
-				{
-					info.ReplyToCommand($"{ChatColors.Green}[Z:Sharp]{ChatColors.Default} target {target.PlayerName} is not alive.");
-					continue;
-				}
+            if (targets.Count == 0)
+            {
+                info.ReplyToCommand($"{ChatColors.Green}[Z:Sharp]{ChatColors.Default} Couldn't find any client contain with that name.");
+                return;
+            }
 
-				if(_player.IsClientHuman(target))
-				{
-					info.ReplyToCommand($"{ChatColors.Green}[Z:Sharp]{ChatColors.Default} target {target.PlayerName} is already human.");
-					continue;
-				}
+            foreach (CCSPlayerController target in targets)
+            {
+                if (!target.IsValid)
+                    continue;
 
-				_core.HumanizeClient(target, true);
-				info.ReplyToCommand($"{ChatColors.Green}[Z:Sharp]{ChatColors.Default} Successfully humanized {target.PlayerName}");
-			}
-		}
+                if (!target.PawnIsAlive)
+                {
+                    info.ReplyToCommand($"{ChatColors.Green}[Z:Sharp]{ChatColors.Default} target {target.PlayerName} is not alive.");
+                    continue;
+                }
 
-		private void ZTeleClientCommand(CCSPlayerController client, CommandInfo info)
-		{
-			if (!client.IsValid)
-				return;
-			
-			if (!client.PawnIsAlive)
-			{
-				info.ReplyToCommand($"{ChatColors.Green}[Z:Sharp]{ChatColors.Default} This feature requires that you are alive.");
-				return;
-			}
-			
-			_zTeleModule.ZTele_TeleportClientToSpawn(client);
-			info.ReplyToCommand($"{ChatColors.Green}[Z:Sharp]{ChatColors.Default} Teleported back to spawn.");
-		}
-	}
+                if (_player.IsClientHuman(target))
+                {
+                    info.ReplyToCommand($"{ChatColors.Green}[Z:Sharp]{ChatColors.Default} target {target.PlayerName} is already human.");
+                    continue;
+                }
+
+                _core.HumanizeClient(target, true);
+                info.ReplyToCommand($"{ChatColors.Green}[Z:Sharp]{ChatColors.Default} Successfully humanized {target.PlayerName}");
+            }
+        }
+
+        private void ZTeleClientCommand(CCSPlayerController client, CommandInfo info)
+        {
+            if (!client.IsValid)
+                return;
+
+            if (!client.PawnIsAlive)
+            {
+                info.ReplyToCommand($"{ChatColors.Green}[Z:Sharp]{ChatColors.Default} This feature requires that you are alive.");
+                return;
+            }
+
+            _zTeleModule.ZTele_TeleportClientToSpawn(client);
+            info.ReplyToCommand($"{ChatColors.Green}[Z:Sharp]{ChatColors.Default} Teleported back to spawn.");
+        }
+    }
 }
