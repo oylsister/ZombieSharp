@@ -13,9 +13,11 @@ namespace ZombieSharp
         private IZombiePlayer _player;
         private IZTeleModule _zTeleModule;
 
-        public CommandModule(ZombieSharp plugin)
+        public CommandModule(ZombieSharp plugin, IZombiePlayer player, IZTeleModule zTeleModule)
         {
             _core = plugin;
+            _player = player;
+            _zTeleModule = zTeleModule;
         }
 
         public void Initialize()
