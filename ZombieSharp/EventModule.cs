@@ -20,7 +20,7 @@ namespace ZombieSharp
             _core.RegisterEventHandler<EventRoundEnd>(OnRoundEnd);
             _core.RegisterEventHandler<EventPlayerHurt>(OnPlayerHurt);
             _core.RegisterEventHandler<EventPlayerDeath>(OnPlayerDeath);
-            _core.RegisterEventHandler<EventPlayerSpawn>(OnPlayerSpawn);
+            _core.RegisterEventHandler<EventPlayerSpawned>(OnPlayerSpawned);
             _core.RegisterEventHandler<EventItemPickup>(OnItemPickup, HookMode.Pre);
 
             _core.RegisterListener<Listeners.OnClientPutInServer>(OnClientPutInServerHandler);
@@ -31,6 +31,7 @@ namespace ZombieSharp
         {
             var client = Utilities.GetPlayerFromSlot(clientindex);
             _player.g_bZombie.Add(client, false);
+            _player.g_MotherZombieStatus.Add(client, ZombiePlayer.MotherZombieFlags.NONE);
         }
 
         private void OnClientDisconnectHandler(int clientindex)
@@ -38,11 +39,15 @@ namespace ZombieSharp
             var client = Utilities.GetPlayerFromSlot(clientindex);
             _player.g_bZombie.Remove(client);
             _zTeleModule.ClientSpawnDatas.Remove(client);
+            _player.g_MotherZombieStatus.Remove(client);
         }
 
         private HookResult OnRoundStart(EventRoundStart @event, GameEventInfo info)
         {
+            RemoveRoundObjective();
+
             Server.PrintToChatAll($"{ChatColors.Green}[Z:Sharp]{ChatColors.Default} The current game mode is the Human vs. Zombie, the zombie goal is to infect all human before time is running out.");
+
             return HookResult.Continue;
         }
 
@@ -111,12 +116,12 @@ namespace ZombieSharp
             return HookResult.Continue;
         }
 
-        private HookResult OnPlayerSpawn(EventPlayerSpawn @event, GameEventInfo info)
+        private HookResult OnPlayerSpawned(EventPlayerSpawned @event, GameEventInfo info)
         {
             var client = @event.Userid;
-
-            var spawnPos = @event.Userid.PlayerPawn.Value.AbsOrigin;
-            var spawnAngle = @event.Userid.PlayerPawn.Value.AbsRotation;
+            var clientPawn = client.PlayerPawn.Value;
+            var spawnPos = clientPawn.AbsOrigin!;
+            var spawnAngle = clientPawn.AbsRotation!;
 
             _zTeleModule.ZTele_GetClientSpawnPoint(client, spawnPos, spawnAngle);
 
@@ -141,6 +146,21 @@ namespace ZombieSharp
                 return HookResult.Handled;
 
             return HookResult.Continue;
+        }
+
+        private void RemoveRoundObjective()
+        {
+            var objectivelist = new List<string>() {"func_bomb_target", "func_hostage_rescue", "hostage_entity", "c4"};
+
+            foreach (string objectivename in objectivelist)
+            {
+                var entityIndex = Utilities.FindAllEntitiesByDesignerName<CEntityInstance>(objectivename);
+
+                foreach(var entity in entityIndex)
+                {
+                    entity.Remove();
+                }
+            }
         }
     }
 }
