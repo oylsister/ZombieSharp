@@ -1,9 +1,11 @@
 ﻿using System.Collections;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using CounterStrikeSharp.API.Modules.Entities.Constants;
 using CounterStrikeSharp.API.Core;
 using ZombieSharp.Helpers;
+using CounterStrikeSharp.API.Modules.Entities;
+using System.IO.Compression;
+using static ZombieSharp.ZombiePlayer;
+using static System.Formats.Asn1.AsnWriter;
 
 namespace ZombieSharp
 {
@@ -19,30 +21,19 @@ namespace ZombieSharp
 		private IWeaponModule _weapon;
 		private IZTeleModule _ztele;
 
-		public ZombieSharp() : base()
+		public ZombieSharp()
 		{
-			PluginHost = Host.CreateDefaultBuilder().ConfigureServices(services => 
-			{
-				services
-					.AddSingleton<ZombieSharp>()
-					.AddSingleton<IEventModule, EventModule>()
-					.AddSingleton<IWeaponModule, WeaponModule>()
-					.AddSingleton<IZTeleModule, ZTeleModule>()
-					.AddSingleton<ICommandModule, CommandModule>()
-					.AddSingleton<IZombiePlayer, ZombiePlayer>();
-			}).Build();
-
-            _event = PluginHost.Services.GetRequiredService<IEventModule>();
-            _weapon = PluginHost.Services.GetRequiredService<IWeaponModule>();
-			_ztele = PluginHost.Services.GetRequiredService<IZTeleModule>();
-			_command = PluginHost.Services.GetRequiredService<ICommandModule>();
-			_player = PluginHost.Services.GetRequiredService<IZombiePlayer>();
+            _player = new ZombiePlayer();
+            _ztele = new ZTeleModule(this);
+            _weapon = new WeaponModule(this);
+            _event = new EventModule(this, _player, _ztele, _weapon);
+			_command = new CommandModule(this, _player, _ztele);
 		}
-
-		public IHost PluginHost { get; init; }
 
 		public bool ZombieSpawned;
 		public int Countdown;
+
+		public Dictionary<int, ZombiePlayer> ZombiePlayers = new Dictionary<int, ZombiePlayer>();
 
 		private CounterStrikeSharp.API.Modules.Timers.Timer g_hCountdown = null;
 		private CounterStrikeSharp.API.Modules.Timers.Timer g_hInfectMZ = null;
@@ -51,7 +42,6 @@ namespace ZombieSharp
 		{
 			_event.Initialize();
 			_command.Initialize();
-			_weapon.Initialize();
 		}
 
 		public void InfectOnRoundFreezeEnd()
@@ -60,10 +50,10 @@ namespace ZombieSharp
 			g_hCountdown = AddTimer(1.0f, Timer_Countdown, TimerFlags.REPEAT);
 			g_hInfectMZ = AddTimer(15.0f, MotherZombieInfect);
 
-			for(int i = 1; i < Server.MaxPlayers; i++)
-			{
-				var client = Utilities.GetPlayerFromIndex(i);
+            List<CCSPlayerController> targetlist = Utilities.GetPlayers();
 
+            foreach(var client in targetlist)
+			{
 				if(client.IsValid)
 					client.PrintToCenter($" First Infection in {Countdown} seconds");
 			}
@@ -71,21 +61,22 @@ namespace ZombieSharp
 
 		public void Timer_Countdown()
 		{
-			if(Countdown <= 0 && g_hCountdown != null)
+			if(Countdown < 0 && g_hCountdown != null)
 			{
 				g_hCountdown.Kill();
+				return;
+			}
+
+            List<CCSPlayerController> targetlist = Utilities.GetPlayers();
+
+            foreach (var client in targetlist)
+			{
+                if (client.IsValid)
+					client.PrintToCenter($" First Infection in {Countdown} seconds");
 			}
 
 			Countdown--;
-
-			for(int i = 1; i < Server.MaxPlayers; i++)
-			{
-				var client = Utilities.GetPlayerFromIndex(i);
-
-				if(client.IsValid)
-					client.PrintToCenter($" First Infection in {Countdown} seconds");
-			}
-		}
+        }
 
 		public void MotherZombieInfect()
 		{
@@ -94,15 +85,15 @@ namespace ZombieSharp
 
 			//ArrayList candidate = new ArrayList();
 			List<CCSPlayerController> candidate = new List<CCSPlayerController>();
+			List<CCSPlayerController> targetlist = Utilities.GetPlayers();
 
 			int allplayer = 0;
 
-			for(int i = 1; i < Server.MaxPlayers; i++)
+			foreach(var client in targetlist)
 			{
-				var client = Utilities.GetPlayerFromIndex(i);
-				if(client.PawnIsAlive && client.IsValid)
+				if(client.PawnIsAlive! && client.IsValid!)
 				{
-					if(_player.g_MotherZombieStatus[client] == ZombiePlayer.MotherZombieFlags.NONE)
+					if(ZombiePlayers[client.UserId ?? 0].MotherZombieStatus == ZombiePlayer.MotherZombieFlags.NONE)
 						candidate.Add(client);
 
 					allplayer++;
@@ -119,9 +110,8 @@ namespace ZombieSharp
 
 				if(candidate.Count > 0)
 				{
-					for(int i = 0; i < candidate.Count; i++)
+					foreach (var client in candidate)
 					{
-						CCSPlayerController client = (CCSPlayerController)candidate[i];
 						InfectClient(client, null, true);
 						alreadymade++;
 					}
@@ -129,35 +119,31 @@ namespace ZombieSharp
 
 				candidate.Clear();
 
-				for(int i = 1; i < Server.MaxPlayers;i++)
-				{
-					var client = Utilities.GetPlayerFromIndex(i);
-
-					if(_player.g_MotherZombieStatus[client] == ZombiePlayer.MotherZombieFlags.LAST)
+				foreach(var client in Utilities.GetPlayers())
+				{ 
+					if(ZombiePlayers[client.UserId ?? 0].MotherZombieStatus == ZombiePlayer.MotherZombieFlags.LAST)
 					{
-						_player.g_MotherZombieStatus[client] = ZombiePlayer.MotherZombieFlags.NONE;
+                        ZombiePlayers[client.UserId ?? 0].MotherZombieStatus = ZombiePlayer.MotherZombieFlags.NONE;
 						candidate.Add(client);
 					}
 				}
 
-				for(int i = 0; i < candidate.Count; i++)
-				{
+                foreach (var client in candidate)
+                {
 					if(alreadymade >= maxmz)
 						break;
 
-					CCSPlayerController client = (CCSPlayerController)candidate[i];
 					InfectClient(client, null, true);
 					alreadymade++;
 				}
 			}
 			else
 			{
-				for(int i = 0; i < candidate.Count; i++)
-				{
+                foreach (var client in candidate)
+                {
 					if(alreadymade >= maxmz)
 						break;
 
-					CCSPlayerController client = (CCSPlayerController)candidate[i];
 					InfectClient(client, null, true);
 					alreadymade++;
 				}
@@ -175,9 +161,9 @@ namespace ZombieSharp
 				CheckGameStatus();
 
 			// make zombie status be true.
-			if(_player.IsClientHuman(client))
+			if(!ZombiePlayers[client.UserId ?? 0].IsZombie)
 			{
-				_player.g_bZombie[client] = true;
+                ZombiePlayers[client.UserId ?? 0].IsZombie = true;
 			}
 
 			// if has attacker then let's show them in kill feed.
@@ -194,7 +180,7 @@ namespace ZombieSharp
 			// if they from the motherzombie infection put status here to prevent being chosen for it again.
 			if(motherzombie)
 			{
-				_player.g_MotherZombieStatus[client] = ZombiePlayer.MotherZombieFlags.CHOSEN;
+				ZombiePlayers[client.UserId ?? 0].MotherZombieStatus = ZombiePlayer.MotherZombieFlags.CHOSEN;
 				_ztele.ZTele_TeleportClientToSpawn(client);
 			}
 
@@ -221,6 +207,11 @@ namespace ZombieSharp
 
 			client.GiveNamedItem("weapon_knife");
 
+			var winCondition = ConVar.Find("mp_ignore_round_win_conditions");
+
+			if(winCondition.GetPrimitiveValue<bool>())
+				Server.ExecuteCommand("mp_ignore_round_win_conditions 0");
+
             // if force then tell them that they has been punnished.
             if (force)
 			{
@@ -233,9 +224,9 @@ namespace ZombieSharp
 		public void HumanizeClient(CCSPlayerController client, bool force = false)
 		{
 			// zombie status to false
-			if(_player.IsClientInfect(client))
+			if(ZombiePlayers[client.UserId ?? 0].IsZombie)
 			{
-				_player.g_bZombie[client] = false;
+                ZombiePlayers[client.UserId ?? 0].IsZombie = false;
 			}
 
 			// switch client to CT
@@ -250,7 +241,7 @@ namespace ZombieSharp
 
 		public void KnockbackClient(CCSPlayerController client, CCSPlayerController attacker, float damage, string weapon)
 		{
-			if(!_player.IsClientInfect(client) || _player.IsClientHuman(attacker))
+			if(ZombiePlayers[client.UserId ?? 0].IsZombie || !ZombiePlayers[attacker.UserId ?? 0].IsZombie)
 				return;
 
 			var clientPawn = client.PlayerPawn.Value;
@@ -285,17 +276,18 @@ namespace ZombieSharp
 
 		public void CheckGameStatus()
 		{
+			if(!ZombieSpawned) return;
+
 			int human = 0;
 			int zombie = 0;
 
-			for(int i = 1; i < Server.MaxPlayers; i++)
-			{
-				var client = Utilities.GetPlayerFromIndex(i);
-
-				if(_player.IsClientInfect(client) && client.PawnIsAlive)
+			List<CCSPlayerController> clientlist = Utilities.GetPlayers();
+            foreach (var client in clientlist)
+            {
+				if(ZombiePlayers[client.UserId ?? 0].IsZombie && client.PawnIsAlive)
 					zombie++;
 				
-				else if(_player.IsClientHuman(client) && client.PawnIsAlive)
+				else if(!ZombiePlayers[client.UserId ?? 0].IsZombie && client.PawnIsAlive)
 					human++;
 			}
 
@@ -313,45 +305,6 @@ namespace ZombieSharp
             }
 		}
 
-		public ArrayList FindTargetByName(string name)
-		{
-			ArrayList clientlist = new ArrayList();
-
-			for(int i = 1; i <= Server.MaxPlayers; i++)
-			{
-				CCSPlayerController client = Utilities.GetPlayerFromIndex(i);
-
-				if(string.Equals(name, "@all"))
-				{
-					clientlist.Add(client);
-				}
-
-				else if(string.Equals(name, "@ct"))
-				{
-					if((CsTeam)client.TeamNum == CsTeam.CounterTerrorist)
-						clientlist.Add(client);
-				}
-
-				else if(string.Equals(name, "@t"))
-				{
-					if((CsTeam)client.TeamNum == CsTeam.Terrorist)
-						clientlist.Add(client);
-				}
-
-				else
-				{
-					StringComparison compare = StringComparison.OrdinalIgnoreCase;
-
-					if(client.PlayerName.Contains(name, compare))
-					{
-						clientlist.Add(client);
-					}
-				}
-			}
-
-			return clientlist;
-		}
-
 		public static CCSGameRules GetGameRules()
 		{
 			return Utilities.FindAllEntitiesByDesignerName<CCSGameRulesProxy>("cs_gamerules").First().GameRules!;
@@ -360,11 +313,9 @@ namespace ZombieSharp
 
     public interface IZombiePlayer
     {
-        Dictionary<CCSPlayerController, bool> g_bZombie { get; set; }
-        Dictionary<CCSPlayerController, ZombiePlayer.MotherZombieFlags> g_MotherZombieStatus { get; set; }
+        public MotherZombieFlags MotherZombieStatus { get; set; }
 
-        bool IsClientHuman(CCSPlayerController player);
-        bool IsClientInfect(CCSPlayerController player);
+        public bool IsZombie { get; set; }
     }
 
     public class ZombiePlayer : IZombiePlayer
@@ -377,19 +328,8 @@ namespace ZombieSharp
             LAST = (1 << 2)
         }
 
-        //public bool[] g_bZombie = new bool[128];
+		public MotherZombieFlags MotherZombieStatus { get; set; }
 
-        public Dictionary<CCSPlayerController, bool> g_bZombie { get; set; } = new Dictionary<CCSPlayerController, bool>();
-        public Dictionary<CCSPlayerController, MotherZombieFlags> g_MotherZombieStatus { get; set; } = new Dictionary<CCSPlayerController, MotherZombieFlags>();
-
-        public bool IsClientInfect(CCSPlayerController player)
-        {
-            return g_bZombie[player];
-        }
-
-        public bool IsClientHuman(CCSPlayerController player)
-        {
-            return !g_bZombie[player];
-        }
+		public bool IsZombie { get; set; }
     }
 }   

@@ -1,4 +1,5 @@
 using System.Collections;
+using CounterStrikeSharp.API.Modules.Commands.Targeting;
 
 namespace ZombieSharp
 {
@@ -35,34 +36,42 @@ namespace ZombieSharp
                 return;
             }
 
-            var targets = _core.FindTargetByName(info.ArgString);
+            var targets = info.GetArgTargetResult(1);
 
-            if (targets.Count == 0)
+            if (targets.Players.Count <= 0)
             {
                 info.ReplyToCommand($"{ChatColors.Green}[Z:Sharp]{ChatColors.Default} Couldn't find any client contain with that name.");
                 return;
             }
 
-            foreach (CCSPlayerController target in targets)
+            foreach (CCSPlayerController target in targets.Players)
             {
                 if (!target.IsValid)
                     continue;
 
                 if (!target.PawnIsAlive)
                 {
-                    info.ReplyToCommand($"{ChatColors.Green}[Z:Sharp]{ChatColors.Default} target {target.PlayerName} is not alive.");
+                    if (targets.Players.Count < 2)
+                        info.ReplyToCommand($"{ChatColors.Green}[Z:Sharp]{ChatColors.Default} target {target.PlayerName} is not alive.");
+
                     continue;
                 }
 
-                if (_player.IsClientInfect(target))
+                if (_core.ZombiePlayers[client.UserId ?? 0].IsZombie)
                 {
-                    info.ReplyToCommand($"{ChatColors.Green}[Z:Sharp]{ChatColors.Default} target {target.PlayerName} is already zombie.");
+                    if (targets.Players.Count < 2)
+                        info.ReplyToCommand($"{ChatColors.Green}[Z:Sharp]{ChatColors.Default} target {target.PlayerName} is already zombie.");
+
                     continue;
                 }
 
                 _core.InfectClient(target, null, false, true);
-                info.ReplyToCommand($"{ChatColors.Green}[Z:Sharp]{ChatColors.Default} Successfully infected {target.PlayerName}");
+
+                if (targets.Players.Count < 2)
+                    info.ReplyToCommand($"{ChatColors.Green}[Z:Sharp]{ChatColors.Default} Successfully infected {target.PlayerName}");
             }
+
+            info.ReplyToCommand($"{ChatColors.Green}[Z:Sharp]{ChatColors.Default} Successfully infected group.");
         }
 
         private void HumanizeClientCommand(CCSPlayerController client, CommandInfo info)
@@ -73,34 +82,41 @@ namespace ZombieSharp
                 return;
             }
 
-            var targets = _core.FindTargetByName(info.ArgString);
+            var targets = info.GetArgTargetResult(1);
 
-            if (targets.Count == 0)
+            if (targets.Players.Count <= 0)
             {
                 info.ReplyToCommand($"{ChatColors.Green}[Z:Sharp]{ChatColors.Default} Couldn't find any client contain with that name.");
                 return;
             }
 
-            foreach (CCSPlayerController target in targets)
+            foreach (var target in targets.Players)
             {
                 if (!target.IsValid)
                     continue;
 
                 if (!target.PawnIsAlive)
                 {
-                    info.ReplyToCommand($"{ChatColors.Green}[Z:Sharp]{ChatColors.Default} target {target.PlayerName} is not alive.");
+                    if (targets.Players.Count < 2)
+                        info.ReplyToCommand($"{ChatColors.Green}[Z:Sharp]{ChatColors.Default} target {target.PlayerName} is not alive.");
+
                     continue;
                 }
 
-                if (_player.IsClientHuman(target))
+                if (!_core.ZombiePlayers[client.UserId ?? 0].IsZombie)
                 {
-                    info.ReplyToCommand($"{ChatColors.Green}[Z:Sharp]{ChatColors.Default} target {target.PlayerName} is already human.");
+                    if (targets.Players.Count < 2)
+                        info.ReplyToCommand($"{ChatColors.Green}[Z:Sharp]{ChatColors.Default} target {target.PlayerName} is already human.");
+
                     continue;
                 }
 
                 _core.HumanizeClient(target, true);
-                info.ReplyToCommand($"{ChatColors.Green}[Z:Sharp]{ChatColors.Default} Successfully humanized {target.PlayerName}");
+
+                if (targets.Players.Count < 2)
+                    info.ReplyToCommand($"{ChatColors.Green}[Z:Sharp]{ChatColors.Default} Successfully humanized {target.PlayerName}");
             }
+            info.ReplyToCommand($"{ChatColors.Green}[Z:Sharp]{ChatColors.Default} Successfully humanized group.");
         }
 
         private void ZTeleClientCommand(CCSPlayerController client, CommandInfo info)

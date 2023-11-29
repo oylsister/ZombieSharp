@@ -5,12 +5,14 @@ namespace ZombieSharp
         private readonly ZombieSharp _core;
         private IZombiePlayer _player;
         private IZTeleModule _zTeleModule;
+        private IWeaponModule _weaponModule;
 
-        public EventModule(ZombieSharp plugin, IZombiePlayer player, IZTeleModule zTeleModule)
+        public EventModule(ZombieSharp plugin, IZombiePlayer player, IZTeleModule zTeleModule, IWeaponModule weapon)
         {
             _core = plugin;
             _player = player;
             _zTeleModule = zTeleModule;
+            _weaponModule = weapon;
         }
 
         public void Initialize()
@@ -23,29 +25,46 @@ namespace ZombieSharp
             _core.RegisterEventHandler<EventPlayerSpawned>(OnPlayerSpawned);
             _core.RegisterEventHandler<EventItemPickup>(OnItemPickup, HookMode.Pre);
 
-            _core.RegisterListener<Listeners.OnClientPutInServer>(OnClientPutInServerHandler);
-            _core.RegisterListener<Listeners.OnClientDisconnect>(OnClientDisconnectHandler);
+            _core.RegisterEventHandler<EventPlayerConnectFull>(OnPlayerConnectFull);
+            _core.RegisterEventHandler<EventPlayerDisconnect>(OnPlayerDisconnect);
+            _core.RegisterListener<Listeners.OnMapStart>(OnMapStart);
         }
 
-        private void OnClientPutInServerHandler(int clientindex)
+        private HookResult OnPlayerConnectFull(EventPlayerConnectFull @event, GameEventInfo info)
         {
-            var client = Utilities.GetPlayerFromSlot(clientindex);
-            _player.g_bZombie.Add(client, false);
-            _player.g_MotherZombieStatus.Add(client, ZombiePlayer.MotherZombieFlags.NONE);
+            var client = @event.Userid;
+
+            int clientindex = client.UserId ?? 0;
+
+            _core.ZombiePlayers[clientindex] = new ZombiePlayer();
+            _core.ZombiePlayers[clientindex].IsZombie = false;
+            _core.ZombiePlayers[clientindex].MotherZombieStatus = ZombiePlayer.MotherZombieFlags.NONE;
+
+            return HookResult.Continue;
         }
 
-        private void OnClientDisconnectHandler(int clientindex)
+        private HookResult OnPlayerDisconnect(EventPlayerDisconnect @event, GameEventInfo info)
         {
-            var client = Utilities.GetPlayerFromSlot(clientindex);
-            _player.g_bZombie.Remove(client);
-            _zTeleModule.ClientSpawnDatas.Remove(client);
-            _player.g_MotherZombieStatus.Remove(client);
+            var client = @event.Userid;
+
+            int clientindex = client.UserId ?? 0;
+
+            _core.ZombiePlayers.Remove(clientindex);
+            _zTeleModule.ClientSpawnDatas.Remove(client.UserId ?? 0);
+
+            return HookResult.Continue;
+        }
+
+        private void OnMapStart(string mapname)
+        {
+            _weaponModule.Initialize();
         }
 
         private HookResult OnRoundStart(EventRoundStart @event, GameEventInfo info)
         {
             RemoveRoundObjective();
 
+            Server.ExecuteCommand("mp_ignore_round_win_conditions 1");
             Server.PrintToChatAll($"{ChatColors.Green}[Z:Sharp]{ChatColors.Default} The current game mode is the Human vs. Zombie, the zombie goal is to infect all human before time is running out.");
 
             return HookResult.Continue;
@@ -77,11 +96,11 @@ namespace ZombieSharp
             foreach (var client in clientlist)
             {
                 // Reset Client Status.
-                _player.g_bZombie[client] = false;
+                _core.ZombiePlayers[client.UserId ?? 0].IsZombie = true;
 
                 // if they were chosen as motherzombie then let's make them not to get chosen again.
-                if (_player.g_MotherZombieStatus[client] == ZombiePlayer.MotherZombieFlags.CHOSEN)
-                    _player.g_MotherZombieStatus[client] = ZombiePlayer.MotherZombieFlags.LAST;
+                if (_core.ZombiePlayers[client.UserId ?? 0].MotherZombieStatus == ZombiePlayer.MotherZombieFlags.CHOSEN)
+                    _core.ZombiePlayers[client.UserId ?? 0].MotherZombieStatus = ZombiePlayer.MotherZombieFlags.LAST;
             }
         }
 
@@ -93,7 +112,7 @@ namespace ZombieSharp
             var weapon = @event.Weapon;
             var dmgHealth = @event.DmgHealth;
 
-            if (_player.IsClientInfect(attacker) && _player.IsClientHuman(client) && string.Equals(weapon, "knife"))
+            if (_core.ZombiePlayers[attacker.UserId ?? 0].IsZombie && !_core.ZombiePlayers[client.UserId ?? 0].IsZombie && string.Equals(weapon, "knife"))
                 _core.InfectClient(client, attacker);
 
             _core.KnockbackClient(client, attacker, dmgHealth, weapon);
@@ -130,19 +149,19 @@ namespace ZombieSharp
                 _core.InfectClient(client);
 
             // else they're human!
-            _core.HumanizeClient(client);
+            else
+                _core.HumanizeClient(client);
 
             return HookResult.Continue;
         }
 
         private HookResult OnItemPickup(EventItemPickup @event, GameEventInfo info)
-        {
+        {          
             var client = @event.Userid;
-
             var weapon = @event.Item;
 
             // if client is zombie and it's not a knife, then no pickup
-            if (_player.IsClientInfect(client) && !string.Equals(weapon, "knife"))
+            if (_core.ZombiePlayers[client.UserId ?? 0].IsZombie && !string.Equals(weapon, "knife"))
                 return HookResult.Handled;
 
             return HookResult.Continue;
