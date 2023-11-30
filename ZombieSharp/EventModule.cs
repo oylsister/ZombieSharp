@@ -25,34 +25,30 @@ namespace ZombieSharp
             _core.RegisterEventHandler<EventPlayerSpawned>(OnPlayerSpawned);
             _core.RegisterEventHandler<EventItemPickup>(OnItemPickup, HookMode.Pre);
 
-            _core.RegisterEventHandler<EventPlayerConnectFull>(OnPlayerConnectFull);
-            _core.RegisterEventHandler<EventPlayerDisconnect>(OnPlayerDisconnect);
+            _core.RegisterListener<Listeners.OnClientConnected>(OnClientConnected);
+            _core.RegisterListener<Listeners.OnClientDisconnect>(OnClientDisconnected);
             _core.RegisterListener<Listeners.OnMapStart>(OnMapStart);
         }
 
-        private HookResult OnPlayerConnectFull(EventPlayerConnectFull @event, GameEventInfo info)
+        private void OnClientConnected(int client)
         {
-            var client = @event.Userid;
+            var player = Utilities.GetPlayerFromSlot(client);
 
-            int clientindex = client.UserId ?? 0;
+            int clientindex = player.UserId ?? 0;
 
             _core.ZombiePlayers[clientindex] = new ZombiePlayer();
             _core.ZombiePlayers[clientindex].IsZombie = false;
             _core.ZombiePlayers[clientindex].MotherZombieStatus = ZombiePlayer.MotherZombieFlags.NONE;
-
-            return HookResult.Continue;
         }
 
-        private HookResult OnPlayerDisconnect(EventPlayerDisconnect @event, GameEventInfo info)
+        private void OnClientDisconnected(int client)
         {
-            var client = @event.Userid;
+            var player = Utilities.GetPlayerFromSlot(client);
 
-            int clientindex = client.UserId ?? 0;
+            int clientindex = player.UserId ?? 0;
 
             _core.ZombiePlayers.Remove(clientindex);
-            _zTeleModule.ClientSpawnDatas.Remove(client.UserId ?? 0);
-
-            return HookResult.Continue;
+            _zTeleModule.ClientSpawnDatas.Remove(clientindex);
         }
 
         private void OnMapStart(string mapname)

@@ -28,11 +28,25 @@ namespace ZombieSharp
 
         public void ZTele_GetClientSpawnPoint(CCSPlayerController client, Vector position, QAngle angle)
         {
-            ClientSpawnDatas.Add(client.UserId ?? 0, new ClientSpawnData
+            if (ClientSpawnDatas.ContainsKey(client.UserId ?? 0))
             {
-                PlayerAngle = angle,
-                PlayerPosition = position
-            });
+                ClientSpawnDatas[client.UserId ?? 0].PlayerAngle.X = angle.X;
+                ClientSpawnDatas[client.UserId ?? 0].PlayerAngle.Y = angle.Y;
+                ClientSpawnDatas[client.UserId ?? 0].PlayerAngle.Z = angle.Z;
+
+                ClientSpawnDatas[client.UserId ?? 0].PlayerPosition.X = position.X;
+                ClientSpawnDatas[client.UserId ?? 0].PlayerPosition.Y = position.Y;
+                ClientSpawnDatas[client.UserId ?? 0].PlayerPosition.Z = position.Z;
+            }
+
+            else
+            {
+                ClientSpawnDatas.Add(client.UserId ?? 0, new ClientSpawnData
+                {
+                    PlayerAngle = angle,
+                    PlayerPosition = position
+                });
+            }
         }
 
         public void ZTele_TeleportClientToSpawn(CCSPlayerController client)

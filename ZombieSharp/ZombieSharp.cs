@@ -93,8 +93,11 @@ namespace ZombieSharp
 			{
 				if(client.PawnIsAlive! && client.IsValid!)
 				{
-					if(ZombiePlayers[client.UserId ?? 0].MotherZombieStatus == ZombiePlayer.MotherZombieFlags.NONE)
+					if (ZombiePlayers[client.UserId ?? 0].MotherZombieStatus == MotherZombieFlags.NONE)
+					{
+						Server.PrintToChatAll($"Add {client.PlayerName} to mother zombie candidate.");
 						candidate.Add(client);
+					}
 
 					allplayer++;
 				}
@@ -121,9 +124,9 @@ namespace ZombieSharp
 
 				foreach(var client in Utilities.GetPlayers())
 				{ 
-					if(ZombiePlayers[client.UserId ?? 0].MotherZombieStatus == ZombiePlayer.MotherZombieFlags.LAST)
+					if(ZombiePlayers[client.UserId ?? 0].MotherZombieStatus == MotherZombieFlags.LAST)
 					{
-                        ZombiePlayers[client.UserId ?? 0].MotherZombieStatus = ZombiePlayer.MotherZombieFlags.NONE;
+                        ZombiePlayers[client.UserId ?? 0].MotherZombieStatus = MotherZombieFlags.NONE;
 						candidate.Add(client);
 					}
 				}
@@ -180,7 +183,7 @@ namespace ZombieSharp
 			// if they from the motherzombie infection put status here to prevent being chosen for it again.
 			if(motherzombie)
 			{
-				ZombiePlayers[client.UserId ?? 0].MotherZombieStatus = ZombiePlayer.MotherZombieFlags.CHOSEN;
+				ZombiePlayers[client.UserId ?? 0].MotherZombieStatus = MotherZombieFlags.CHOSEN;
 				_ztele.ZTele_TeleportClientToSpawn(client);
 			}
 
