@@ -11,13 +11,11 @@ namespace ZombieSharp
     public class CommandModule : ICommandModule
     {
         private readonly ZombieSharp _core;
-        private IZombiePlayer _player;
         private IZTeleModule _zTeleModule;
 
-        public CommandModule(ZombieSharp plugin, IZombiePlayer player, IZTeleModule zTeleModule)
+        public CommandModule(ZombieSharp plugin, IZTeleModule zTeleModule)
         {
             _core = plugin;
-            _player = player;
             _zTeleModule = zTeleModule;
         }
 
@@ -57,7 +55,7 @@ namespace ZombieSharp
                     continue;
                 }
 
-                if (_core.ZombiePlayers[client.UserId ?? 0].IsZombie)
+                if (_core.IsZombie[client.Slot])
                 {
                     if (targets.Players.Count < 2)
                         info.ReplyToCommand($"{ChatColors.Green}[Z:Sharp]{ChatColors.Default} target {target.PlayerName} is already zombie.");
@@ -103,7 +101,7 @@ namespace ZombieSharp
                     continue;
                 }
 
-                if (!_core.ZombiePlayers[client.UserId ?? 0].IsZombie)
+                if (!_core.IsZombie[client.Slot])
                 {
                     if (targets.Players.Count < 2)
                         info.ReplyToCommand($"{ChatColors.Green}[Z:Sharp]{ChatColors.Default} target {target.PlayerName} is already human.");

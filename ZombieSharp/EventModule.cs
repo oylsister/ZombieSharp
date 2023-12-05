@@ -3,14 +3,12 @@ namespace ZombieSharp
     public class EventModule : IEventModule
     {
         private readonly ZombieSharp _core;
-        private IZombiePlayer _player;
         private IZTeleModule _zTeleModule;
         private IWeaponModule _weaponModule;
 
-        public EventModule(ZombieSharp plugin, IZombiePlayer player, IZTeleModule zTeleModule, IWeaponModule weapon)
+        public EventModule(ZombieSharp plugin, IZTeleModule zTeleModule, IWeaponModule weapon)
         {
             _core = plugin;
-            _player = player;
             _zTeleModule = zTeleModule;
             _weaponModule = weapon;
         }
@@ -34,21 +32,20 @@ namespace ZombieSharp
         {
             var player = Utilities.GetPlayerFromSlot(client);
 
-            int clientindex = player.UserId ?? 0;
+            int clientindex = player.Slot;
 
-            _core.ZombiePlayers[clientindex] = new ZombiePlayer();
-            _core.ZombiePlayers[clientindex].IsZombie = false;
-            _core.ZombiePlayers[clientindex].MotherZombieStatus = ZombiePlayer.MotherZombieFlags.NONE;
+            _core.IsZombie[clientindex] = false;
+            _core.MotherZombieStatus[clientindex] = ZombieSharp.MotherZombieFlags.NONE;
         }
 
         private void OnClientDisconnected(int client)
         {
             var player = Utilities.GetPlayerFromSlot(client);
 
-            int clientindex = player.UserId ?? 0;
+            int clientindex = player.Slot;
 
-            _core.ZombiePlayers.Remove(clientindex);
-            _zTeleModule.ClientSpawnDatas.Remove(clientindex);
+            _core.IsZombie[clientindex] = false;
+            _core.MotherZombieStatus[clientindex] = ZombieSharp.MotherZombieFlags.NONE;
         }
 
         private void OnMapStart(string mapname)
@@ -92,11 +89,11 @@ namespace ZombieSharp
             foreach (var client in clientlist)
             {
                 // Reset Client Status.
-                _core.ZombiePlayers[client.UserId ?? 0].IsZombie = true;
+                _core.IsZombie[client.Slot] = true;
 
                 // if they were chosen as motherzombie then let's make them not to get chosen again.
-                if (_core.ZombiePlayers[client.UserId ?? 0].MotherZombieStatus == ZombiePlayer.MotherZombieFlags.CHOSEN)
-                    _core.ZombiePlayers[client.UserId ?? 0].MotherZombieStatus = ZombiePlayer.MotherZombieFlags.LAST;
+                if (_core.MotherZombieStatus[client.Slot] == ZombieSharp.MotherZombieFlags.CHOSEN)
+                    _core.MotherZombieStatus[client.Slot] = ZombieSharp.MotherZombieFlags.LAST;
             }
         }
 
@@ -108,7 +105,7 @@ namespace ZombieSharp
             var weapon = @event.Weapon;
             var dmgHealth = @event.DmgHealth;
 
-            if (_core.ZombiePlayers[attacker.UserId ?? 0].IsZombie && !_core.ZombiePlayers[client.UserId ?? 0].IsZombie && string.Equals(weapon, "knife"))
+            if (_core.IsZombie[attacker.Slot] && !_core.IsZombie[client.Slot] && string.Equals(weapon, "knife"))
                 _core.InfectClient(client, attacker);
 
             _core.KnockbackClient(client, attacker, dmgHealth, weapon);
@@ -157,7 +154,7 @@ namespace ZombieSharp
             var weapon = @event.Item;
 
             // if client is zombie and it's not a knife, then no pickup
-            if (_core.ZombiePlayers[client.UserId ?? 0].IsZombie && !string.Equals(weapon, "knife"))
+            if (_core.IsZombie[client.Slot] && !string.Equals(weapon, "knife"))
                 return HookResult.Handled;
 
             return HookResult.Continue;
