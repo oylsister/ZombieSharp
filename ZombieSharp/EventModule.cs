@@ -22,6 +22,7 @@ namespace ZombieSharp
             _core.RegisterEventHandler<EventPlayerDeath>(OnPlayerDeath);
             _core.RegisterEventHandler<EventPlayerSpawned>(OnPlayerSpawned);
             _core.RegisterEventHandler<EventItemPickup>(OnItemPickup, HookMode.Pre);
+            _core.RegisterEventHandler<EventPlayerJump>(OnPlayerJump);
 
             _core.RegisterListener<Listeners.OnClientConnected>(OnClientConnected);
             _core.RegisterListener<Listeners.OnClientDisconnect>(OnClientDisconnected);
@@ -156,6 +157,18 @@ namespace ZombieSharp
             // if client is zombie and it's not a knife, then no pickup
             if (_core.IsZombie[client.Slot] && !string.Equals(weapon, "knife"))
                 return HookResult.Handled;
+
+            return HookResult.Continue;
+        }
+
+        private HookResult OnPlayerJump(EventPlayerJump @event, GameEventInfo info)
+        {
+            var client = @event.Userid;
+
+            Vector velocity = client.PlayerPawn.Value.AbsVelocity;
+            velocity.Y *= 1.07f; 
+
+            client.Teleport(new(0f, 0f, 0f), new(0f, 0f, 0f), velocity);
 
             return HookResult.Continue;
         }
