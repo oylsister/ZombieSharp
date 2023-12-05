@@ -38,8 +38,8 @@ namespace ZombieSharp
             LAST = (1 << 2)
         }
 
-        public bool[] IsZombie = new bool[Server.MaxPlayers];
-        public MotherZombieFlags[] MotherZombieStatus = new MotherZombieFlags[Server.MaxPlayers];
+        public bool[] IsZombie { get; set; } = new bool[Server.MaxPlayers];
+        public MotherZombieFlags[] MotherZombieStatus { get; set; } = new MotherZombieFlags[Server.MaxPlayers];
 
         private CounterStrikeSharp.API.Modules.Timers.Timer g_hCountdown = null;
         private CounterStrikeSharp.API.Modules.Timers.Timer g_hInfectMZ = null;
@@ -111,7 +111,7 @@ namespace ZombieSharp
 
             int alreadymade = 0;
 
-            int maxmz = (int)Math.Round((float)allplayer / 7.0f);
+            int maxmz = (int)Math.Round(allplayer / 7.0f);
 
             if(candidate.Count < maxmz)
             {
