@@ -32,6 +32,8 @@ namespace ZombieSharp
         private CounterStrikeSharp.API.Modules.Timers.Timer g_hCountdown = null;
         private CounterStrikeSharp.API.Modules.Timers.Timer g_hInfectMZ = null;
 
+        public bool hitgroupLoad = false;
+
         public override void Load(bool HotReload)
         {
             EventInitialize();
@@ -201,6 +203,16 @@ namespace ZombieSharp
             if (!ZombieSpawned)
                 ZombieSpawned = true;
 
+            // Create an event for killfeed
+            if(attacker != null)
+            {
+                EventPlayerDeath eventDeath = new EventPlayerDeath(true);
+                eventDeath.Set("userid", client.UserId ?? 0);
+                eventDeath.Set("attacker", attacker.UserId ?? 0);
+                eventDeath.Set("weapon", "knife");
+                eventDeath.FireEvent(true);
+            }
+
             // if force then tell them that they has been punnished.
             if (force)
             {
@@ -230,7 +242,7 @@ namespace ZombieSharp
             }
         }
 
-        public void KnockbackClient(CCSPlayerController client, CCSPlayerController attacker, float damage, string weapon)
+        public void KnockbackClient(CCSPlayerController client, CCSPlayerController attacker, float damage, string weapon, int hitgroup)
         {
             if(!IsClientHuman(attacker) || !IsClientZombie(client))
                 return;
@@ -246,9 +258,10 @@ namespace ZombieSharp
             var clientVelocity = clientPawn.AbsVelocity;
 
             float weaponKnockback;
+            var hitgroupknocback = HitGroupGetKnockback(hitgroup);
 
             // try to find the key then the knockback
-            if(WeaponDatas.WeaponConfigs.ContainsKey(weapon)) 
+            if (WeaponDatas.WeaponConfigs.ContainsKey(weapon)) 
             {
                 weaponKnockback = WeaponDatas.WeaponConfigs[weapon].Knockback;
             }
@@ -258,11 +271,11 @@ namespace ZombieSharp
                 weaponKnockback = 1f;
             }
 
-            Vector pushVelocity = direction * damage * weaponKnockback * WeaponDatas.KnockbackMultiply;
+            Vector pushVelocity = direction * damage * weaponKnockback * WeaponDatas.KnockbackMultiply * hitgroupknocback;
 
             Vector velocity = clientVelocity + pushVelocity;
 
-            client.Teleport(new(0f, 0f, 0f), new(0f, 0f, 0f), velocity);
+            client.Teleport(null, null, velocity);
         }
 
         public void CheckGameStatus()

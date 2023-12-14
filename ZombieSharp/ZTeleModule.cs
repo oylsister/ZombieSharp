@@ -39,7 +39,7 @@ namespace ZombieSharp
             var position = ClientSpawnDatas[client.UserId ?? 0].PlayerPosition;
             var angle = ClientSpawnDatas[client.UserId ?? 0].PlayerAngle;
 
-            playerpawn.Teleport(position, angle, new(0f, 0f, 0f));
+            playerpawn.Teleport(position, angle, null);
         }
     }
 }

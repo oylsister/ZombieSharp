@@ -35,7 +35,7 @@ namespace ZombieSharp
 
             int clientindex = player.UserId ?? 0;
 
-            ClientSpawnDatas[clientindex] = new ClientSpawnData();
+            ClientSpawnDatas[clientindex] = null;
 
             IsZombie[clientindex] = false;
             MotherZombieStatus[clientindex] = MotherZombieFlags.NONE;
@@ -48,6 +48,8 @@ namespace ZombieSharp
 
             if (!load)
                 ConfigSettings = new GameSettings();
+
+            hitgroupLoad = HitGroupIntialize();
         }
 
         private HookResult OnRoundStart(EventRoundStart @event, GameEventInfo info)
@@ -104,11 +106,12 @@ namespace ZombieSharp
 
                 var weapon = @event.Weapon;
                 var dmgHealth = @event.DmgHealth;
+                var hitgroup = @event.Hitgroup;
 
                 if (IsZombie[attacker.UserId ?? 0] && !IsZombie[client.UserId ?? 0] && string.Equals(weapon, "knife"))
                     InfectClient(client, attacker);
 
-                KnockbackClient(client, attacker, dmgHealth, weapon);
+                KnockbackClient(client, attacker, dmgHealth, weapon, hitgroup);
             }
 
             return HookResult.Continue;
