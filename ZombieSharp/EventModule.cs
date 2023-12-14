@@ -1,88 +1,83 @@
 namespace ZombieSharp
 {
-    public class EventModule : IEventModule
-    {
-        private readonly ZombieSharp _core;
-        private IZTeleModule _zTeleModule;
-        private IWeaponModule _weaponModule;
-
-        public EventModule(ZombieSharp plugin, IZTeleModule zTeleModule, IWeaponModule weapon)
+    public partial class ZombieSharp
+    { 
+        public void EventInitialize()
         {
-            _core = plugin;
-            _zTeleModule = zTeleModule;
-            _weaponModule = weapon;
-        }
+            RegisterEventHandler<EventRoundStart>(OnRoundStart);
+            RegisterEventHandler<EventRoundFreezeEnd>(OnRoundFreezeEnd);
+            RegisterEventHandler<EventRoundEnd>(OnRoundEnd);
+            RegisterEventHandler<EventPlayerHurt>(OnPlayerHurt);
+            RegisterEventHandler<EventPlayerDeath>(OnPlayerDeath);
+            RegisterEventHandler<EventPlayerSpawn>(OnPlayerSpawn);
+            RegisterEventHandler<EventPlayerJump>(OnPlayerJump);
 
-        public void Initialize()
-        {
-            _core.RegisterEventHandler<EventRoundStart>(OnRoundStart);
-            _core.RegisterEventHandler<EventRoundFreezeEnd>(OnRoundFreezeEnd);
-            _core.RegisterEventHandler<EventRoundEnd>(OnRoundEnd);
-            _core.RegisterEventHandler<EventPlayerHurt>(OnPlayerHurt);
-            _core.RegisterEventHandler<EventPlayerDeath>(OnPlayerDeath);
-            _core.RegisterEventHandler<EventPlayerSpawned>(OnPlayerSpawned);
-            _core.RegisterEventHandler<EventItemPickup>(OnItemPickup, HookMode.Pre);
-            _core.RegisterEventHandler<EventPlayerJump>(OnPlayerJump);
-
-            _core.RegisterListener<Listeners.OnClientConnected>(OnClientConnected);
-            _core.RegisterListener<Listeners.OnClientDisconnect>(OnClientDisconnected);
-            _core.RegisterListener<Listeners.OnMapStart>(OnMapStart);
+            RegisterListener<Listeners.OnClientConnected>(OnClientConnected);
+            RegisterListener<Listeners.OnClientDisconnect>(OnClientDisconnected);
+            RegisterListener<Listeners.OnMapStart>(OnMapStart);
         }
 
         private void OnClientConnected(int client)
         {
             var player = Utilities.GetPlayerFromSlot(client);
 
-            int clientindex = player.Slot;
+            int clientindex = player.UserId ?? 0;
 
-            _core.IsZombie[clientindex] = false;
-            _core.MotherZombieStatus[clientindex] = ZombieSharp.MotherZombieFlags.NONE;
+            ClientSpawnDatas[clientindex] = new ClientSpawnData();
+
+            IsZombie[clientindex] = false;
+            MotherZombieStatus[clientindex] = MotherZombieFlags.NONE;
         }
 
         private void OnClientDisconnected(int client)
         {
             var player = Utilities.GetPlayerFromSlot(client);
 
-            int clientindex = player.Slot;
+            int clientindex = player.UserId ?? 0;
 
-            _core.IsZombie[clientindex] = false;
-            _core.MotherZombieStatus[clientindex] = ZombieSharp.MotherZombieFlags.NONE;
+            ClientSpawnDatas[clientindex] = new ClientSpawnData();
+
+            IsZombie[clientindex] = false;
+            MotherZombieStatus[clientindex] = MotherZombieFlags.NONE;
         }
 
         private void OnMapStart(string mapname)
         {
-            _weaponModule.Initialize();
+            WeaponInitialize();
         }
 
         private HookResult OnRoundStart(EventRoundStart @event, GameEventInfo info)
         {
             RemoveRoundObjective();
 
-            Server.ExecuteCommand("mp_ignore_round_win_conditions 1");
-            Server.PrintToChatAll($"{ChatColors.Green}[Z:Sharp]{ChatColors.Default} The current game mode is the Human vs. Zombie, the zombie goal is to infect all human before time is running out.");
+            Server.PrintToChatAll($" {ChatColors.Green}[Z:Sharp]{ChatColors.Default} The current game mode is the Human vs. Zombie, the zombie goal is to infect all human before time is running out.");
 
             return HookResult.Continue;
         }
 
         private HookResult OnRoundFreezeEnd(EventRoundFreezeEnd @event, GameEventInfo info)
         {
-            _core.InfectOnRoundFreezeEnd();
+            bool warmup = GetGameRules().WarmupPeriod;
+
+            if (!warmup)
+                InfectOnRoundFreezeEnd();
+
             return HookResult.Continue;
         }
 
         private HookResult OnRoundEnd(EventRoundEnd @event, GameEventInfo info)
         {
             // Reset Zombie Spawned here.
-            _core.ZombieSpawned = false;
+            ZombieSpawned = false;
 
             // Reset Client Status
-            _core.AddTimer(0.3f, Timer_ResetZombieStatus);
+            AddTimer(0.3f, Timer_ResetZombieStatus);
 
             return HookResult.Continue;
         }
 
         // avoiding zombie status glitch on human class like in zombie:reloaded
-        private void Timer_ResetZombieStatus()
+        public void Timer_ResetZombieStatus()
         {
             List<CCSPlayerController> clientlist = Utilities.GetPlayers();
 
@@ -90,73 +85,76 @@ namespace ZombieSharp
             foreach (var client in clientlist)
             {
                 // Reset Client Status.
-                _core.IsZombie[client.Slot] = true;
+                IsZombie[client.UserId ?? 0] = false;
 
                 // if they were chosen as motherzombie then let's make them not to get chosen again.
-                if (_core.MotherZombieStatus[client.Slot] == ZombieSharp.MotherZombieFlags.CHOSEN)
-                    _core.MotherZombieStatus[client.Slot] = ZombieSharp.MotherZombieFlags.LAST;
+                if (MotherZombieStatus[client.UserId ?? 0] == MotherZombieFlags.CHOSEN)
+                    MotherZombieStatus[client.UserId ?? 0] = MotherZombieFlags.LAST;
             }
         }
 
         private HookResult OnPlayerHurt(EventPlayerHurt @event, GameEventInfo info)
         {
-            var client = @event.Userid;
-            var attacker = @event.Attacker;
+            if (ZombieSpawned)
+            {
+                var client = @event.Userid;
+                var attacker = @event.Attacker;
 
-            var weapon = @event.Weapon;
-            var dmgHealth = @event.DmgHealth;
+                var weapon = @event.Weapon;
+                var dmgHealth = @event.DmgHealth;
 
-            if (_core.IsZombie[attacker.Slot] && !_core.IsZombie[client.Slot] && string.Equals(weapon, "knife"))
-                _core.InfectClient(client, attacker);
+                if (IsZombie[attacker.UserId ?? 0] && !IsZombie[client.UserId ?? 0] && string.Equals(weapon, "knife"))
+                    InfectClient(client, attacker);
 
-            _core.KnockbackClient(client, attacker, dmgHealth, weapon);
+                KnockbackClient(client, attacker, dmgHealth, weapon);
+            }
 
             return HookResult.Continue;
         }
 
         private HookResult OnPlayerDeath(EventPlayerDeath @event, GameEventInfo info)
         {
-            _core.CheckGameStatus();
-
-            _core.AddTimer(5.0f, () =>
+            if (ZombieSpawned)
             {
-                var clientPawn = @event.Userid.PlayerPawn.Value;
+                CheckGameStatus();
 
-                // Respawn the client.
-                clientPawn.Respawn();
-            });
+                AddTimer(5.0f, () =>
+                {
+                    var clientPawn = @event.Userid.PlayerPawn.Value;
 
+                    // Respawn the client.
+                    if(!@event.Userid.PawnIsAlive)
+                        clientPawn.Respawn();
+                });
+            }
             return HookResult.Continue;
         }
 
-        private HookResult OnPlayerSpawned(EventPlayerSpawned @event, GameEventInfo info)
+        public HookResult OnPlayerSpawn(EventPlayerSpawn @event, GameEventInfo info)
         {
             var client = @event.Userid;
-            var clientPawn = client.PlayerPawn.Value;
-            var spawnPos = clientPawn.AbsOrigin!;
-            var spawnAngle = clientPawn.AbsRotation!;
 
-            _zTeleModule.ZTele_GetClientSpawnPoint(client, spawnPos, spawnAngle);
+            bool warmup = GetGameRules().WarmupPeriod;
 
-            // if zombie already spawned then they become zombie.
-            if (_core.ZombieSpawned)
-                _core.InfectClient(client);
+            if (!warmup)
+            {
+                AddTimer(0.2f, () =>
+                {
+                    var clientPawn = client.PlayerPawn.Value;
+                    var spawnPos = clientPawn.AbsOrigin!;
+                    var spawnAngle = clientPawn.AbsRotation ?? new(0, 0, 0);
 
-            // else they're human!
-            else
-                _core.HumanizeClient(client);
+                    // if zombie already spawned then they become zombie.
+                    if (ZombieSpawned)
+                        InfectClient(client);
 
-            return HookResult.Continue;
-        }
+                    // else they're human!
+                    else
+                        HumanizeClient(client);
 
-        private HookResult OnItemPickup(EventItemPickup @event, GameEventInfo info)
-        {          
-            var client = @event.Userid;
-            var weapon = @event.Item;
-
-            // if client is zombie and it's not a knife, then no pickup
-            if (_core.IsZombie[client.Slot] && !string.Equals(weapon, "knife"))
-                return HookResult.Handled;
+                    ZTele_GetClientSpawnPoint(client, spawnPos, spawnAngle);
+                });
+            }
 
             return HookResult.Continue;
         }

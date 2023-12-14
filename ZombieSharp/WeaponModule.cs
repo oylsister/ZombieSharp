@@ -4,22 +4,15 @@ using Microsoft.Extensions.Logging;
 
 namespace ZombieSharp
 {
-    public class WeaponModule : IWeaponModule
+    public partial class ZombieSharp
     {
-        private ZombieSharp _Core;
-
         private ILogger _logger = CoreLogging.Factory.CreateLogger("WeaponConfgLog");
-
-        public WeaponModule(ZombieSharp plugin)
-        {
-            _Core = plugin;
-        }
 
         public WeaponConfig WeaponDatas { get; private set; }
 
-        public void Initialize()
+        public void WeaponInitialize()
         {
-            var configPath = Path.Combine(_Core.ModuleDirectory, "weapons.json");
+            var configPath = Path.Combine(ModuleDirectory, "weapons.json");
 
             if (!File.Exists(configPath))
             {

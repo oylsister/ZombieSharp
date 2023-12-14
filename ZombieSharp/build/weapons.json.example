@@ -1,8 +1,9 @@
 {
-    "glock": {
-        "WeaponName": "Glock",
-        "WeaponEntity": "weapon_glock",
-        "Knockback": "1.1"
+    // pistol
+    "glock": { // weapon name according on @event.Weapon
+        "WeaponName": "Glock", // just weapon name for furture feature.
+        "WeaponEntity": "weapon_glock", // entity name
+        "Knockback": "1.1" // knockback
     },
     "hkp2000": {
         "WeaponName": "P2000",
@@ -49,10 +50,12 @@
         "WeaponEntity": "weapon_usp_silencer",
         "Knockback": "1.0"
     },
+
+    // shotgun
     "nova": {
         "WeaponName": "Nova",
         "WeaponEntity": "weapon_nova",
-        "Knockback": "0.8"
+        "Knockback": "0.8" // There are 8 pellets in 1 shot
     },
     "xm1014": {
         "WeaponName": "XM1014",
@@ -69,6 +72,8 @@
         "WeaponEntity": "weapon_mag7",
         "Knockback": "0.9"
     },
+
+    // sub-machinegun
     "mac10": {
         "WeaponName": "Mac-10",
         "WeaponEntity": "weapon_mac10",
@@ -104,6 +109,8 @@
         "WeaponEntity": "weapon_p90",
         "Knockback": "1.0"
     },
+
+    // Rifle and Sniper
     "galilar": {
         "WeaponName": "Galil AR",
         "WeaponEntity": "weapon_galilar",
@@ -119,7 +126,7 @@
         "WeaponEntity": "weapon_ak47",
         "Knockback": "1.1"
     },
-    "m4a1": {
+    "m4a1": { // M4A4
         "WeaponName": "M4A4",
         "WeaponEntity": "weapon_m4a1",
         "Knockback": "1.1"
@@ -159,6 +166,8 @@
         "WeaponEntity": "weapon_g3sg1",
         "Knockback": "1.1"
     },
+
+    // Machine Gun
     "m249": {
         "WeaponName": "M249",
         "WeaponEntity": "weapon_m249",
@@ -169,6 +178,8 @@
         "WeaponEntity": "weapon_negev",
         "Knockback": "1.1"
     },
+
+    // knife
     "knife": {
         "WeaponName": "Knife",
         "WeaponEntity": "weapon_knife",

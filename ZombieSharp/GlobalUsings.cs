@@ -10,3 +10,4 @@ global using CounterStrikeSharp.API.Modules.Memory;
 global using CounterStrikeSharp.API.Modules.Menu;
 global using CounterStrikeSharp.API.Modules.Timers;
 global using CounterStrikeSharp.API.Modules.Utils;
+global using CounterStrikeSharp.API.Modules.Admin;
