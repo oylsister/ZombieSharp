@@ -44,6 +44,10 @@ namespace ZombieSharp
         private void OnMapStart(string mapname)
         {
             WeaponInitialize();
+            bool load = SettingsIntialize(mapname);
+
+            if (!load)
+                ConfigSettings = new GameSettings();
         }
 
         private HookResult OnRoundStart(EventRoundStart @event, GameEventInfo info)
@@ -116,14 +120,17 @@ namespace ZombieSharp
             {
                 CheckGameStatus();
 
-                AddTimer(5.0f, () =>
+                if (ConfigSettings.RespawnTimer > 0.0f)
                 {
-                    var clientPawn = @event.Userid.PlayerPawn.Value;
+                    AddTimer(5.0f, () =>
+                    {
+                        var clientPawn = @event.Userid.PlayerPawn.Value;
 
-                    // Respawn the client.
-                    if(!@event.Userid.PawnIsAlive)
-                        clientPawn.Respawn();
-                });
+                        // Respawn the client.
+                        if (!@event.Userid.PawnIsAlive)
+                            clientPawn.Respawn();
+                    });
+                }
             }
             return HookResult.Continue;
         }

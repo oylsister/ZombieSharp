@@ -62,9 +62,9 @@ namespace ZombieSharp
 
         public void InfectOnRoundFreezeEnd()
         {
-            Countdown = 15;
+            Countdown = (int)Math.Round(ConfigSettings.FirstInfectionTimer);
             g_hCountdown = AddTimer(1.0f, Timer_Countdown, TimerFlags.REPEAT);
-            g_hInfectMZ = AddTimer(15.0f, MotherZombieInfect);
+            g_hInfectMZ = AddTimer(ConfigSettings.FirstInfectionTimer, MotherZombieInfect);
         }
 
         public void Timer_Countdown()
@@ -113,7 +113,7 @@ namespace ZombieSharp
 
             int alreadymade = 0;
 
-            int maxmz = allplayer / 7;
+            int maxmz = (int)Math.Round(allplayer / ConfigSettings.MotherZombieRatio);
 
             if(candidate.Count < maxmz)
             {
