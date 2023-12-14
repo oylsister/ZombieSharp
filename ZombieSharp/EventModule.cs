@@ -71,26 +71,24 @@ namespace ZombieSharp
             ZombieSpawned = false;
 
             // Reset Client Status
-            AddTimer(0.3f, Timer_ResetZombieStatus);
+            AddTimer(0.1f, () =>
+            {
+                // avoiding zombie status glitch on human class like in zombie:reloaded
+                List<CCSPlayerController> clientlist = Utilities.GetPlayers();
+
+                // Reset Client Status
+                foreach (var client in clientlist)
+                {
+                    // Reset Client Status.
+                    IsZombie[client.UserId ?? 0] = false;
+
+                    // if they were chosen as motherzombie then let's make them not to get chosen again.
+                    if (MotherZombieStatus[client.UserId ?? 0] == MotherZombieFlags.CHOSEN)
+                        MotherZombieStatus[client.UserId ?? 0] = MotherZombieFlags.LAST;
+                }
+            });
 
             return HookResult.Continue;
-        }
-
-        // avoiding zombie status glitch on human class like in zombie:reloaded
-        public void Timer_ResetZombieStatus()
-        {
-            List<CCSPlayerController> clientlist = Utilities.GetPlayers();
-
-            // Reset Client Status
-            foreach (var client in clientlist)
-            {
-                // Reset Client Status.
-                IsZombie[client.UserId ?? 0] = false;
-
-                // if they were chosen as motherzombie then let's make them not to get chosen again.
-                if (MotherZombieStatus[client.UserId ?? 0] == MotherZombieFlags.CHOSEN)
-                    MotherZombieStatus[client.UserId ?? 0] = MotherZombieFlags.LAST;
-            }
         }
 
         private HookResult OnPlayerHurt(EventPlayerHurt @event, GameEventInfo info)
