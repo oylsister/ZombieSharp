@@ -6,7 +6,7 @@ Zombie-Sharp is a plugin project for CS2 Zombie-Mode. By referencing the feature
 - [x] Basic Zombie Infection Initial with Timer.
 - [x] Mother Zombie Cycle.
 - [x] Infect and Human Command.
-- [ ] Respawn Option
+- [x] Respawn Option
 - [ ] Player Class Module
 - [x] Weapon Module
 - [ ] Hitgroup Module
