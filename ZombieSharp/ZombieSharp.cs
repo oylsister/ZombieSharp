@@ -13,7 +13,7 @@ namespace ZombieSharp
     {
         public override string ModuleName => "Zombie Sharp";
         public override string ModuleAuthor => "Oylsister, Kurumi, Sparky";
-        public override string ModuleVersion => "1.0 Alpha";
+        public override string ModuleVersion => "1.0.1 Alpha";
 
         public bool ZombieSpawned;
         public int Countdown;

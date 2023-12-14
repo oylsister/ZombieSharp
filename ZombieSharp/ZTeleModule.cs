@@ -25,8 +25,8 @@ namespace ZombieSharp
 
             var clientPawn = client.PlayerPawn.Value;
 
-            Server.PrintToChatAll($"{client.PlayerName} Pos: {position}");
-            Server.PrintToChatAll($"{client.PlayerName} Angle: {angle}");
+            //Server.PrintToChatAll($"{client.PlayerName} Pos: {position}");
+            //Server.PrintToChatAll($"{client.PlayerName} Angle: {angle}");
 
             ClientSpawnDatas[client.UserId ?? 0].PlayerPosition = new Vector(position.X, position.Y, position.Z);
             ClientSpawnDatas[client.UserId ?? 0].PlayerAngle = new QAngle(angle.X, angle.Y, angle.Z);
