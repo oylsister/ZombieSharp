@@ -11,6 +11,7 @@ namespace ZombieSharp
             RegisterEventHandler<EventPlayerDeath>(OnPlayerDeath);
             RegisterEventHandler<EventPlayerSpawn>(OnPlayerSpawn);
             RegisterEventHandler<EventPlayerJump>(OnPlayerJump);
+            RegisterEventHandler<EventCsPreRestart>(OnPreRestart);
 
             RegisterListener<Listeners.OnClientConnected>(OnClientConnected);
             RegisterListener<Listeners.OnClientDisconnect>(OnClientDisconnected);
@@ -21,24 +22,24 @@ namespace ZombieSharp
         {
             var player = Utilities.GetPlayerFromSlot(client);
 
-            int clientindex = player.UserId ?? 0;
+            int clientindex = player.Slot;
 
-            ClientSpawnDatas[clientindex] = new ClientSpawnData();
+            ClientSpawnDatas.Add(clientindex, new ClientSpawnData());
 
-            IsZombie[clientindex] = false;
-            MotherZombieStatus[clientindex] = MotherZombieFlags.NONE;
+            ZombiePlayers.Add(clientindex, new ZombiePlayer());
+
+            ZombiePlayers[clientindex].IsZombie = false;
+            ZombiePlayers[clientindex].MotherZombieStatus = MotherZombieFlags.NONE;
         }
 
         private void OnClientDisconnected(int client)
         {
             var player = Utilities.GetPlayerFromSlot(client);
 
-            int clientindex = player.UserId ?? 0;
+            int clientindex = player.Slot;
 
-            ClientSpawnDatas[clientindex] = null;
-
-            IsZombie[clientindex] = false;
-            MotherZombieStatus[clientindex] = MotherZombieFlags.NONE;
+            ClientSpawnDatas.Remove(clientindex);
+            ZombiePlayers.Remove(clientindex);
         }
 
         private void OnMapStart(string mapname)
@@ -71,14 +72,36 @@ namespace ZombieSharp
             return HookResult.Continue;
         }
 
+        private HookResult OnPreRestart(EventCsPreRestart @event, GameEventInfo info)
+        {
+            bool warmup = GetGameRules().WarmupPeriod;
+
+            if (!warmup)
+            {
+                AddTimer(0.1f, () =>
+                {
+                    List<CCSPlayerController> clientlist = Utilities.GetPlayers();
+
+                    foreach (var client in clientlist)
+                    {
+                        if (client.IsValid && client.PawnIsAlive)
+                        {
+                            HumanizeClient(client);
+                        }
+                    }
+                });
+            }
+            return HookResult.Continue; 
+        }
+
         private HookResult OnRoundEnd(EventRoundEnd @event, GameEventInfo info)
         {
-            // Reset Zombie Spawned here.
-            ZombieSpawned = false;
-
             // Reset Client Status
-            AddTimer(0.1f, () =>
+            AddTimer(0.2f, () =>
             {
+                // Reset Zombie Spawned here.
+                ZombieSpawned = false;
+
                 // avoiding zombie status glitch on human class like in zombie:reloaded
                 List<CCSPlayerController> clientlist = Utilities.GetPlayers();
 
@@ -86,11 +109,11 @@ namespace ZombieSharp
                 foreach (var client in clientlist)
                 {
                     // Reset Client Status.
-                    IsZombie[client.UserId ?? 0] = false;
+                    ZombiePlayers[client.Slot].IsZombie = false;
 
                     // if they were chosen as motherzombie then let's make them not to get chosen again.
-                    if (MotherZombieStatus[client.UserId ?? 0] == MotherZombieFlags.CHOSEN)
-                        MotherZombieStatus[client.UserId ?? 0] = MotherZombieFlags.LAST;
+                    if (ZombiePlayers[client.Slot].MotherZombieStatus == MotherZombieFlags.CHOSEN)
+                        ZombiePlayers[client.Slot].MotherZombieStatus = MotherZombieFlags.LAST;
                 }
             });
 
@@ -108,8 +131,11 @@ namespace ZombieSharp
                 var dmgHealth = @event.DmgHealth;
                 var hitgroup = @event.Hitgroup;
 
-                if (IsZombie[attacker.UserId ?? 0] && !IsZombie[client.UserId ?? 0] && string.Equals(weapon, "knife"))
+                if (IsClientZombie(attacker) && IsClientHuman(client) && string.Equals(weapon, "knife"))
+                {
+                    // Server.PrintToChatAll($"{client.PlayerName} Infected by {attacker.PlayerName}");
                     InfectClient(client, attacker);
+                }
 
                 KnockbackClient(client, attacker, dmgHealth, weapon, hitgroup);
             }
@@ -119,6 +145,8 @@ namespace ZombieSharp
 
         private HookResult OnPlayerDeath(EventPlayerDeath @event, GameEventInfo info)
         {
+            // Server.PrintToChatAll($"Player Death is call by {@event.Userid.PlayerName}");
+
             if (ZombieSpawned)
             {
                 CheckGameStatus();
@@ -150,11 +178,14 @@ namespace ZombieSharp
                 {
                     var clientPawn = client.PlayerPawn.Value;
                     var spawnPos = clientPawn.AbsOrigin!;
-                    var spawnAngle = clientPawn.AbsRotation ?? new(0, 0, 0);
+                    var spawnAngle = clientPawn.AbsRotation!;
 
                     // if zombie already spawned then they become zombie.
                     if (ZombieSpawned)
+                    {
+                        // Server.PrintToChatAll($"Infect {client.PlayerName} on Spawn.");
                         InfectClient(client);
+                    }
 
                     // else they're human!
                     else

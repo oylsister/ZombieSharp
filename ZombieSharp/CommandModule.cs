@@ -10,6 +10,7 @@ namespace ZombieSharp
             AddCommand("css_zs_infect", "Infect Client Command", InfectClientCommand);
             AddCommand("css_zs_human", "Humanize Client Command", HumanizeClientCommand);
             AddCommand("css_zs_ztele", "Teleport Client to spawn Command", ZTeleClientCommand);
+            AddCommand("css_playerlist", "Player List Command", PlayerListCommand);
         }
 
         [RequiresPermissions(@"css/slay")]
@@ -42,7 +43,7 @@ namespace ZombieSharp
                     continue;
                 }
 
-                if (IsZombie[client.UserId ?? 0])
+                if (IsClientZombie(target))
                 {
                     if (targets.Players.Count < 2)
                         info.ReplyToCommand($" {ChatColors.Green}[Z:Sharp]{ChatColors.Default} target {target.PlayerName} is already zombie.");
@@ -89,7 +90,7 @@ namespace ZombieSharp
                     continue;
                 }
 
-                if (!IsZombie[client.UserId ?? 0])
+                if (IsClientHuman(target))
                 {
                     if (targets.Players.Count < 2)
                         info.ReplyToCommand($" {ChatColors.Green}[Z:Sharp]{ChatColors.Default} target {target.PlayerName} is already human.");
@@ -124,6 +125,14 @@ namespace ZombieSharp
                 info.ReplyToCommand($" {ChatColors.Green}[Z:Sharp]{ChatColors.Default} Teleported back to spawn.");
                 client.PrintToCenter("You have been teleported back to spawn.");
             });
+        }
+
+        private void PlayerListCommand(CCSPlayerController client, CommandInfo info)
+        {
+            foreach(var player in Utilities.GetPlayers())
+            {
+                info.ReplyToCommand($"{player.UserId}: {player.PlayerName}| Zombie: {ZombiePlayers[player.Slot].IsZombie}| MotherZombie: {ZombiePlayers[player.Slot].MotherZombieStatus} | Player Slot: {player.Slot}");
+            }
         }
     }
 }

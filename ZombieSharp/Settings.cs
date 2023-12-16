@@ -21,6 +21,7 @@ namespace ZombieSharp
             {
                 ConfigSettings = JsonSerializer.Deserialize<GameSettings>(File.ReadAllText(configPath));
                 Logger.LogInformation($"[Z:Sharp] Found config file for {mapname}.json.");
+                Logger.LogInformation($"Respawn Timer = {ConfigSettings.RespawnTimer}, Infect Timer = {ConfigSettings.FirstInfectionTimer}, MTZ Ratio = {ConfigSettings.MotherZombieRatio}");
                 return true;
             }
 
@@ -28,6 +29,7 @@ namespace ZombieSharp
             {
                 ConfigSettings = JsonSerializer.Deserialize<GameSettings>(File.ReadAllText(defaultconfig));
                 Logger.LogInformation($"[Z:Sharp] There is no config file for {mapname}.json, Default file is used.");
+                Logger.LogInformation($"Respawn Timer = {ConfigSettings.RespawnTimer}, Infect Timer = {ConfigSettings.FirstInfectionTimer}, MTZ Ratio = {ConfigSettings.MotherZombieRatio}");
                 return true;
             }
 
@@ -42,5 +44,5 @@ public class GameSettings
     public float RespawnTimer { get; set; } = 5.0f;
     public float FirstInfectionTimer { get; set; } = 15.0f;
     public float MotherZombieRatio { get; set; } = 7.0f;
-
+    public bool TeleportMotherZombie { get; set; } = true;
 }
