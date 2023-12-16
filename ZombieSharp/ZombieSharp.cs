@@ -76,11 +76,14 @@ namespace ZombieSharp
         {
             Countdown = (int)ConfigSettings.FirstInfectionTimer;
             g_hCountdown = AddTimer(1.0f, Timer_Countdown, TimerFlags.REPEAT);
-            g_hInfectMZ = AddTimer(ConfigSettings.FirstInfectionTimer, MotherZombieInfect);
+            g_hInfectMZ = AddTimer(ConfigSettings.FirstInfectionTimer + 1.0f, MotherZombieInfect);
         }
 
         public void Timer_Countdown()
         {
+            if (ZombieSpawned)
+                return;
+
             if(Countdown < 0 && g_hCountdown != null)
             {
                 g_hCountdown.Kill();
@@ -221,17 +224,15 @@ namespace ZombieSharp
             if (!ZombieSpawned)
                 ZombieSpawned = true;
 
-            /*
             // Create an event for killfeed
             if(attacker != null)
             {
                 EventPlayerDeath eventDeath = new EventPlayerDeath(true);
-                eventDeath.Set("userid", client.UserId ?? 0);
-                eventDeath.Set("attacker", attacker.UserId ?? 0);
+                eventDeath.Set("userid", client);
+                eventDeath.Set("attacker", attacker);
                 eventDeath.Set("weapon", "knife");
                 eventDeath.FireEvent(true);
             }
-            */
 
             // if force then tell them that they has been punnished.
             if (force)
@@ -308,6 +309,9 @@ namespace ZombieSharp
             List<CCSPlayerController> clientlist = Utilities.GetPlayers();
             foreach (var client in clientlist)
             {
+                if (!ZombiePlayers.ContainsKey(client.Slot))
+                    continue;
+
                 if(ZombiePlayers[client.Slot].IsZombie && client.PawnIsAlive)
                     zombie++;
                 

@@ -17,6 +17,15 @@ Zombie-Sharp is a plugin project for CS2 Zombie-Mode. By referencing the feature
 
 ### We are now Pre-Alpha released!
 
+To get knockback work properly you will need [MovementUnlocker](https://github.com/Source2ZE/MovementUnlocker) plugin. 
+
+it's recommend to set these Convar before using the plugin to prevent crashed and issues that may occur.
+```
+mp_limitteams 0
+mp_autoteambalance 0
+mp_disconnect_kills_players 0 // set in gamemode_casual.cfg
+```
+
 You can figure a Weapon Config in weapons.json
 ```json
 {
