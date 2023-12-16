@@ -27,9 +27,9 @@ namespace ZombieSharp
 
 public class WeaponConfig
 {
-    public Dictionary<string, WeaponData> WeaponConfigs { get; set; } = new Dictionary<string, WeaponData>();
-
     public float KnockbackMultiply { get; set; } = 1.0f;
+
+    public Dictionary<string, WeaponData> WeaponConfigs { get; set; } = new Dictionary<string, WeaponData>();
 
     public WeaponConfig()
     {

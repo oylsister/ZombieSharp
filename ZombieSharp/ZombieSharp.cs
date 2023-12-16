@@ -6,6 +6,7 @@ using CounterStrikeSharp.API.Modules.Entities;
 using System.IO.Compression;
 using static System.Formats.Asn1.AsnWriter;
 using CounterStrikeSharp.API.Modules.Memory.DynamicFunctions;
+using System.Diagnostics.Eventing.Reader;
 
 namespace ZombieSharp
 {
@@ -13,7 +14,7 @@ namespace ZombieSharp
     {
         public override string ModuleName => "Zombie Sharp";
         public override string ModuleAuthor => "Oylsister, Kurumi, Sparky";
-        public override string ModuleVersion => "1.0.1 Alpha";
+        public override string ModuleVersion => "1.1.0 Alpha";
 
         public bool ZombieSpawned;
         public int Countdown;
@@ -26,11 +27,21 @@ namespace ZombieSharp
             LAST = (1 << 2)
         }
 
-        public bool[] IsZombie { get; set; } = new bool[Server.MaxPlayers];
-        public MotherZombieFlags[] MotherZombieStatus { get; set; } = new MotherZombieFlags[Server.MaxPlayers];
+        public class ZombiePlayer
+        {
+            public bool IsZombie { get; set; } = false;
+            public MotherZombieFlags MotherZombieStatus { get; set; } = MotherZombieFlags.NONE;
+        }
+
+        public Dictionary<int, ZombiePlayer> ZombiePlayers { get; set; } = new Dictionary<int, ZombiePlayer>();
 
         private CounterStrikeSharp.API.Modules.Timers.Timer g_hCountdown = null;
         private CounterStrikeSharp.API.Modules.Timers.Timer g_hInfectMZ = null;
+
+        public bool hitgroupLoad = false;
+
+        public Vector NULL_VECTOR = new();
+        public QAngle NULL_ANGLE = new();
 
         public override void Load(bool HotReload)
         {
@@ -47,10 +58,11 @@ namespace ZombieSharp
 
                 var client = new CCSPlayerController(weaponservices!.Pawn.Value.Controller.Value!.Handle);
 
-                if (IsZombie[client.UserId ?? 0])
+                if (ZombiePlayers[client.Slot].IsZombie && ZombieSpawned)
                 {
                     if (clientweapon.DesignerName != "weapon_knife")
                     {
+                        weaponservices.PreventWeaponPickup = true;
                         clientweapon.Remove();
                     }
                 }
@@ -62,9 +74,9 @@ namespace ZombieSharp
 
         public void InfectOnRoundFreezeEnd()
         {
-            Countdown = 15;
+            Countdown = (int)ConfigSettings.FirstInfectionTimer;
             g_hCountdown = AddTimer(1.0f, Timer_Countdown, TimerFlags.REPEAT);
-            g_hInfectMZ = AddTimer(15.0f, MotherZombieInfect);
+            g_hInfectMZ = AddTimer(ConfigSettings.FirstInfectionTimer, MotherZombieInfect);
         }
 
         public void Timer_Countdown()
@@ -101,7 +113,7 @@ namespace ZombieSharp
             {
                 if(client.PawnIsAlive! && client.IsValid!)
                 {
-                    if (MotherZombieStatus[client.UserId ?? 0] == MotherZombieFlags.NONE)
+                    if (ZombiePlayers[client.Slot].MotherZombieStatus == MotherZombieFlags.NONE)
                     {
                         // Server.PrintToChatAll($"Add {client.PlayerName} to mother zombie candidate.");
                         candidate.Add(client);
@@ -113,16 +125,18 @@ namespace ZombieSharp
 
             int alreadymade = 0;
 
-            int maxmz = allplayer / 7;
+            int maxmz = (int)(allplayer / ConfigSettings.MotherZombieRatio);
+            // Server.PrintToChatAll($"Max Mother Zombie is: {maxmz}");
 
             if(candidate.Count < maxmz)
             {
-                Server.PrintToChatAll($"{ChatColors.Green}[Z:Sharp]{ChatColors.Default} Mother zombie cycle has been reset!");
+                Server.PrintToChatAll($" {ChatColors.Green}[Z:Sharp]{ChatColors.Default} Mother zombie cycle has been reset!");
 
                 if(candidate.Count > 0)
                 {
                     foreach (var client in candidate)
                     {
+                        Server.PrintToChatAll($"Infect {client.PlayerName} as Mother Zombie.");
                         InfectClient(client, null, true);
                         alreadymade++;
                     }
@@ -132,9 +146,9 @@ namespace ZombieSharp
 
                 foreach(var client in Utilities.GetPlayers())
                 { 
-                    if(MotherZombieStatus[client.UserId ?? 0] == MotherZombieFlags.LAST)
+                    if(ZombiePlayers[client.Slot].MotherZombieStatus == MotherZombieFlags.LAST)
                     {
-                        MotherZombieStatus[client.UserId ?? 0] = MotherZombieFlags.NONE;
+                        ZombiePlayers[client.Slot].MotherZombieStatus = MotherZombieFlags.NONE;
                         candidate.Add(client);
                     }
                 }
@@ -144,6 +158,7 @@ namespace ZombieSharp
                     if(alreadymade >= maxmz)
                         break;
 
+                    //Server.PrintToChatAll($"Infect {client.PlayerName} as Mother Zombie.");
                     InfectClient(client, null, true);
                     alreadymade++;
                 }
@@ -155,6 +170,7 @@ namespace ZombieSharp
                     if(alreadymade >= maxmz)
                         break;
 
+                    //Server.PrintToChatAll($"Infect {client.PlayerName} as Mother Zombie.");
                     InfectClient(client, null, true);
                     alreadymade++;
                 }
@@ -164,17 +180,19 @@ namespace ZombieSharp
         public void InfectClient(CCSPlayerController client, CCSPlayerController attacker = null, bool motherzombie = false, bool force = false)
         {
             // make zombie status be true.
-            IsZombie[client.UserId ?? 0] = true;
+            ZombiePlayers[client.Slot].IsZombie = true;
 
             // if they from the motherzombie infection put status here to prevent being chosen for it again.
             if(motherzombie)
             {
-                MotherZombieStatus[client.UserId ?? 0] = MotherZombieFlags.CHOSEN;
-                ZTele_TeleportClientToSpawn(client);
+                ZombiePlayers[client.Slot].MotherZombieStatus = MotherZombieFlags.CHOSEN;
+
+                if (ConfigSettings.TeleportMotherZombie)
+                    ZTele_TeleportClientToSpawn(client);
             }
 
             // Remove all weapon.
-            ForceDropAllWeapon(client);
+            StripAllWeapon(client);
 
             // swith to terrorist side.
             client.SwitchTeam(CsTeam.Terrorist);
@@ -184,14 +202,16 @@ namespace ZombieSharp
                 client.PlayerPawn.Value!.SetModel(@"characters\models\tm_phoenix\tm_phoenix.vmdl");
             });
 
+            client!.PlayerPawn.Value!.WeaponServices!.AllowSwitchToNoWeapon = false;
+
+            client.GiveNamedItem("weapon_knife");
+
             // no armor
             CCSPlayerPawn clientpawn = client.PlayerPawn.Value;
             clientpawn.ArmorValue = 0;
 
             // will apply this in class system later
             clientpawn.Health = 10000;
-
-            client.GiveNamedItem("weapon_knife");
 
             // if all human died then let's end the round.
             if (ZombieSpawned)
@@ -200,6 +220,18 @@ namespace ZombieSharp
             // if zombie hasn't spawned yet, then make it true.
             if (!ZombieSpawned)
                 ZombieSpawned = true;
+
+            /*
+            // Create an event for killfeed
+            if(attacker != null)
+            {
+                EventPlayerDeath eventDeath = new EventPlayerDeath(true);
+                eventDeath.Set("userid", client.UserId ?? 0);
+                eventDeath.Set("attacker", attacker.UserId ?? 0);
+                eventDeath.Set("weapon", "knife");
+                eventDeath.FireEvent(true);
+            }
+            */
 
             // if force then tell them that they has been punnished.
             if (force)
@@ -213,7 +245,7 @@ namespace ZombieSharp
         public void HumanizeClient(CCSPlayerController client, bool force = false)
         {
             // zombie status to false
-            IsZombie[client.UserId ?? 0] = false;
+            ZombiePlayers[client.Slot].IsZombie = false;
 
             // switch client to CT
             client.SwitchTeam(CsTeam.CounterTerrorist);
@@ -230,7 +262,7 @@ namespace ZombieSharp
             }
         }
 
-        public void KnockbackClient(CCSPlayerController client, CCSPlayerController attacker, float damage, string weapon)
+        public void KnockbackClient(CCSPlayerController client, CCSPlayerController attacker, float damage, string weapon, int hitgroup)
         {
             if(!IsClientHuman(attacker) || !IsClientZombie(client))
                 return;
@@ -246,9 +278,10 @@ namespace ZombieSharp
             var clientVelocity = clientPawn.AbsVelocity;
 
             float weaponKnockback;
+            var hitgroupknocback = HitGroupGetKnockback(hitgroup);
 
             // try to find the key then the knockback
-            if(WeaponDatas.WeaponConfigs.ContainsKey(weapon)) 
+            if (WeaponDatas.WeaponConfigs.ContainsKey(weapon)) 
             {
                 weaponKnockback = WeaponDatas.WeaponConfigs[weapon].Knockback;
             }
@@ -258,11 +291,11 @@ namespace ZombieSharp
                 weaponKnockback = 1f;
             }
 
-            Vector pushVelocity = direction * damage * weaponKnockback * WeaponDatas.KnockbackMultiply;
+            Vector pushVelocity = direction * damage * weaponKnockback * WeaponDatas.KnockbackMultiply * hitgroupknocback;
 
             Vector velocity = clientVelocity + pushVelocity;
 
-            client.Teleport(new(0f, 0f, 0f), new(0f, 0f, 0f), velocity);
+            clientPawn.AbsVelocity.Add(velocity);
         }
 
         public void CheckGameStatus()
@@ -275,10 +308,10 @@ namespace ZombieSharp
             List<CCSPlayerController> clientlist = Utilities.GetPlayers();
             foreach (var client in clientlist)
             {
-                if(IsZombie[client.UserId ?? 0] && client.PawnIsAlive)
+                if(ZombiePlayers[client.Slot].IsZombie && client.PawnIsAlive)
                     zombie++;
                 
-                else if(!IsZombie[client.UserId ?? 0] && client.PawnIsAlive)
+                else if(!ZombiePlayers[client.Slot].IsZombie && client.PawnIsAlive)
                     human++;
             }
 
@@ -296,12 +329,26 @@ namespace ZombieSharp
             }
         }
 
+        public void StripAllWeapon(CCSPlayerController client)
+        {
+            if (client == null)
+                return;
+
+            var weapons = client!.PlayerPawn.Value!.WeaponServices!.MyWeapons;
+
+            client!.PlayerPawn.Value!.WeaponServices!.AllowSwitchToNoWeapon = true;
+
+            client.RemoveWeapons();
+        }
+
         public void ForceDropAllWeapon(CCSPlayerController client)
         {
             if (client == null)
                 return;
 
             var weapons = client!.PlayerPawn.Value!.WeaponServices!.MyWeapons;
+
+            client!.PlayerPawn.Value!.WeaponServices.AllowSwitchToNoWeapon = true;
 
             for (int i = weapons.Count - 1; i >= 0; i--)
             {
@@ -321,12 +368,12 @@ namespace ZombieSharp
 
         public bool IsClientZombie(CCSPlayerController controller)
         {
-            return IsZombie[controller.UserId ?? 0];
+            return ZombiePlayers[controller.Slot].IsZombie;
         }
 
         public bool IsClientHuman(CCSPlayerController controller)
         {
-            return !IsZombie[controller.UserId ?? 0];
+            return !ZombiePlayers[controller.Slot].IsZombie;
         }
     }
 }   

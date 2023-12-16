@@ -10,7 +10,7 @@ namespace ZombieSharp
             public QAngle PlayerAngle { get; set; } = new QAngle(0f, 0f, 0f);
         }
 
-        public ClientSpawnData[] ClientSpawnDatas { get; set; } =  new ClientSpawnData[Server.MaxPlayers];
+        public Dictionary<int, ClientSpawnData> ClientSpawnDatas { get; set; } = new Dictionary<int, ClientSpawnData>();
 
         public void ZTele_GetClientSpawnPoint(CCSPlayerController client, Vector position, QAngle angle)
         {
@@ -28,18 +28,19 @@ namespace ZombieSharp
             //Server.PrintToChatAll($"{client.PlayerName} Pos: {position}");
             //Server.PrintToChatAll($"{client.PlayerName} Angle: {angle}");
 
-            ClientSpawnDatas[client.UserId ?? 0].PlayerPosition = new Vector(position.X, position.Y, position.Z);
-            ClientSpawnDatas[client.UserId ?? 0].PlayerAngle = new QAngle(angle.X, angle.Y, angle.Z);
+            ClientSpawnDatas[client.Slot].PlayerPosition = new Vector(position.X, position.Y, position.Z);
+            ClientSpawnDatas[client.Slot].PlayerAngle = new QAngle(angle.X, angle.Y, angle.Z);
         }
 
         public void ZTele_TeleportClientToSpawn(CCSPlayerController client)
         {
             var playerpawn = client.PlayerPawn.Value;
 
-            var position = ClientSpawnDatas[client.UserId ?? 0].PlayerPosition;
-            var angle = ClientSpawnDatas[client.UserId ?? 0].PlayerAngle;
+            var position = ClientSpawnDatas[client.Slot].PlayerPosition;
+            var angle = ClientSpawnDatas[client.Slot].PlayerAngle;
+            var velocity = client.PlayerPawn.Value.AbsVelocity!;
 
-            playerpawn.Teleport(position, angle, new(0f, 0f, 0f));
+            playerpawn.Teleport(position, angle, velocity);
         }
     }
 }
