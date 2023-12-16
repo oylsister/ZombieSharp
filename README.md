@@ -9,10 +9,44 @@ Zombie-Sharp is a plugin project for CS2 Zombie-Mode. By referencing the feature
 - [ ] Respawn Option
 - [ ] Player Class Module
 - [x] Weapon Module
-- [ ] Hitgroup Module
+- [x] Hitgroup Module
 - [x] Knockback Module
 - [x] ZTeleport Module
-- [ ] Configuratable for Infection setting (Previously: ConVar)
+- [x] Configuratable for Infection setting (Previously: ConVar)
 
 
-More detail will be updated when we have actually test the plugin. (Not test anything yet.)
+### We are now Pre-Alpha released!
+
+You can figure a Weapon Config in weapons.json
+```json
+{
+    "KnockbackMultiply": 1.0, // Knockback Multiply for all weapon
+    "glock": { // The weaponname get from event when get fired.
+        "WeaponName": "Glock", // weapon name you wish
+        "WeaponEntity": "weapon_glock", // weapon entity
+        "Knockback": 1.1 // knockback
+    },
+}
+```
+Hitgroup configuration for knockback when get hit in specific of player body (hitgroups.json)
+```json
+{
+    "Generic": { // name of the part, doesn't affect anything
+        "HitgroupIndex": 0, // hitgroup index DO NOT CHANGE THIS
+        "HitgroupKnockback": 1.0 // knockback multiply when get hit to this hitgroup
+    },
+    "Head": {
+        "HitgroupIndex": 1,
+        "HitgroupKnockback": 1.2
+    }
+}
+```
+Game Settings for specific a thing you want. Default is default.json, but it will try to find that match with mapname (example: Map de_dust2 it will try to find de_dust2.json first. if doesn't found the file, it will use the default value instead)
+```json
+{
+    "RespawnTimer": 5.0, // respawn timer when die (in progress, not done yet)
+    "FirstInfectionTimer": 15.0, // First infection timer in seconds
+    "MotherZombieRatio": 7.0, // Mother Zombie Spawn ratio (14 players / 7.0 ratio = 2 Mother zombie)
+    "TeleportMotherZombie": true // Teleport mother zombie to spawn after get infected (Useful for Zombie Escape)
+}
+```
