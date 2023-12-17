@@ -1,3 +1,5 @@
+using System.Reflection.Metadata;
+
 namespace ZombieSharp
 {
     public partial class ZombieSharp
@@ -145,25 +147,30 @@ namespace ZombieSharp
 
         private HookResult OnPlayerDeath(EventPlayerDeath @event, GameEventInfo info)
         {
-            // Server.PrintToChatAll($"Player Death is call by {@event.Userid.PlayerName}");
-
             if (ZombieSpawned)
             {
+                var client = @event.Userid!;
                 CheckGameStatus();
-
-                if (ConfigSettings.RespawnTimer > 0.0f)
-                {
-                    AddTimer(5.0f, () =>
-                    {
-                        var clientPawn = @event.Userid.PlayerPawn.Value;
-
-                        // Respawn the client.
-                        if (!@event.Userid.PawnIsAlive)
-                            clientPawn.Respawn();
-                    });
-                }
+                RespawnPlayer(client); 
             }
             return HookResult.Continue;
+        }
+
+        public void RespawnPlayer(CCSPlayerController client)
+        {
+            if (ConfigSettings.RespawnTimer > 0.0f)
+            {
+                AddTimer(ConfigSettings.RespawnTimer, () =>
+                {
+                    // Respawn the client.
+                    if (!client.PawnIsAlive)
+                    {
+                        var clientPawn = client.PlayerPawn.Value;
+                        client.Respawn();
+                        clientPawn.Respawn();
+                    }
+                });
+            }
         }
 
         public HookResult OnPlayerSpawn(EventPlayerSpawn @event, GameEventInfo info)

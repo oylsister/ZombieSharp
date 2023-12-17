@@ -1,12 +1,6 @@
-﻿using System.Collections;
-using CounterStrikeSharp.API.Modules.Entities.Constants;
-using CounterStrikeSharp.API.Core;
+﻿using CounterStrikeSharp.API.Modules.Entities.Constants;
 using ZombieSharp.Helpers;
-using CounterStrikeSharp.API.Modules.Entities;
-using System.IO.Compression;
-using static System.Formats.Asn1.AsnWriter;
 using CounterStrikeSharp.API.Modules.Memory.DynamicFunctions;
-using System.Diagnostics.Eventing.Reader;
 
 namespace ZombieSharp
 {
@@ -14,7 +8,7 @@ namespace ZombieSharp
     {
         public override string ModuleName => "Zombie Sharp";
         public override string ModuleAuthor => "Oylsister, Kurumi, Sparky";
-        public override string ModuleVersion => "1.1.0 Alpha";
+        public override string ModuleVersion => "1.1.1 Alpha";
 
         public bool ZombieSpawned;
         public int Countdown;
@@ -69,18 +63,21 @@ namespace ZombieSharp
 
                 return HookResult.Continue;
 
-            }), HookMode.Pre);
+            }), HookMode.Pre);  
         }
 
         public void InfectOnRoundFreezeEnd()
         {
             Countdown = (int)ConfigSettings.FirstInfectionTimer;
             g_hCountdown = AddTimer(1.0f, Timer_Countdown, TimerFlags.REPEAT);
-            g_hInfectMZ = AddTimer(ConfigSettings.FirstInfectionTimer, MotherZombieInfect);
+            g_hInfectMZ = AddTimer(ConfigSettings.FirstInfectionTimer + 1.0f, MotherZombieInfect);
         }
 
         public void Timer_Countdown()
         {
+            if (ZombieSpawned)
+                return;
+
             if(Countdown < 0 && g_hCountdown != null)
             {
                 g_hCountdown.Kill();
@@ -221,15 +218,17 @@ namespace ZombieSharp
             if (!ZombieSpawned)
                 ZombieSpawned = true;
 
-            /*
             // Create an event for killfeed
-            if(attacker != null)
+            /*
+            if (attacker != null)
             {
-                EventPlayerDeath eventDeath = new EventPlayerDeath(true);
-                eventDeath.Set("userid", client.UserId ?? 0);
-                eventDeath.Set("attacker", attacker.UserId ?? 0);
-                eventDeath.Set("weapon", "knife");
-                eventDeath.FireEvent(true);
+                EventPlayerDeath eventDeath = new EventPlayerDeath(false);
+                eventDeath.Userid = client;
+                eventDeath.Attacker = attacker;
+                eventDeath.Set<int>("assister", 65535);
+                eventDeath.Set<int>("assister_pawn", -1);
+                eventDeath.Weapon = "knife";
+                eventDeath.FireEvent(false);
             }
             */
 
@@ -308,6 +307,9 @@ namespace ZombieSharp
             List<CCSPlayerController> clientlist = Utilities.GetPlayers();
             foreach (var client in clientlist)
             {
+                if (!ZombiePlayers.ContainsKey(client.Slot))
+                    continue;
+
                 if(ZombiePlayers[client.Slot].IsZombie && client.PawnIsAlive)
                     zombie++;
                 
