@@ -45,4 +45,9 @@ public class GameSettings
     public float FirstInfectionTimer { get; set; } = 15.0f;
     public float MotherZombieRatio { get; set; } = 7.0f;
     public bool TeleportMotherZombie { get; set; } = true;
+
+    // Default Class
+    public string Human_Default { get; set; } = "human_default";
+    public string Zombie_Default { get; set; } = "zombie_default";
+    public string Mother_Zombie { get; set; } = "motherzombie";
 }

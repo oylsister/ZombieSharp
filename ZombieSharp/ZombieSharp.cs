@@ -8,7 +8,7 @@ namespace ZombieSharp
     {
         public override string ModuleName => "Zombie Sharp";
         public override string ModuleAuthor => "Oylsister, Kurumi, Sparky";
-        public override string ModuleVersion => "1.1.1 Alpha";
+        public override string ModuleVersion => "1.2.0 Alpha";
 
         public bool ZombieSpawned;
         public int Countdown;
@@ -194,21 +194,28 @@ namespace ZombieSharp
             // swith to terrorist side.
             client.SwitchTeam(CsTeam.Terrorist);
 
-            AddTimer(0.1f, () =>
+            bool apply = ApplyClientPlayerClass(client, ClientPlayerClass[client.Slot].ZombieClass, 0);
+
+            if (!apply)
             {
-                client.PlayerPawn.Value!.SetModel(@"characters\models\tm_phoenix\tm_phoenix.vmdl");
-            });
+                AddTimer(0.1f, () =>
+                {
+                    client.PlayerPawn.Value!.SetModel(@"characters\models\tm_phoenix\tm_phoenix.vmdl");
+                });
+
+                // no armor
+                var clientpawn = client.PlayerPawn.Value;
+                clientpawn.ArmorValue = 0;
+
+                // will apply this in class system later
+                clientpawn.Health = 10000;
+
+                ClientPlayerClass[client.Slot].ActiveClass = null;
+            }
 
             client!.PlayerPawn.Value!.WeaponServices!.AllowSwitchToNoWeapon = false;
 
             client.GiveNamedItem("weapon_knife");
-
-            // no armor
-            CCSPlayerPawn clientpawn = client.PlayerPawn.Value;
-            clientpawn.ArmorValue = 0;
-
-            // will apply this in class system later
-            clientpawn.Health = 10000;
 
             // if all human died then let's end the round.
             if (ZombieSpawned)
@@ -249,10 +256,22 @@ namespace ZombieSharp
             // switch client to CT
             client.SwitchTeam(CsTeam.CounterTerrorist);
 
-            AddTimer(0.1f, () =>
+            bool apply = ApplyClientPlayerClass(client, ClientPlayerClass[client.Slot].HumanClass, 1);
+
+            if (!apply)
             {
-                client.PlayerPawn.Value!.SetModel("characters\\models\\ctm_sas\\ctm_sas.vmdl");
-            });
+                AddTimer(0.1f, () =>
+                {
+                    client.PlayerPawn.Value!.SetModel(@"characters\models\ctm_sas\ctm_sas.vmdl");
+                });
+
+                var clientPawn = client.PlayerPawn.Value;
+
+                clientPawn.Health = 100;
+                clientPawn.ArmorValue = 100;
+
+                ClientPlayerClass[client.Slot].ActiveClass = null;
+            }
 
             // if force tell them that they has been resurrected.
             if (force)

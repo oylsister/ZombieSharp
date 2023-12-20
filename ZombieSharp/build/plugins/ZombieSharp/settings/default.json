@@ -2,5 +2,8 @@
 	"RespawnTimer": 5.0,
 	"FirstInfectionTimer": 15.0,
 	"MotherZombieRatio": 7.0,
-	"TeleportMotherZombie": true
+	"TeleportMotherZombie": true,
+	"Human_Default": "human_default",
+	"Zombie_Default": "zombie_default",
+	"Mother_Zombie": "motherzombie"
 }
