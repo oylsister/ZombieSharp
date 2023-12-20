@@ -1,4 +1,5 @@
 using System.Reflection.Metadata;
+using static CounterStrikeSharp.API.Core.Listeners;
 
 namespace ZombieSharp
 {
@@ -15,12 +16,12 @@ namespace ZombieSharp
             RegisterEventHandler<EventPlayerJump>(OnPlayerJump);
             RegisterEventHandler<EventCsPreRestart>(OnPreRestart);
 
-            RegisterListener<Listeners.OnClientConnected>(OnClientConnected);
+            RegisterListener<Listeners.OnClientPutInServer>(OnClientPutInServer);
             RegisterListener<Listeners.OnClientDisconnect>(OnClientDisconnected);
             RegisterListener<Listeners.OnMapStart>(OnMapStart);
         }
 
-        private void OnClientConnected(int client)
+        private void OnClientPutInServer(int client)
         {
             var player = Utilities.GetPlayerFromSlot(client);
 
