@@ -156,12 +156,14 @@ namespace ZombieSharp
 
         private HookResult OnPlayerDeath(EventPlayerDeath @event, GameEventInfo info)
         {
+            var client = @event.Userid;
+
             if (ZombieSpawned)
             {
-                var client = @event.Userid!;
                 CheckGameStatus();
                 RespawnPlayer(client); 
             }
+
             return HookResult.Continue;
         }
 
@@ -214,7 +216,7 @@ namespace ZombieSharp
             return HookResult.Continue;
         }
 
-        private HookResult OnPlayerJump(EventPlayerJump @event, GameEventInfo info)
+        public HookResult OnPlayerJump(EventPlayerJump @event, GameEventInfo info)
         {
             var client = @event.Userid;
 
@@ -223,15 +225,36 @@ namespace ZombieSharp
             var classData = PlayerClassDatas.PlayerClasses;
             var activeclass = ClientPlayerClass[client.Slot].ActiveClass;
 
-            if (classData.ContainsKey(activeclass))
+            //Server.PrintToChatAll($"{client.PlayerName} just jumped");
+            //client.PrintToChat("You just jump!");
+
+            if (!GetGameRules().WarmupPeriod)
             {
-                Vector ApplyVec = new Vector();
+                if (activeclass == null)
+                {
+                    if (IsClientHuman(client))
+                        activeclass = ConfigSettings.Human_Default;
 
-                ApplyVec.X = (velocity.X * classData[activeclass].Jump_Distance) - velocity.X;
-                ApplyVec.Y = (velocity.Y * classData[activeclass].Jump_Distance) - velocity.X;
-                ApplyVec.Z = velocity.Z * classData[activeclass].Jump_Height;
+                    else
+                        activeclass = ConfigSettings.Zombie_Default;
+                }
 
-                client.AbsVelocity.Add(ApplyVec);
+                if (classData.ContainsKey(activeclass))
+                {
+                    Vector ApplyVec = new Vector();
+
+                    ApplyVec.X = (velocity.X * classData[activeclass].Jump_Distance) - velocity.X;
+                    ApplyVec.Y = (velocity.Y * classData[activeclass].Jump_Distance) - velocity.X;
+                    ApplyVec.Z = velocity.Z * classData[activeclass].Jump_Height;
+
+                    client.AbsVelocity.Add(ApplyVec);
+
+                    //client.PrintToChat($"Jump Distance: {classData[activeclass].Jump_Distance} Jump Height: {classData[activeclass].Jump_Height}");
+                }
+                else
+                {
+                    //client.PrintToChat($"Cannot find class {activeclass}");
+                }
             }
 
             return HookResult.Continue;

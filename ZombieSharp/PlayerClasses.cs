@@ -16,12 +16,12 @@ namespace ZombieSharp
 
             if (!File.Exists(configPath))
             {
-                Logger.LogError("[Z:Sharp] Couldn't find playerclasses.json config file, Initial backup class!");
+                Logger.LogInformation("[Z:Sharp] Couldn't find playerclasses.json config file, Initial backup class!");
                 PlayerClassDatas = new PlayerClassConfig();
                 return false;
             }
 
-            Logger.LogError("[Z:Sharp] Loading playerclasses.json file.");
+            Logger.LogInformation("[Z:Sharp] Loading playerclasses.json file.");
             PlayerClassDatas = JsonSerializer.Deserialize<PlayerClassConfig>(File.ReadAllText(configPath));
             return true;
         }
@@ -67,6 +67,7 @@ namespace ZombieSharp
             }
 
             clientPawn.Health = classData.Health;
+            clientPawn.VelocityModifier = classData.Speed / 250.0f;
 
             if(classData.Regen_Interval > 0.0f && classData.Regen_Amount > 0)
             {
@@ -97,7 +98,7 @@ public class PlayerClassConfig
     {
         PlayerClasses = new Dictionary<string, PlayerClassData>(StringComparer.OrdinalIgnoreCase)
         {
-            { "human_default", new PlayerClassData("Human Default", "Default Class for human", true, 0, "", false, 100, 0.0f, 0, 250.0f, 0.0f, 1.07f, 1.0f) },
+            { "human_default", new PlayerClassData("Human Default", "Default Class for human", true, 0, "", false, 100, 0.0f, 0, 250.0f, 0.0f, 3.0f, 1.0f) },
             { "zombie_default", new PlayerClassData("Zombie Default", "Default Class for zombie", true, 0, "", false, 8000, 10.0f, 100, 255.0f, 3.0f, 1.0f, 1.0f) },
             { "motherzombie", new PlayerClassData("Mother Zombie", "Mother Zombie Class", true, 0, "", false, 15000, 10.0f, 100, 255.0f, 3.0f, 1.0f, 1.0f) },
         };

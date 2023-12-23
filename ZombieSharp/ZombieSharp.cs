@@ -8,7 +8,7 @@ namespace ZombieSharp
     {
         public override string ModuleName => "Zombie Sharp";
         public override string ModuleAuthor => "Oylsister, Kurumi, Sparky";
-        public override string ModuleVersion => "1.2.0 Alpha";
+        public override string ModuleVersion => "1.1.2 Alpha";
 
         public bool ZombieSpawned;
         public int Countdown;
@@ -52,13 +52,31 @@ namespace ZombieSharp
 
                 var client = new CCSPlayerController(weaponservices!.Pawn.Value.Controller.Value!.Handle);
 
-                if (ZombiePlayers[client.Slot].IsZombie && ZombieSpawned)
+                if (ZombieSpawned)
                 {
-                    if (clientweapon.DesignerName != "weapon_knife")
+                    if (IsClientZombie(client))
                     {
-                        weaponservices.PreventWeaponPickup = true;
-                        clientweapon.Remove();
+                        if (clientweapon.DesignerName != "weapon_knife")
+                        {
+                            if (!weaponservices.PreventWeaponPickup)
+                            {
+                                weaponservices.PreventWeaponPickup = true;
+                                clientweapon.Remove();
+                            }
+                        }
+                        else
+                        {
+                            weaponservices.PreventWeaponPickup = false;
+                        }
                     }
+                    else
+                    {
+                        weaponservices.PreventWeaponPickup = false;
+                    }
+                }
+                else
+                {
+                    weaponservices.PreventWeaponPickup = false;
                 }
 
                 return HookResult.Continue;
@@ -76,7 +94,10 @@ namespace ZombieSharp
         public void Timer_Countdown()
         {
             if (ZombieSpawned)
+            {
+                g_hCountdown.Kill();
                 return;
+            }
 
             if(Countdown < 0 && g_hCountdown != null)
             {
@@ -179,8 +200,10 @@ namespace ZombieSharp
             // make zombie status be true.
             ZombiePlayers[client.Slot].IsZombie = true;
 
+            client.PlayerPawn.Value.WeaponServices.PreventWeaponPickup = false;
+
             // if they from the motherzombie infection put status here to prevent being chosen for it again.
-            if(motherzombie)
+            if (motherzombie)
             {
                 ZombiePlayers[client.Slot].MotherZombieStatus = MotherZombieFlags.CHOSEN;
 
@@ -225,6 +248,8 @@ namespace ZombieSharp
             if (!ZombieSpawned)
                 ZombieSpawned = true;
 
+            client.PlayerPawn.Value.WeaponServices.PreventWeaponPickup = true;
+
             // Create an event for killfeed
             /*
             if (attacker != null)
@@ -252,6 +277,8 @@ namespace ZombieSharp
         {
             // zombie status to false
             ZombiePlayers[client.Slot].IsZombie = false;
+
+            client.PlayerPawn.Value.WeaponServices.PreventWeaponPickup = false;
 
             // switch client to CT
             client.SwitchTeam(CsTeam.CounterTerrorist);
