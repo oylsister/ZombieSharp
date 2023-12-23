@@ -1,4 +1,5 @@
 using System.Reflection.Metadata;
+using static CounterStrikeSharp.API.Core.Listeners;
 
 namespace ZombieSharp
 {
@@ -15,12 +16,12 @@ namespace ZombieSharp
             RegisterEventHandler<EventPlayerJump>(OnPlayerJump);
             RegisterEventHandler<EventCsPreRestart>(OnPreRestart);
 
-            RegisterListener<Listeners.OnClientConnected>(OnClientConnected);
+            RegisterListener<Listeners.OnClientPutInServer>(OnClientPutInServer);
             RegisterListener<Listeners.OnClientDisconnect>(OnClientDisconnected);
             RegisterListener<Listeners.OnMapStart>(OnMapStart);
         }
 
-        private void OnClientConnected(int client)
+        private void OnClientPutInServer(int client)
         {
             var player = Utilities.GetPlayerFromSlot(client);
 
@@ -32,6 +33,12 @@ namespace ZombieSharp
 
             ZombiePlayers[clientindex].IsZombie = false;
             ZombiePlayers[clientindex].MotherZombieStatus = MotherZombieFlags.NONE;
+
+            ClientPlayerClass.Add(clientindex, new PlayerClientClass());
+
+            ClientPlayerClass[clientindex].HumanClass = ConfigSettings.Human_Default;
+            ClientPlayerClass[clientindex].ZombieClass = ConfigSettings.Zombie_Default;
+            ClientPlayerClass[clientindex].ActiveClass = null;
         }
 
         private void OnClientDisconnected(int client)
@@ -42,12 +49,14 @@ namespace ZombieSharp
 
             ClientSpawnDatas.Remove(clientindex);
             ZombiePlayers.Remove(clientindex);
+            ClientPlayerClass.Remove(clientindex);
         }
 
         private void OnMapStart(string mapname)
         {
             WeaponInitialize();
             bool load = SettingsIntialize(mapname);
+            PlayerClassIntialize();
 
             if (!load)
                 ConfigSettings = new GameSettings();
@@ -147,12 +156,14 @@ namespace ZombieSharp
 
         private HookResult OnPlayerDeath(EventPlayerDeath @event, GameEventInfo info)
         {
+            var client = @event.Userid;
+
             if (ZombieSpawned)
             {
-                var client = @event.Userid!;
                 CheckGameStatus();
                 RespawnPlayer(client); 
             }
+
             return HookResult.Continue;
         }
 
@@ -205,14 +216,46 @@ namespace ZombieSharp
             return HookResult.Continue;
         }
 
-        private HookResult OnPlayerJump(EventPlayerJump @event, GameEventInfo info)
+        public HookResult OnPlayerJump(EventPlayerJump @event, GameEventInfo info)
         {
             var client = @event.Userid;
 
             Vector velocity = client.PlayerPawn.Value.AbsVelocity;
-            velocity.Y *= 1.07f; 
 
-            client.Teleport(new(0f, 0f, 0f), new(0f, 0f, 0f), velocity);
+            var classData = PlayerClassDatas.PlayerClasses;
+            var activeclass = ClientPlayerClass[client.Slot].ActiveClass;
+
+            //Server.PrintToChatAll($"{client.PlayerName} just jumped");
+            //client.PrintToChat("You just jump!");
+
+            if (!GetGameRules().WarmupPeriod)
+            {
+                if (activeclass == null)
+                {
+                    if (IsClientHuman(client))
+                        activeclass = ConfigSettings.Human_Default;
+
+                    else
+                        activeclass = ConfigSettings.Zombie_Default;
+                }
+
+                if (classData.ContainsKey(activeclass))
+                {
+                    Vector ApplyVec = new Vector();
+
+                    ApplyVec.X = (velocity.X * classData[activeclass].Jump_Distance) - velocity.X;
+                    ApplyVec.Y = (velocity.Y * classData[activeclass].Jump_Distance) - velocity.X;
+                    ApplyVec.Z = velocity.Z * classData[activeclass].Jump_Height;
+
+                    client.AbsVelocity.Add(ApplyVec);
+
+                    //client.PrintToChat($"Jump Distance: {classData[activeclass].Jump_Distance} Jump Height: {classData[activeclass].Jump_Height}");
+                }
+                else
+                {
+                    //client.PrintToChat($"Cannot find class {activeclass}");
+                }
+            }
 
             return HookResult.Continue;
         }
