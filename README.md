@@ -1,23 +1,23 @@
 # ZombieSharp
  
-Zombie-Sharp is a plugin project for CS2 Zombie-Mode. By referencing the feature and the function from previous SourcePawn Zombie:Reloaded plugins. You can said this is the Zombie:Reloaded remake except is C#. Here is the list of feature that will be feature on Beta stage.
+Zombie-Sharp is a Zombie Mode plugin for CS2 referencing the features and functions from the previous SourcePawn Zombie:Reloaded plugin. You can say this is the Zombie:Reloaded remake but in C#. Here is the list of features that will be featured in the Beta.
 
-### Feature of Zombie-Sharp (list todo)
-- [x] Basic Zombie Infection Initial with Timer.
-- [x] Mother Zombie Cycle.
-- [x] Infect and Human Command.
+### Feature of Zombie-Sharp
+- [x] Basic Zombie Infection Initial with Timer
+- [x] Mother Zombie Cycle
+- [x] Infect and Human Command
 - [x] Respawn Option
 - [ ] Player Class Module
 - [x] Weapon Module
-- [x] Hitgroup Module
+- [x] Hitgroups Module
 - [x] Knockback Module
 - [x] ZTeleport Module
-- [x] Configuratable for Infection setting (Previously: ConVar)
+- [x] Configuration for Infection Settings (Previously: ConVar)
 
 
-### We are now Pre-Alpha released!
-To get knockback work properly you will need [MovementUnlocker](https://github.com/Source2ZE/MovementUnlocker) plugin. 
-it's recommend to set these Convar before using the plugin to prevent crashed and issues that may occur. Since the respawn function still have an issue, it's recommend to enable ``mp_respawn_on_death_ct`` and ``mp_respawn_on_death_t`` to 1. 
+### We are now in Pre-Alpha!
+To get knockback working correctly you will need [MovementUnlocker](https://github.com/Source2ZE/MovementUnlocker) plugin. 
+It's recommend to set these Convar before using the plugin to prevent crashed and issues that may occur. Since the respawn function still have an issue, it's recommend to enable ``mp_respawn_on_death_ct`` and ``mp_respawn_on_death_t`` to 1. 
 ```
 mp_limitteams 0
 mp_autoteambalance 0
@@ -26,7 +26,10 @@ mp_respawn_on_death_ct 1
 mp_respawn_on_death_t 1
 ```
 
-You can figure a Weapon Config in weapons.json
+### Other config files
+Here is a list of all the config files available and what they do.
+
+weapons.json - Configure specific weapon settings.
 ```json
 {
     "KnockbackMultiply": 1.0, // Knockback Multiply for all weapon
@@ -37,7 +40,7 @@ You can figure a Weapon Config in weapons.json
     },
 }
 ```
-Hitgroup configuration for knockback when get hit in specific of player body (hitgroups.json)
+hitgroups.json - Hitgroup configuration for knockback.
 ```json
 {
     "Generic": { // name of the part, doesn't affect anything
@@ -50,7 +53,7 @@ Hitgroup configuration for knockback when get hit in specific of player body (hi
     }
 }
 ```
-Game Settings for specific a thing you want. Default is default.json, but it will try to find that match with mapname (example: Map de_dust2 it will try to find de_dust2.json first. if doesn't found the file, it will use the default value instead)
+default.json - Custom Settings. These can be set for specific maps too. Example: de_dust2.json. If it doesn't find de_dust2.json first it will use the default.json file instead.
 ```json
 {
     "RespawnTimer": 5.0, // respawn timer when die (in progress, not done yet)
