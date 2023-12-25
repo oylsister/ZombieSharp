@@ -1,23 +1,18 @@
 ﻿using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace ZombieSharp
 {
     public partial class ZombieSharp
     {
         public GameSettings ConfigSettings { get; private set; }
-        
+
         public bool SettingsIntialize(string mapname)
         {
             string configPath = Path.Combine(ModuleDirectory, $"settings/{mapname}.json");
             string defaultconfig = Path.Combine(ModuleDirectory, $"settings/default.json");
 
-            if(File.Exists(configPath))
+            if (File.Exists(configPath))
             {
                 ConfigSettings = JsonSerializer.Deserialize<GameSettings>(File.ReadAllText(configPath));
                 Logger.LogInformation($"[Z:Sharp] Found config file for {mapname}.json.");
@@ -25,7 +20,7 @@ namespace ZombieSharp
                 return true;
             }
 
-            if(File.Exists(defaultconfig))
+            if (File.Exists(defaultconfig))
             {
                 ConfigSettings = JsonSerializer.Deserialize<GameSettings>(File.ReadAllText(defaultconfig));
                 Logger.LogInformation($"[Z:Sharp] There is no config file for {mapname}.json, Default file is used.");

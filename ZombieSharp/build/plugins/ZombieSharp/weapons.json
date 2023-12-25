@@ -1,6 +1,6 @@
 {
     "KnockbackMultiply": 1.0,
-    "WeaponDatas": {
+    "WeaponConfigs": {
         "glock": {
             "WeaponName": "Glock",
             "WeaponEntity": "weapon_glock",

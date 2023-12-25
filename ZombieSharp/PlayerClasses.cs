@@ -73,6 +73,7 @@ namespace ZombieSharp
 
             clientPawn.Health = classData.Health;
             clientPawn.VelocityModifier = classData.Speed / 250.0f;
+            clientPawn.GravityScale = classData.Speed / 250.0f;
 
             if (classData.Regen_Interval > 0.0f && classData.Regen_Amount > 0)
             {

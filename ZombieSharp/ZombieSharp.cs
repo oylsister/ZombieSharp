@@ -207,13 +207,21 @@ namespace ZombieSharp
 
             client.PlayerPawn.Value.WeaponServices.PreventWeaponPickup = false;
 
+            string ApplyClass;
+
             // if they from the motherzombie infection put status here to prevent being chosen for it again.
             if (motherzombie)
             {
                 ZombiePlayers[client.Slot].MotherZombieStatus = MotherZombieFlags.CHOSEN;
 
+                ApplyClass = ConfigSettings.Mother_Zombie;
+
                 if (ConfigSettings.TeleportMotherZombie)
                     ZTele_TeleportClientToSpawn(client);
+            }
+            else
+            {
+                ApplyClass = ClientPlayerClass[client.Slot].ZombieClass;
             }
 
             if (respawn)
@@ -227,7 +235,7 @@ namespace ZombieSharp
             // swith to terrorist side.
             client.SwitchTeam(CsTeam.Terrorist);
 
-            bool apply = ApplyClientPlayerClass(client, ClientPlayerClass[client.Slot].ZombieClass, 0);
+            bool apply = ApplyClientPlayerClass(client, ApplyClass, 0);
 
             if (!apply)
             {

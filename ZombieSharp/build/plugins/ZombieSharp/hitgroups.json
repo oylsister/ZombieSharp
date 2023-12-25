@@ -1,5 +1,5 @@
 {
-    "HitGroupDatas":{
+    "HitGroupConfigs": {
         "Generic": {
             "HitgroupIndex": 0,
             "HitgroupKnockback": 1.0

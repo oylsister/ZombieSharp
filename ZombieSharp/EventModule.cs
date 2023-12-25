@@ -173,13 +173,11 @@ namespace ZombieSharp
                     // Respawn the client.
                     if (!client.PawnIsAlive)
                     {
-                        Server.PrintToChatAll($"Player {client.PlayerName} should be respawn here.");
+                        // Server.PrintToChatAll($"Player {client.PlayerName} should be respawn here.");
                         var clientPawn = client.PlayerPawn.Value;
 
                         CBasePlayerController_SetPawnFunc.Invoke(client, clientPawn, true, false);
                         VirtualFunction.CreateVoid<CCSPlayerController>(client.Handle, GameData.GetOffset("CCSPlayerController_Respawn"))(client);
-
-                        //client.Respawn();
                     }
                 });
             }
@@ -220,38 +218,38 @@ namespace ZombieSharp
         public HookResult OnPlayerJump(EventPlayerJump @event, GameEventInfo info)
         {
             var client = @event.Userid;
+            JumpBoost(client);
 
+            return HookResult.Continue;
+        }
+
+        public void JumpBoost(CCSPlayerController client)
+        {
             var classData = PlayerClassDatas.PlayerClasses;
             var activeclass = ClientPlayerClass[client.Slot].ActiveClass;
 
-            //Server.PrintToChatAll($"{client.PlayerName} just jumped");
-            //client.PrintToChat("You just jump!");
-
             if (!GetGameRules().WarmupPeriod)
             {
-                if (activeclass == null)
+                // if jump boost can apply after client is already jump.
+                AddTimer(0.0f, () =>
                 {
-                    if (IsClientHuman(client))
-                        activeclass = ConfigSettings.Human_Default;
+                    if (activeclass == null)
+                    {
+                        if (IsClientHuman(client))
+                            activeclass = ConfigSettings.Human_Default;
 
-                    else
-                        activeclass = ConfigSettings.Zombie_Default;
-                }
+                        else
+                            activeclass = ConfigSettings.Zombie_Default;
+                    }
 
-                if (classData.ContainsKey(activeclass))
-                {
-                    client.PlayerPawn.Value.AbsVelocity.X *= classData[activeclass].Jump_Distance;
-                    client.PlayerPawn.Value.AbsVelocity.Y *= classData[activeclass].Jump_Distance;
-                    client.PlayerPawn.Value.AbsVelocity.Z *= classData[activeclass].Jump_Height;
-                    //client.PrintToChat($"Jump Distance: {classData[activeclass].Jump_Distance} Jump Height: {classData[activeclass].Jump_Height}");
-                }
-                else
-                {
-                    //client.PrintToChat($"Cannot find class {activeclass}");
-                }
+                    if (classData.ContainsKey(activeclass))
+                    {
+                        client.PlayerPawn.Value.AbsVelocity.X *= classData[activeclass].Jump_Distance;
+                        client.PlayerPawn.Value.AbsVelocity.Y *= classData[activeclass].Jump_Distance;
+                        client.PlayerPawn.Value.AbsVelocity.Z *= classData[activeclass].Jump_Height;
+                    }
+                });
             }
-
-            return HookResult.Continue;
         }
 
         private void RemoveRoundObjective()

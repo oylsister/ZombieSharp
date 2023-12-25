@@ -10,6 +10,8 @@ namespace ZombieSharp
             AddCommand("css_playerlist", "Player List Command", PlayerListCommand);
             AddCommand("css_classlist", "Class List Command", CommandClassList);
             AddCommand("css_weaponlist", "Weapon List Command", WeaponListCommand);
+            AddCommand("css_hitgrouplist", "Hitgroup List Command", HiggroupsListCommand);
+            AddCommand("css_myclass", "Client PlayerClass Command", ClientPlayerClassCommand);
         }
 
         [RequiresPermissions(@"css/slay")]
@@ -151,6 +153,22 @@ namespace ZombieSharp
             {
                 info.ReplyToCommand($"Class Name: {weaponData.Value.WeaponName}");
             }
+        }
+
+        [RequiresPermissions(@"css/slay")]
+        private void HiggroupsListCommand(CCSPlayerController client, CommandInfo info)
+        {
+            foreach (var hitgroupData in HitGroupDatas.HitGroupConfigs)
+            {
+                info.ReplyToCommand($"Found: {hitgroupData.Key}");
+            }
+        }
+
+        private void ClientPlayerClassCommand(CCSPlayerController client, CommandInfo info)
+        {
+            info.ReplyToCommand($"Human Class: {ClientPlayerClass[client.Slot].HumanClass}");
+            info.ReplyToCommand($"Zombie Class: {ClientPlayerClass[client.Slot].ZombieClass}");
+            info.ReplyToCommand($"Active Class: {ClientPlayerClass[client.Slot].HumanClass}");
         }
     }
 }
