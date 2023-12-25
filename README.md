@@ -6,8 +6,8 @@ Zombie-Sharp is a Zombie Mode plugin for CS2 referencing the features and functi
 - [x] Basic Zombie Infection Initial with Timer
 - [x] Mother Zombie Cycle
 - [x] Infect and Human Command
-- [x] Respawn Option
-- [ ] Player Class Module
+- [ ] Respawn Option
+- [x] Player Class Module
 - [x] Weapon Module
 - [x] Hitgroups Module
 - [x] Knockback Module
@@ -37,23 +37,49 @@ weapons.json - Configure specific weapon settings.
 ```json
 {
     "KnockbackMultiply": 1.0, // Knockback Multiply for all weapon
-    "glock": { // The weaponname get from event when get fired.
-        "WeaponName": "Glock", // weapon name you wish
-        "WeaponEntity": "weapon_glock", // weapon entity
-        "Knockback": 1.1 // knockback
-    },
+    "WeaponDatas":{
+        "glock": { // The weaponname get from event when get fired.
+            "WeaponName": "Glock", // weapon name you wish
+            "WeaponEntity": "weapon_glock", // weapon entity
+            "Knockback": 1.1 // knockback
+        }
+    }
+}
+```
+playerclasses.json - Player Classes configuration.
+```json
+{
+    "PlayerClasses":{
+        "human_default": { // Class unique name
+            "Name": "Human Default", // class name
+            "Description": "Default Class for human", // description
+            "Enable": true, // enable it or not
+            "Team": 1, // Team 0 = zombie, Team 1 = human
+            "Model": "", // Model path for this class
+            "MotherZombie": false, // Specify if this class is for mother zombie.
+            "Health": 150, // class health
+            "Regen_Interval": 0.0, // Specify how much second to regen health
+            "Regen_Amount": 0, // Regen Health amount
+            "Speed": 250.0, // class speed
+            "Knockback": 0.0, // class knockback
+            "Jump_Height": 3.0, // Jump height (On progress now)
+            "Jump_Distance": 1.0 // Jump Distance (On progress now)
+        }
+    }
 }
 ```
 hitgroups.json - Hitgroup configuration for knockback.
 ```json
 {
-    "Generic": { // name of the part, doesn't affect anything
-        "HitgroupIndex": 0, // hitgroup index DO NOT CHANGE THIS
-        "HitgroupKnockback": 1.0 // knockback multiply when get hit to this hitgroup
-    },
-    "Head": {
-        "HitgroupIndex": 1,
-        "HitgroupKnockback": 1.2
+    "HitGroupDatas": {
+        "Generic": { // name of the part, doesn't affect anything
+            "HitgroupIndex": 0, // hitgroup index DO NOT CHANGE THIS
+            "HitgroupKnockback": 1.0 // knockback multiply when get hit to this hitgroup
+        },
+        "Head": {
+            "HitgroupIndex": 1,
+            "HitgroupKnockback": 1.2
+        }
     }
 }
 ```
@@ -63,6 +89,9 @@ default.json - Custom Settings. These can be set for specific maps too. Example:
     "RespawnTimer": 5.0, // respawn timer when die (in progress, not done yet)
     "FirstInfectionTimer": 15.0, // First infection timer in seconds
     "MotherZombieRatio": 7.0, // Mother Zombie Spawn ratio (14 players / 7.0 ratio = 2 Mother zombie)
-    "TeleportMotherZombie": true // Teleport mother zombie to spawn after get infected (Useful for Zombie Escape)
+    "TeleportMotherZombie": true, // Teleport mother zombie to spawn after get infected (Useful for Zombie Escape)
+    "Human_Default": "human_default", // Default Human Class
+    "Zombie_Default": "zombie_default", // Default Zombie Class
+    "Mother_Zombie": "motherzombie" // Default Mother Zombie Class
 }
 ```
