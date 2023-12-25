@@ -14,9 +14,13 @@ Zombie-Sharp is a Zombie Mode plugin for CS2 referencing the features and functi
 - [x] ZTeleport Module
 - [x] Configuration for Infection Settings (Previously: ConVar)
 
+### Requirements
+- [Metamode:Source](https://www.sourcemm.net/downloads.php/?branch=master) Dev build (2.x).
+- [CounterStrikeSharp](https://github.com/roflmuffin/CounterStrikeSharp) 
+- [MovementUnlocker](https://github.com/Source2ZE/MovementUnlocker) plugin for knockback.
+- [Newtonsoft.Json](https://github.com/JamesNK/Newtonsoft.Json/releases) (This is already included in Release)
 
 ### We are now in Pre-Alpha!
-To get knockback working correctly you will need [MovementUnlocker](https://github.com/Source2ZE/MovementUnlocker) plugin. 
 It's recommend to set these Convar before using the plugin to prevent crashed and issues that may occur. Since the respawn function still have an issue, it's recommend to enable ``mp_respawn_on_death_ct`` and ``mp_respawn_on_death_t`` to 1. 
 ```
 mp_limitteams 0

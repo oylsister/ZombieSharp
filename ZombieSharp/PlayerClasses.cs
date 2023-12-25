@@ -1,6 +1,5 @@
-﻿using System.Text.Json;
-using Microsoft.Extensions.Logging;
-using CounterStrikeSharp.API.Modules.Utils;
+﻿using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace ZombieSharp
 {
@@ -12,7 +11,7 @@ namespace ZombieSharp
 
         public bool PlayerClassIntialize()
         {
-            string configPath = Path.Combine(ModuleDirectory, "playerclasses.json");
+            var configPath = Path.Combine(ModuleDirectory, "playerclasses.json");
 
             if (!File.Exists(configPath))
             {
@@ -22,7 +21,7 @@ namespace ZombieSharp
             }
 
             Logger.LogInformation("[Z:Sharp] Loading playerclasses.json file.");
-            PlayerClassDatas = JsonSerializer.Deserialize<PlayerClassConfig>(File.ReadAllText(configPath));
+            PlayerClassDatas = JsonConvert.DeserializeObject<PlayerClassConfig>(File.ReadAllText(configPath));
             return true;
         }
 
@@ -30,13 +29,19 @@ namespace ZombieSharp
         {
             // if cannot find the class, then false so they can use the default value.
             if (!PlayerClassDatas.PlayerClasses.ContainsKey(class_string))
+            {
+                //Server.PrintToChatAll($"Couldn't find {class_string} for {client.PlayerName}");
                 return false;
+            }
 
             var classData = PlayerClassDatas.PlayerClasses[class_string];
 
             // wrong team 
             if (classData.Team != team)
+            {
+                //Server.PrintToChatAll($"Try Apply class {class_string} for {client.PlayerName} but in the wrong team. TEAM= {team}, CTEAM= {classData.Team}");
                 return false;
+            }
 
             var clientPawn = client.PlayerPawn.Value;
 
@@ -69,12 +74,23 @@ namespace ZombieSharp
             clientPawn.Health = classData.Health;
             clientPawn.VelocityModifier = classData.Speed / 250.0f;
 
-            if(classData.Regen_Interval > 0.0f && classData.Regen_Amount > 0)
+            if (classData.Regen_Interval > 0.0f && classData.Regen_Amount > 0)
             {
-                AddTimer(classData.Regen_Interval, () =>
+                CounterStrikeSharp.API.Modules.Timers.Timer regenTimer = null;
+
+                regenTimer = AddTimer(classData.Regen_Interval, () =>
                 {
-                    if (!client.PawnIsAlive)
+                    if (!client.IsValid)
+                    {
+                        regenTimer.Kill();
                         return;
+                    }
+
+                    if (!client.PawnIsAlive)
+                    {
+                        regenTimer.Kill();
+                        return;
+                    }
 
                     if (clientPawn.Health + classData.Regen_Amount > classData.Health)
                         clientPawn.Health = classData.Health;
@@ -98,9 +114,9 @@ public class PlayerClassConfig
     {
         PlayerClasses = new Dictionary<string, PlayerClassData>(StringComparer.OrdinalIgnoreCase)
         {
-            { "human_default", new PlayerClassData("Human Default", "Default Class for human", true, 0, "", false, 100, 0.0f, 0, 250.0f, 0.0f, 3.0f, 1.0f) },
-            { "zombie_default", new PlayerClassData("Zombie Default", "Default Class for zombie", true, 0, "", false, 8000, 10.0f, 100, 255.0f, 3.0f, 1.0f, 1.0f) },
-            { "motherzombie", new PlayerClassData("Mother Zombie", "Mother Zombie Class", true, 0, "", false, 15000, 10.0f, 100, 255.0f, 3.0f, 1.0f, 1.0f) },
+            { "human_default", new PlayerClassData("Human Config Default", "Default Class for human", true, 1, "", false, 100, 0.0f, 0, 250.0f, 0.0f, 3.0f, 1.0f) },
+            { "zombie_default", new PlayerClassData("Zombie Config Default", "Default Class for zombie", true, 0, "", false, 8000, 10.0f, 100, 255.0f, 3.0f, 1.0f, 1.0f) },
+            { "motherzombie", new PlayerClassData("Mother Zombie Config", "Mother Zombie Class", true, 0, "", false, 15000, 10.0f, 100, 255.0f, 3.0f, 1.0f, 1.0f) },
         };
     }
 }

@@ -1,10 +1,7 @@
-using System.Reflection.Metadata;
-using static CounterStrikeSharp.API.Core.Listeners;
-
 namespace ZombieSharp
 {
     public partial class ZombieSharp
-    { 
+    {
         public void EventInitialize()
         {
             RegisterEventHandler<EventRoundStart>(OnRoundStart);
@@ -102,7 +99,7 @@ namespace ZombieSharp
                     }
                 });
             }
-            return HookResult.Continue; 
+            return HookResult.Continue;
         }
 
         private HookResult OnRoundEnd(EventRoundEnd @event, GameEventInfo info)
@@ -161,7 +158,7 @@ namespace ZombieSharp
             if (ZombieSpawned)
             {
                 CheckGameStatus();
-                RespawnPlayer(client); 
+                RespawnPlayer(client);
             }
 
             return HookResult.Continue;
@@ -202,7 +199,7 @@ namespace ZombieSharp
                     if (ZombieSpawned)
                     {
                         // Server.PrintToChatAll($"Infect {client.PlayerName} on Spawn.");
-                        InfectClient(client);
+                        InfectClient(client, null, false, false, true);
                     }
 
                     // else they're human!
@@ -262,13 +259,13 @@ namespace ZombieSharp
 
         private void RemoveRoundObjective()
         {
-            var objectivelist = new List<string>() {"func_bomb_target", "func_hostage_rescue", "hostage_entity", "c4"};
+            var objectivelist = new List<string>() { "func_bomb_target", "func_hostage_rescue", "hostage_entity", "c4" };
 
             foreach (string objectivename in objectivelist)
             {
                 var entityIndex = Utilities.FindAllEntitiesByDesignerName<CEntityInstance>(objectivename);
 
-                foreach(var entity in entityIndex)
+                foreach (var entity in entityIndex)
                 {
                     entity.Remove();
                 }

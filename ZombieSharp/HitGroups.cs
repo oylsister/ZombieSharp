@@ -1,10 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace ZombieSharp
 {
@@ -18,7 +13,7 @@ namespace ZombieSharp
 
             if (File.Exists(configPath))
             {
-                HitGroupDatas = JsonSerializer.Deserialize<HitGroupConfig>(File.ReadAllText(configPath));
+                HitGroupDatas = JsonConvert.DeserializeObject<HitGroupConfig>(File.ReadAllText(configPath));
                 return true;
             }
 
@@ -28,12 +23,12 @@ namespace ZombieSharp
 
         public float HitGroupGetKnockback(int hitgroup)
         {
-            if(!hitgroupLoad)
+            if (!hitgroupLoad)
                 return 1.0f;
 
             foreach (var data in HitGroupDatas.HitGroupConfigs)
             {
-                if(data.Value.HitgroupIndex == hitgroup)
+                if (data.Value.HitgroupIndex == hitgroup)
                     return data.Value.HitgroupKnockback;
             }
 

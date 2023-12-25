@@ -1,9 +1,6 @@
-using System.Collections;
-using CounterStrikeSharp.API.Modules.Commands.Targeting;
-
 namespace ZombieSharp
-{ 
-    public partial class ZombieSharp 
+{
+    public partial class ZombieSharp
     {
         public void CommandInitialize()
         {
@@ -11,6 +8,8 @@ namespace ZombieSharp
             AddCommand("css_zs_human", "Humanize Client Command", HumanizeClientCommand);
             AddCommand("css_zs_ztele", "Teleport Client to spawn Command", ZTeleClientCommand);
             AddCommand("css_playerlist", "Player List Command", PlayerListCommand);
+            AddCommand("css_classlist", "Class List Command", CommandClassList);
+            AddCommand("css_weaponlist", "Weapon List Command", WeaponListCommand);
         }
 
         [RequiresPermissions(@"css/slay")]
@@ -119,7 +118,7 @@ namespace ZombieSharp
 
             client.PrintToCenter("You will be teleported back to spawn in 5 seconds.");
 
-            AddTimer(5.0f, () => 
+            AddTimer(5.0f, () =>
             {
                 ZTele_TeleportClientToSpawn(client);
                 info.ReplyToCommand($" {ChatColors.Green}[Z:Sharp]{ChatColors.Default} Teleported back to spawn.");
@@ -127,11 +126,30 @@ namespace ZombieSharp
             });
         }
 
+        [RequiresPermissions(@"css/slay")]
         private void PlayerListCommand(CCSPlayerController client, CommandInfo info)
         {
-            foreach(var player in Utilities.GetPlayers())
+            foreach (var player in Utilities.GetPlayers())
             {
                 info.ReplyToCommand($"{player.UserId}: {player.PlayerName}| Zombie: {ZombiePlayers[player.Slot].IsZombie}| MotherZombie: {ZombiePlayers[player.Slot].MotherZombieStatus} | Player Slot: {player.Slot}");
+            }
+        }
+
+        [RequiresPermissions(@"css/slay")]
+        private void CommandClassList(CCSPlayerController client, CommandInfo info)
+        {
+            foreach (var classData in PlayerClassDatas.PlayerClasses)
+            {
+                info.ReplyToCommand($"Class Name: {classData.Value.Name}");
+            }
+        }
+
+        [RequiresPermissions(@"css/slay")]
+        private void WeaponListCommand(CCSPlayerController client, CommandInfo info)
+        {
+            foreach (var weaponData in WeaponDatas.WeaponConfigs)
+            {
+                info.ReplyToCommand($"Class Name: {weaponData.Value.WeaponName}");
             }
         }
     }

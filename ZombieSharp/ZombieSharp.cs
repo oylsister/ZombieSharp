@@ -8,7 +8,7 @@ namespace ZombieSharp
     {
         public override string ModuleName => "Zombie Sharp";
         public override string ModuleAuthor => "Oylsister, Kurumi, Sparky";
-        public override string ModuleVersion => "1.1.2 Alpha";
+        public override string ModuleVersion => "1.2.0 Alpha";
 
         public bool ZombieSpawned;
         public int Countdown;
@@ -81,7 +81,7 @@ namespace ZombieSharp
 
                 return HookResult.Continue;
 
-            }), HookMode.Pre);  
+            }), HookMode.Pre);
         }
 
         public void InfectOnRoundFreezeEnd()
@@ -99,7 +99,7 @@ namespace ZombieSharp
                 return;
             }
 
-            if(Countdown < 0 && g_hCountdown != null)
+            if (Countdown < 0 && g_hCountdown != null)
             {
                 g_hCountdown.Kill();
                 return;
@@ -118,7 +118,7 @@ namespace ZombieSharp
 
         public void MotherZombieInfect()
         {
-            if(ZombieSpawned)
+            if (ZombieSpawned)
                 return;
 
             //ArrayList candidate = new ArrayList();
@@ -127,9 +127,9 @@ namespace ZombieSharp
 
             int allplayer = 0;
 
-            foreach(var client in targetlist)
+            foreach (var client in targetlist)
             {
-                if(client.PawnIsAlive! && client.IsValid!)
+                if (client.PawnIsAlive! && client.IsValid!)
                 {
                     if (ZombiePlayers[client.Slot].MotherZombieStatus == MotherZombieFlags.NONE)
                     {
@@ -146,11 +146,11 @@ namespace ZombieSharp
             int maxmz = (int)(allplayer / ConfigSettings.MotherZombieRatio);
             // Server.PrintToChatAll($"Max Mother Zombie is: {maxmz}");
 
-            if(candidate.Count < maxmz)
+            if (candidate.Count < maxmz)
             {
                 Server.PrintToChatAll($" {ChatColors.Green}[Z:Sharp]{ChatColors.Default} Mother zombie cycle has been reset!");
 
-                if(candidate.Count > 0)
+                if (candidate.Count > 0)
                 {
                     foreach (var client in candidate)
                     {
@@ -162,9 +162,9 @@ namespace ZombieSharp
 
                 candidate.Clear();
 
-                foreach(var client in Utilities.GetPlayers())
-                { 
-                    if(ZombiePlayers[client.Slot].MotherZombieStatus == MotherZombieFlags.LAST)
+                foreach (var client in Utilities.GetPlayers())
+                {
+                    if (ZombiePlayers[client.Slot].MotherZombieStatus == MotherZombieFlags.LAST)
                     {
                         ZombiePlayers[client.Slot].MotherZombieStatus = MotherZombieFlags.NONE;
                         candidate.Add(client);
@@ -173,7 +173,7 @@ namespace ZombieSharp
 
                 foreach (var client in candidate)
                 {
-                    if(alreadymade >= maxmz)
+                    if (alreadymade >= maxmz)
                         break;
 
                     //Server.PrintToChatAll($"Infect {client.PlayerName} as Mother Zombie.");
@@ -185,7 +185,7 @@ namespace ZombieSharp
             {
                 foreach (var client in candidate)
                 {
-                    if(alreadymade >= maxmz)
+                    if (alreadymade >= maxmz)
                         break;
 
                     //Server.PrintToChatAll($"Infect {client.PlayerName} as Mother Zombie.");
@@ -195,7 +195,7 @@ namespace ZombieSharp
             }
         }
 
-        public void InfectClient(CCSPlayerController client, CCSPlayerController attacker = null, bool motherzombie = false, bool force = false)
+        public void InfectClient(CCSPlayerController client, CCSPlayerController attacker = null, bool motherzombie = false, bool force = false, bool respawn = false)
         {
             // make zombie status be true.
             ZombiePlayers[client.Slot].IsZombie = true;
@@ -209,6 +209,11 @@ namespace ZombieSharp
 
                 if (ConfigSettings.TeleportMotherZombie)
                     ZTele_TeleportClientToSpawn(client);
+            }
+
+            if (respawn)
+            {
+                ZTele_TeleportClientToSpawn(client);
             }
 
             // Remove all weapon.
@@ -309,7 +314,7 @@ namespace ZombieSharp
 
         public void KnockbackClient(CCSPlayerController client, CCSPlayerController attacker, float damage, string weapon, int hitgroup)
         {
-            if(!IsClientHuman(attacker) || !IsClientZombie(client))
+            if (!IsClientHuman(attacker) || !IsClientZombie(client))
                 return;
 
             var clientPawn = client.PlayerPawn.Value;
@@ -326,7 +331,7 @@ namespace ZombieSharp
             var hitgroupknocback = HitGroupGetKnockback(hitgroup);
 
             // try to find the key then the knockback
-            if (WeaponDatas.WeaponConfigs.ContainsKey(weapon)) 
+            if (WeaponDatas.WeaponConfigs.ContainsKey(weapon))
             {
                 weaponKnockback = WeaponDatas.WeaponConfigs[weapon].Knockback;
             }
@@ -345,7 +350,7 @@ namespace ZombieSharp
 
         public void CheckGameStatus()
         {
-            if(!ZombieSpawned) return;
+            if (!ZombieSpawned) return;
 
             int human = 0;
             int zombie = 0;
@@ -356,20 +361,20 @@ namespace ZombieSharp
                 if (!ZombiePlayers.ContainsKey(client.Slot))
                     continue;
 
-                if(ZombiePlayers[client.Slot].IsZombie && client.PawnIsAlive)
+                if (ZombiePlayers[client.Slot].IsZombie && client.PawnIsAlive)
                     zombie++;
-                
-                else if(!ZombiePlayers[client.Slot].IsZombie && client.PawnIsAlive)
+
+                else if (!ZombiePlayers[client.Slot].IsZombie && client.PawnIsAlive)
                     human++;
             }
 
-            if(human <= 0)
+            if (human <= 0)
             {
                 // round end.
                 CCSGameRules gameRules = GetGameRules();
                 gameRules.TerminateRound(5.0f, RoundEndReason.TerroristsWin);
             }
-            else if(zombie <= 0)
+            else if (zombie <= 0)
             {
                 // round end.
                 CCSGameRules gameRules = GetGameRules();
@@ -424,4 +429,4 @@ namespace ZombieSharp
             return !ZombiePlayers[controller.Slot].IsZombie;
         }
     }
-}   
+}
