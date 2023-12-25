@@ -173,9 +173,13 @@ namespace ZombieSharp
                     // Respawn the client.
                     if (!client.PawnIsAlive)
                     {
+                        Server.PrintToChatAll($"Player {client.PlayerName} should be respawn here.");
                         var clientPawn = client.PlayerPawn.Value;
-                        client.Respawn();
-                        clientPawn.Respawn();
+
+                        CBasePlayerController_SetPawnFunc.Invoke(client, clientPawn, true, false);
+                        VirtualFunction.CreateVoid<CCSPlayerController>(client.Handle, GameData.GetOffset("CCSPlayerController_Respawn"))(client);
+
+                        //client.Respawn();
                     }
                 });
             }
@@ -217,8 +221,6 @@ namespace ZombieSharp
         {
             var client = @event.Userid;
 
-            Vector velocity = client.PlayerPawn.Value.AbsVelocity;
-
             var classData = PlayerClassDatas.PlayerClasses;
             var activeclass = ClientPlayerClass[client.Slot].ActiveClass;
 
@@ -238,14 +240,9 @@ namespace ZombieSharp
 
                 if (classData.ContainsKey(activeclass))
                 {
-                    Vector ApplyVec = new Vector();
-
-                    ApplyVec.X = (velocity.X * classData[activeclass].Jump_Distance) - velocity.X;
-                    ApplyVec.Y = (velocity.Y * classData[activeclass].Jump_Distance) - velocity.X;
-                    ApplyVec.Z = velocity.Z * classData[activeclass].Jump_Height;
-
-                    client.AbsVelocity.Add(ApplyVec);
-
+                    client.PlayerPawn.Value.AbsVelocity.X *= classData[activeclass].Jump_Distance;
+                    client.PlayerPawn.Value.AbsVelocity.Y *= classData[activeclass].Jump_Distance;
+                    client.PlayerPawn.Value.AbsVelocity.Z *= classData[activeclass].Jump_Height;
                     //client.PrintToChat($"Jump Distance: {classData[activeclass].Jump_Distance} Jump Height: {classData[activeclass].Jump_Height}");
                 }
                 else

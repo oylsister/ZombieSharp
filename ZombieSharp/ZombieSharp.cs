@@ -37,10 +37,15 @@ namespace ZombieSharp
         public Vector NULL_VECTOR = new();
         public QAngle NULL_ANGLE = new();
 
+        MemoryFunctionVoid<CCSPlayerController, CCSPlayerPawn, bool, bool> CBasePlayerController_SetPawnFunc;
+
         public override void Load(bool HotReload)
         {
             EventInitialize();
             CommandInitialize();
+
+            CBasePlayerController_SetPawnFunc = new(GameData.GetSignature("CBasePlayerController_SetPawn"));
+            //var CBasePlayerController_SetPawnFunc = new MemoryFunctionVoid<IntPtr, IntPtr, bool, bool>(GameData.GetSignature("CBasePlayerController_SetPawn"));
 
             MemoryFunctionVoid<CCSPlayer_WeaponServices, CBasePlayerWeapon> CCSPlayer_WeaponServices_CanUseFunc = new(GameData.GetSignature("CCSPlayer_WeaponServices_CanUse"));
             Action<CCSPlayer_WeaponServices, CBasePlayerWeapon> CCSPlayer_WeaponServices_CanUse = CCSPlayer_WeaponServices_CanUseFunc.Invoke;
