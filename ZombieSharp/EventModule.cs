@@ -174,10 +174,7 @@ namespace ZombieSharp
                     if (!client.PawnIsAlive)
                     {
                         // Server.PrintToChatAll($"Player {client.PlayerName} should be respawn here.");
-                        var clientPawn = client.PlayerPawn.Value;
-
-                        CBasePlayerController_SetPawnFunc.Invoke(client, clientPawn, true, false);
-                        VirtualFunction.CreateVoid<CCSPlayerController>(client.Handle, GameData.GetOffset("CCSPlayerController_Respawn"))(client);
+                        RespawnClient(client);
                     }
                 });
             }
