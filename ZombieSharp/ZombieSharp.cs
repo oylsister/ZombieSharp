@@ -1,6 +1,5 @@
 ﻿using CounterStrikeSharp.API.Modules.Entities.Constants;
 using ZombieSharp.Helpers;
-using CounterStrikeSharp.API.Modules.Memory.DynamicFunctions;
 
 namespace ZombieSharp
 {
@@ -34,59 +33,11 @@ namespace ZombieSharp
 
         public bool hitgroupLoad = false;
 
-        public Vector NULL_VECTOR = new();
-        public QAngle NULL_ANGLE = new();
-
-        MemoryFunctionVoid<CCSPlayerController, CCSPlayerPawn, bool, bool> CBasePlayerController_SetPawnFunc;
-
         public override void Load(bool HotReload)
         {
             EventInitialize();
             CommandInitialize();
-
-            CBasePlayerController_SetPawnFunc = new(GameData.GetSignature("CBasePlayerController_SetPawn"));
-            //var CBasePlayerController_SetPawnFunc = new MemoryFunctionVoid<IntPtr, IntPtr, bool, bool>(GameData.GetSignature("CBasePlayerController_SetPawn"));
-
-            MemoryFunctionVoid<CCSPlayer_WeaponServices, CBasePlayerWeapon> CCSPlayer_WeaponServices_CanUseFunc = new(GameData.GetSignature("CCSPlayer_WeaponServices_CanUse"));
-            Action<CCSPlayer_WeaponServices, CBasePlayerWeapon> CCSPlayer_WeaponServices_CanUse = CCSPlayer_WeaponServices_CanUseFunc.Invoke;
-
-            CCSPlayer_WeaponServices_CanUseFunc.Hook((h =>
-            {
-                var weaponservices = h.GetParam<CCSPlayer_WeaponServices>(0);
-                var clientweapon = h.GetParam<CBasePlayerWeapon>(1);
-
-                var client = new CCSPlayerController(weaponservices!.Pawn.Value.Controller.Value!.Handle);
-
-                if (ZombieSpawned)
-                {
-                    if (IsClientZombie(client))
-                    {
-                        if (clientweapon.DesignerName != "weapon_knife")
-                        {
-                            if (!weaponservices.PreventWeaponPickup)
-                            {
-                                weaponservices.PreventWeaponPickup = true;
-                                clientweapon.Remove();
-                            }
-                        }
-                        else
-                        {
-                            weaponservices.PreventWeaponPickup = false;
-                        }
-                    }
-                    else
-                    {
-                        weaponservices.PreventWeaponPickup = false;
-                    }
-                }
-                else
-                {
-                    weaponservices.PreventWeaponPickup = false;
-                }
-
-                return HookResult.Continue;
-
-            }), HookMode.Pre);
+            VirtualFunctionsInitialize();
         }
 
         public void InfectOnRoundFreezeEnd()

@@ -74,7 +74,7 @@ namespace ZombieSharp
         {
             bool warmup = GetGameRules().WarmupPeriod;
 
-            if (!warmup)
+            if (!warmup || ConfigSettings.EnableOnWarmup)
                 InfectOnRoundFreezeEnd();
 
             return HookResult.Continue;
@@ -84,7 +84,7 @@ namespace ZombieSharp
         {
             bool warmup = GetGameRules().WarmupPeriod;
 
-            if (!warmup)
+            if (!warmup || ConfigSettings.EnableOnWarmup)
             {
                 AddTimer(0.1f, () =>
                 {
@@ -189,7 +189,7 @@ namespace ZombieSharp
 
             bool warmup = GetGameRules().WarmupPeriod;
 
-            if (!warmup)
+            if (!warmup || ConfigSettings.EnableOnWarmup)
             {
                 AddTimer(0.2f, () =>
                 {
@@ -228,7 +228,7 @@ namespace ZombieSharp
             var classData = PlayerClassDatas.PlayerClasses;
             var activeclass = ClientPlayerClass[client.Slot].ActiveClass;
 
-            if (!GetGameRules().WarmupPeriod)
+            if (!GetGameRules().WarmupPeriod || ConfigSettings.EnableOnWarmup)
             {
                 // if jump boost can apply after client is already jump.
                 AddTimer(0.0f, () =>

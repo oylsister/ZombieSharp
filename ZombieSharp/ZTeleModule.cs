@@ -1,6 +1,4 @@
-﻿using System.Dynamic;
-
-namespace ZombieSharp
+﻿namespace ZombieSharp
 {
     public partial class ZombieSharp
     {
@@ -14,13 +12,13 @@ namespace ZombieSharp
 
         public void ZTele_GetClientSpawnPoint(CCSPlayerController client, Vector position, QAngle angle)
         {
-            if(client is null)
+            if (client is null)
             {
                 Server.PrintToChatAll("The client is null, you didn't get shit.");
                 return;
             }
 
-            if(!client.PawnIsAlive)
+            if (!client.PawnIsAlive)
                 return;
 
             var clientPawn = client.PlayerPawn.Value;

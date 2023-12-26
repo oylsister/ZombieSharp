@@ -40,6 +40,7 @@ public class GameSettings
     public float FirstInfectionTimer { get; set; } = 15.0f;
     public float MotherZombieRatio { get; set; } = 7.0f;
     public bool TeleportMotherZombie { get; set; } = true;
+    public bool EnableOnWarmup { get; set; } = false;
 
     // Default Class
     public string Human_Default { get; set; } = "human_default";

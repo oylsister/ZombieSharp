@@ -3,6 +3,7 @@
 	"FirstInfectionTimer": 15.0,
 	"MotherZombieRatio": 7.0,
 	"TeleportMotherZombie": true,
+	"EnableOnWarmup": false,
 	"Human_Default": "human_default",
 	"Zombie_Default": "zombie_default",
 	"Mother_Zombie": "motherzombie"
