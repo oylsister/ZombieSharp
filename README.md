@@ -6,8 +6,8 @@ Zombie-Sharp is a Zombie Mode plugin for CS2 referencing the features and functi
 - [x] Basic Zombie Infection Initial with Timer
 - [x] Mother Zombie Cycle
 - [x] Infect and Human Command
-- [ ] Respawn Option
-- [x] Player Class Module
+- [x] Respawn Option
+- [x] Player Class Module (Mostly work, except player speed.)
 - [x] Weapon Module
 - [x] Hitgroups Module
 - [x] Knockback Module
@@ -21,13 +21,11 @@ Zombie-Sharp is a Zombie Mode plugin for CS2 referencing the features and functi
 - [Newtonsoft.Json](https://github.com/JamesNK/Newtonsoft.Json/releases) (This is already included in Release)
 
 ### We are now in Pre-Alpha!
-It's recommend to set these Convar before using the plugin to prevent crashed and issues that may occur. Since the respawn function still have an issue, it's recommend to enable ``mp_respawn_on_death_ct`` and ``mp_respawn_on_death_t`` to 1. 
+It's recommend to set these Convar before using the plugin to prevent crashed and issues that may occur.
 ```
 mp_limitteams 0
 mp_autoteambalance 0
 mp_disconnect_kills_players 0 // set in gamemode_casual.cfg
-mp_respawn_on_death_ct 1
-mp_respawn_on_death_t 1
 ```
 
 ### Other config files
@@ -60,10 +58,10 @@ playerclasses.json - Player Classes configuration.
             "Health": 150, // class health
             "Regen_Interval": 0.0, // Specify how much second to regen health
             "Regen_Amount": 0, // Regen Health amount
-            "Speed": 250.0, // class speed
+            "Speed": 250.0, // class speed (not work yet)
             "Knockback": 0.0, // class knockback
-            "Jump_Height": 3.0, // Jump height (On progress now)
-            "Jump_Distance": 1.0 // Jump Distance (On progress now)
+            "Jump_Height": 3.0, // Jump height
+            "Jump_Distance": 1.0 // Jump Distance
         }
     }
 }
