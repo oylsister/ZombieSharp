@@ -66,9 +66,18 @@ namespace ZombieSharp
                 var damageInfo = h.GetParam<CTakeDamageInfo>(1);
 
                 var controller = client.As<CCSPlayerController>();
+                var attacker = damageInfo.Attacker.Value.As<CCSPlayerController>();
 
                 if (controller.IsValid)
                     Server.PrintToChatAll($"{controller.PlayerName} damaged by type: {damageInfo.BitsDamageType}");
+
+                bool warmup = GetGameRules().WarmupPeriod;
+
+                if (warmup && !ConfigSettings.EnableOnWarmup)
+                {
+                    if (controller.IsValid && attacker.IsValid)
+                        damageInfo.Damage = 0;
+                }
 
                 return HookResult.Continue;
             }), HookMode.Pre);

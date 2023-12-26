@@ -203,15 +203,7 @@ namespace ZombieSharp
 
             bool warmup = GetGameRules().WarmupPeriod;
 
-            if (warmup && !ConfigSettings.EnableOnWarmup)
-            {
-                AddTimer(0.1f, () =>
-                {
-                    client.SwitchTeam(CsTeam.CounterTerrorist);
-                });
-            }
-
-            else if (!warmup || ConfigSettings.EnableOnWarmup)
+            if (!warmup || ConfigSettings.EnableOnWarmup)
             {
                 AddTimer(0.2f, () =>
                 {
