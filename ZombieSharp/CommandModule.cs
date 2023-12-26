@@ -11,6 +11,7 @@ namespace ZombieSharp
             AddCommand("css_classlist", "Class List Command", CommandClassList);
             AddCommand("css_weaponlist", "Weapon List Command", WeaponListCommand);
             AddCommand("css_hitgrouplist", "Hitgroup List Command", HiggroupsListCommand);
+            AddCommand("css_rk", "Toggle Repeat Killer Command", ToggleRepeatKillerCommand);
             AddCommand("css_myclass", "Client PlayerClass Command", ClientPlayerClassCommand);
         }
 
@@ -161,6 +162,29 @@ namespace ZombieSharp
             foreach (var hitgroupData in HitGroupDatas.HitGroupConfigs)
             {
                 info.ReplyToCommand($"Found: {hitgroupData.Key}");
+            }
+        }
+
+        private void ToggleRepeatKillerCommand(CCSPlayerController client, CommandInfo info)
+        {
+            if (!RepeatKillerEnable)
+            {
+                info.ReplyToCommand($" {ChatColors.Green}[Z:Sharp]{ChatColors.Default} This feature is currently disabled.");
+                return;
+            }
+
+            if (RepeatKillerActivated)
+            {
+                info.ReplyToCommand($" {ChatColors.Green}[Z:Sharp]{ChatColors.Default} Repeat killer detector force toggled off. Re-enabling respawn for this round.");
+                RepeatKillerActivated = false;
+                ForceRespawnAllDeath();
+                return;
+            }
+
+            else
+            {
+                info.ReplyToCommand($" {ChatColors.Green}[Z:Sharp]{ChatColors.Default} Repeat killer is already turned off!");
+                return;
             }
         }
 

@@ -72,8 +72,10 @@ namespace ZombieSharp
             }
 
             clientPawn.Health = classData.Health;
-            clientPawn.VelocityModifier = classData.Speed / 250.0f;
-            clientPawn.GravityScale = classData.Speed / 250.0f;
+
+            // This currently doesn't work properly need to find an altenative method that similar to m_flLaggedMovementValue
+            // clientPawn.VelocityModifier = classData.Speed / 250.0f;
+            // clientPawn.GravityScale = classData.Speed / 250.0f;
 
             if (classData.Regen_Interval > 0.0f && classData.Regen_Amount > 0)
             {

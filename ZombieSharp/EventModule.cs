@@ -36,6 +36,8 @@ namespace ZombieSharp
             ClientPlayerClass[clientindex].HumanClass = ConfigSettings.Human_Default;
             ClientPlayerClass[clientindex].ZombieClass = ConfigSettings.Zombie_Default;
             ClientPlayerClass[clientindex].ActiveClass = null;
+
+            PlayerDeathTime.Add(clientindex, 0.0f);
         }
 
         private void OnClientDisconnected(int client)
@@ -47,6 +49,7 @@ namespace ZombieSharp
             ClientSpawnDatas.Remove(clientindex);
             ZombiePlayers.Remove(clientindex);
             ClientPlayerClass.Remove(clientindex);
+            PlayerDeathTime.Remove(clientindex);
         }
 
         private void OnMapStart(string mapname)
@@ -59,11 +62,13 @@ namespace ZombieSharp
                 ConfigSettings = new GameSettings();
 
             hitgroupLoad = HitGroupIntialize();
+            RepeatKillerOnMapStart();
         }
 
         private HookResult OnRoundStart(EventRoundStart @event, GameEventInfo info)
         {
             RemoveRoundObjective();
+            RepeatKillerActivated = false;
 
             Server.PrintToChatAll($" {ChatColors.Green}[Z:Sharp]{ChatColors.Default} The current game mode is the Human vs. Zombie, the zombie goal is to infect all human before time is running out.");
 
@@ -84,7 +89,12 @@ namespace ZombieSharp
         {
             bool warmup = GetGameRules().WarmupPeriod;
 
-            if (!warmup || ConfigSettings.EnableOnWarmup)
+            if (warmup && !ConfigSettings.EnableOnWarmup)
+            {
+                Server.PrintToChatAll($" {ChatColors.Green}[Z:Sharp]{ChatColors.Default} The current server has disabled infection in warmup round.");
+            }
+
+            else if (!warmup || ConfigSettings.EnableOnWarmup)
             {
                 AddTimer(0.1f, () =>
                 {
@@ -154,11 +164,18 @@ namespace ZombieSharp
         private HookResult OnPlayerDeath(EventPlayerDeath @event, GameEventInfo info)
         {
             var client = @event.Userid;
+            var attacker = @event.Attacker;
+            var weapon = @event.Weapon;
 
             if (ZombieSpawned)
             {
                 CheckGameStatus();
-                RespawnPlayer(client);
+
+                if (!RepeatKillerActivated)
+                {
+                    RespawnPlayer(client);
+                    RepeatKillerOnPlayerDeath(client, attacker, weapon);
+                }
             }
 
             return HookResult.Continue;
@@ -186,7 +203,15 @@ namespace ZombieSharp
 
             bool warmup = GetGameRules().WarmupPeriod;
 
-            if (!warmup || ConfigSettings.EnableOnWarmup)
+            if (warmup && !ConfigSettings.EnableOnWarmup)
+            {
+                AddTimer(0.1f, () =>
+                {
+                    client.SwitchTeam(CsTeam.CounterTerrorist);
+                });
+            }
+
+            else if (!warmup || ConfigSettings.EnableOnWarmup)
             {
                 AddTimer(0.2f, () =>
                 {

@@ -13,6 +13,7 @@ Zombie-Sharp is a Zombie Mode plugin for CS2 referencing the features and functi
 - [x] Knockback Module
 - [x] ZTeleport Module
 - [x] Configuration for Infection Settings (Previously: ConVar)
+- [x] Repeat Killer Module (NEW!)
 
 ### Requirements
 - [Metamode:Source](https://www.sourcemm.net/downloads.php/?branch=master) Dev build (2.x).
@@ -20,7 +21,7 @@ Zombie-Sharp is a Zombie Mode plugin for CS2 referencing the features and functi
 - [MovementUnlocker](https://github.com/Source2ZE/MovementUnlocker) plugin for knockback.
 - [Newtonsoft.Json](https://github.com/JamesNK/Newtonsoft.Json/releases) (This is already included in Release)
 
-### We are now in Pre-Alpha!
+### We are now in Alpha!
 It's recommend to set these Convar before using the plugin to prevent crashed and issues that may occur.
 ```
 mp_limitteams 0
@@ -88,6 +89,8 @@ default.json - Custom Settings. These can be set for specific maps too. Example:
     "FirstInfectionTimer": 15.0, // First infection timer in seconds
     "MotherZombieRatio": 7.0, // Mother Zombie Spawn ratio (14 players / 7.0 ratio = 2 Mother zombie)
     "TeleportMotherZombie": true, // Teleport mother zombie to spawn after get infected (Useful for Zombie Escape)
+    "EnableOnWarmup": false, // Enable Infection in warmup round or not?, this is not recommend to enable.
+    "RepeatKillerThreshold": 3.0, // Repeat Killer Threshould to prevent zombie dying from respawn over and over again.
     "Human_Default": "human_default", // Default Human Class
     "Zombie_Default": "zombie_default", // Default Zombie Class
     "Mother_Zombie": "motherzombie" // Default Mother Zombie Class

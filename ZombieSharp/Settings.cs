@@ -41,6 +41,7 @@ public class GameSettings
     public float MotherZombieRatio { get; set; } = 7.0f;
     public bool TeleportMotherZombie { get; set; } = true;
     public bool EnableOnWarmup { get; set; } = false;
+    public float RepeatKillerThreshold { get; set; } = 3.0f;
 
     // Default Class
     public string Human_Default { get; set; } = "human_default";
