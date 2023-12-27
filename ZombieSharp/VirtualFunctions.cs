@@ -64,20 +64,22 @@ namespace ZombieSharp
                 var client = h.GetParam<CEntityInstance>(0);
                 var damageInfo = h.GetParam<CTakeDamageInfo>(1);
 
-                //var controller = client.As<CCSPlayerController>();
-                var attacker = damageInfo.Attacker;
+                var attackInfo = damageInfo.Attacker;
+
+                /*
+                var controller = new CCSPlayerController(client.Handle);
+                var attacker = new CCSPlayerController(damageInfo.Attacker.Value.Handle);
 
                 // 32 for fall damage
-                /*
                 if (client.IsValid)
-                    Server.PrintToChatAll($"{client.DesignerName} damaged by type: {attacker.Value.DesignerName}");
+                    Server.PrintToChatAll($"{client.DesignerName} damaged by type: {attackInfo.Value.DesignerName}");
                 */
 
                 bool warmup = GetGameRules().WarmupPeriod;
 
                 if (warmup && !ConfigSettings.EnableOnWarmup)
                 {
-                    if (client.DesignerName == "player" && attacker.Value.DesignerName == "player")
+                    if (client.DesignerName == "player" && attackInfo.Value.DesignerName == "player")
                         damageInfo.Damage = 0;
                 }
                 return HookResult.Continue;
