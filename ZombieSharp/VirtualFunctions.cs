@@ -10,7 +10,7 @@ namespace ZombieSharp
         {
             CBasePlayerController_SetPawnFunc = new(GameData.GetSignature("CBasePlayerController_SetPawn"));
             Hook_OnPlayerCanUse();
-            // Hook_OnTakeDamageOld();
+            Hook_OnTakeDamageOld();
         }
 
         private void Hook_OnPlayerCanUse()
@@ -57,7 +57,6 @@ namespace ZombieSharp
             }), HookMode.Pre);
         }
 
-        /*
         private void Hook_OnTakeDamageOld()
         {
             VirtualFunctions.CBaseEntity_TakeDamageOldFunc.Hook((h =>
@@ -65,24 +64,25 @@ namespace ZombieSharp
                 var client = h.GetParam<CEntityInstance>(0);
                 var damageInfo = h.GetParam<CTakeDamageInfo>(1);
 
-                var controller = client.As<CCSPlayerController>();
-                var attacker = damageInfo.Attacker.Value.As<CCSPlayerController>();
+                //var controller = client.As<CCSPlayerController>();
+                var attacker = damageInfo.Attacker;
 
-                if (controller.IsValid)
-                    Server.PrintToChatAll($"{controller.PlayerName} damaged by type: {damageInfo.BitsDamageType}");
+                // 32 for fall damage
+                /*
+                if (client.IsValid)
+                    Server.PrintToChatAll($"{client.DesignerName} damaged by type: {attacker.Value.DesignerName}");
+                */
 
                 bool warmup = GetGameRules().WarmupPeriod;
 
                 if (warmup && !ConfigSettings.EnableOnWarmup)
                 {
-                    if (controller.IsValid && attacker.IsValid)
+                    if (client.DesignerName == "player" && attacker.Value.DesignerName == "player")
                         damageInfo.Damage = 0;
                 }
-
                 return HookResult.Continue;
             }), HookMode.Pre);
         }
-        */
 
         public void RespawnClient(CCSPlayerController client)
         {
