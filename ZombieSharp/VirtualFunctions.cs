@@ -25,7 +25,7 @@ namespace ZombieSharp
 
                 var client = new CCSPlayerController(weaponservices!.Pawn.Value.Controller.Value!.Handle);
 
-                Server.PrintToChatAll($"{client.PlayerName}: {CCSPlayer_WeaponServices_CanUseFunc.Invoke(weaponservices, clientweapon)}");
+                //Server.PrintToChatAll($"{client.PlayerName}: {CCSPlayer_WeaponServices_CanUseFunc.Invoke(weaponservices, clientweapon)}");
 
                 if (ZombieSpawned)
                 {

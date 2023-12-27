@@ -7,7 +7,7 @@ namespace ZombieSharp
     {
         public override string ModuleName => "Zombie Sharp";
         public override string ModuleAuthor => "Oylsister, Kurumi, Sparky";
-        public override string ModuleVersion => "1.2.0 Alpha";
+        public override string ModuleVersion => "Beta 1.0.0";
 
         public bool ZombieSpawned;
         public int Countdown;
@@ -180,12 +180,18 @@ namespace ZombieSharp
                 ZTele_TeleportClientToSpawn(client);
             }
 
-            // Remove all weapon.
-            if (ConfigSettings.ZombieDrop == 0)
-                StripAllWeapon(client);
+            // Create an event for killfeed
+            if (attacker != null)
+            {
+                EventPlayerDeath eventDeath = new EventPlayerDeath(false);
+                eventDeath.Userid = client;
+                eventDeath.Attacker = attacker;
+                eventDeath.Weapon = "knife";
+                eventDeath.FireEvent(false);
+            }
 
-            else
-                ForceDropAllWeapon(client);
+            // Remove all weapon.
+            StripAllWeapon(client);
 
             // swith to terrorist side.
             client.SwitchTeam(CsTeam.Terrorist);
@@ -222,16 +228,6 @@ namespace ZombieSharp
                 ZombieSpawned = true;
 
             client.PlayerPawn.Value.WeaponServices.PreventWeaponPickup = true;
-
-            // Create an event for killfeed
-            if (attacker != null)
-            {
-                EventPlayerDeath eventDeath = new EventPlayerDeath(false);
-                eventDeath.Userid = client;
-                eventDeath.Attacker = attacker;
-                eventDeath.Weapon = "knife";
-                eventDeath.FireEvent(false);
-            }
 
             // if force then tell them that they has been punnished.
             if (force)

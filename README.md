@@ -1,6 +1,6 @@
 # ZombieSharp
  
-Zombie-Sharp is a Zombie Mode plugin for CS2 referencing the features and functions from the previous SourcePawn Zombie:Reloaded plugin. You can say this is the Zombie:Reloaded remake but in C#. Here is the list of features that will be featured in the Beta.
+Zombie-Sharp is a Zombie Mode plugin for CS2 referencing the features and functions from the previous SourcePawn Zombie:Reloaded plugin. You can say this is the Zombie:Reloaded remake but in C#. Here is the list of features.
 
 ### Feature of Zombie-Sharp
 - [x] Basic Zombie Infection Initial with Timer
@@ -20,8 +20,9 @@ Zombie-Sharp is a Zombie Mode plugin for CS2 referencing the features and functi
 - [CounterStrikeSharp](https://github.com/roflmuffin/CounterStrikeSharp) 
 - [MovementUnlocker](https://github.com/Source2ZE/MovementUnlocker) plugin for knockback.
 - [Newtonsoft.Json](https://github.com/JamesNK/Newtonsoft.Json/releases) (This is already included in Release)
+- [PrecaheResource](https://github.com/KillStr3aK/ResourcePrecacher/) for Zombie and Player model etc.
 
-### We are now in Alpha!
+### We are now in Beta!
 It's recommend to set these Convar before using the plugin to prevent crashed and issues that may occur.
 ```
 mp_limitteams 0
@@ -89,7 +90,7 @@ default.json - Custom Settings. These can be set for specific maps too. Example:
     "FirstInfectionTimer": 15.0, // First infection timer in seconds
     "MotherZombieRatio": 7.0, // Mother Zombie Spawn ratio (14 players / 7.0 ratio = 2 Mother zombie)
     "TeleportMotherZombie": true, // Teleport mother zombie to spawn after get infected (Useful for Zombie Escape)
-    "EnableOnWarmup": false, // Enable Infection in warmup round or not?, this is not recommend to enable.
+    "EnableOnWarmup": false, // Enable Infection in warmup round or not?, this is not recommend to enable as it has potential memory corrupt to the server.
     "RepeatKillerThreshold": 3.0, // Repeat Killer Threshould to prevent zombie dying from respawn over and over again.
     "Human_Default": "human_default", // Default Human Class
     "Zombie_Default": "zombie_default", // Default Zombie Class
