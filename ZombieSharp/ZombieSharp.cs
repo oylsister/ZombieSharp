@@ -220,18 +220,14 @@ namespace ZombieSharp
             client.PlayerPawn.Value.WeaponServices.PreventWeaponPickup = true;
 
             // Create an event for killfeed
-            /*
             if (attacker != null)
             {
                 EventPlayerDeath eventDeath = new EventPlayerDeath(false);
                 eventDeath.Userid = client;
                 eventDeath.Attacker = attacker;
-                eventDeath.Set<int>("assister", 65535);
-                eventDeath.Set<int>("assister_pawn", -1);
                 eventDeath.Weapon = "knife";
                 eventDeath.FireEvent(false);
             }
-            */
 
             // if force then tell them that they has been punnished.
             if (force)
