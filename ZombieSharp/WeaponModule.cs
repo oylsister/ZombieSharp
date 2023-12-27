@@ -1,6 +1,6 @@
-using System.Text.Json;
 using CounterStrikeSharp.API.Core.Logging;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace ZombieSharp
 {
@@ -20,7 +20,7 @@ namespace ZombieSharp
                 return;
             }
 
-            WeaponDatas = JsonSerializer.Deserialize<WeaponConfig>(File.ReadAllText(configPath));
+            WeaponDatas = JsonConvert.DeserializeObject<WeaponConfig>(File.ReadAllText(configPath));
         }
     }
 }
@@ -51,5 +51,5 @@ public class WeaponData
 
     public string WeaponName { get; set; }
     public string WeaponEntity { get; set; }
-	public float Knockback { get; set; }
+    public float Knockback { get; set; }
 }
