@@ -7,10 +7,14 @@
 
         public Dictionary<int, float> PlayerDeathTime = new Dictionary<int, float>();
 
+        public bool RespawnEnable { get; set; } = true;
+
         public void RepeatKillerOnMapStart()
         {
             if (ConfigSettings.RepeatKillerThreshold > 0.0)
                 RepeatKillerEnable = true;
+
+            RespawnTogglerSetup();
         }
 
         public void RepeatKillerOnPlayerDeath(CCSPlayerController client, CCSPlayerController attacker, string weapon)
@@ -32,6 +36,28 @@
                 }
 
                 PlayerDeathTime[client.Slot] = GameTime;
+            }
+        }
+
+        public void RespawnTogglerSetup()
+        {
+            RespawnRelay = Utilities.CreateEntityByName<CBaseEntity>("logic_relay");
+
+            RespawnRelay.Entity.Name = "zr_toggle_respawn";
+            RespawnRelay.DispatchSpawn();
+        }
+
+        public void ToggleRespawn(bool force = false, bool value = false)
+        {
+            if ((!force && !RespawnEnable) || (force && value))
+            {
+                ForceRespawnAllDeath();
+                RespawnEnable = true;
+            }
+            else
+            {
+                RespawnEnable = false;
+                CheckGameStatus();
             }
         }
 

@@ -70,6 +70,8 @@ namespace ZombieSharp
             RemoveRoundObjective();
             RepeatKillerActivated = false;
 
+            RespawnTogglerSetup();
+
             Server.PrintToChatAll($" {ChatColors.Green}[Z:Sharp]{ChatColors.Default} The current game mode is the Human vs. Zombie, the zombie goal is to infect all human before time is running out.");
 
             return HookResult.Continue;
@@ -96,6 +98,8 @@ namespace ZombieSharp
 
             else if (!warmup || ConfigSettings.EnableOnWarmup)
             {
+                ToggleRespawn(true, true);
+
                 AddTimer(0.1f, () =>
                 {
                     List<CCSPlayerController> clientlist = Utilities.GetPlayers();

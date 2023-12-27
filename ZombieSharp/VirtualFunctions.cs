@@ -6,11 +6,14 @@ namespace ZombieSharp
     {
         MemoryFunctionVoid<CCSPlayerController, CCSPlayerPawn, bool, bool> CBasePlayerController_SetPawnFunc;
 
+        public CBaseEntity RespawnRelay;
+
         public void VirtualFunctionsInitialize()
         {
             CBasePlayerController_SetPawnFunc = new(GameData.GetSignature("CBasePlayerController_SetPawn"));
             Hook_OnPlayerCanUse();
             Hook_OnTakeDamageOld();
+            Hook_CEntityIdentity();
         }
 
         private void Hook_OnPlayerCanUse()
@@ -86,6 +89,37 @@ namespace ZombieSharp
                 }
                 return HookResult.Continue;
             }), HookMode.Pre);
+        }
+
+        private void Hook_CEntityIdentity()
+        {
+            MemoryFunctionVoid<CEntityIdentity, string, CEntityInstance, CEntityInstance, string, int> CEntityInstance_AcceptInputFunc = new(GameData.GetSignature("CEntityInstance_AcceptInput"));
+
+            CEntityInstance_AcceptInputFunc.Hook((h =>
+            {
+                if (!RespawnRelay.IsValid)
+                {
+                    Server.PrintToChatAll("zr_toggle_respawn is invalid!");
+                    return HookResult.Stop;
+                }
+
+                var identity = h.GetParam<CEntityIdentity>(0);
+                var input = h.GetParam<string>(1);
+
+                if (identity != RespawnRelay.Entity)
+                    return HookResult.Stop;
+
+                if (input == "Trigger")
+                    ToggleRespawn();
+
+                else if (input == "Enable" && !RespawnEnable)
+                    ToggleRespawn(true, true);
+
+                else if (input == "Disable" && RespawnEnable)
+                    ToggleRespawn(true, false);
+
+                return HookResult.Continue;
+            }), HookMode.Post);
         }
 
         public void RespawnClient(CCSPlayerController client)
