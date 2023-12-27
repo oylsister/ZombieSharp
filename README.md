@@ -1,6 +1,6 @@
 # ZombieSharp
  
-Zombie-Sharp is a Zombie Mode plugin for CS2 referencing the features and functions from the previous SourcePawn Zombie:Reloaded plugin. You can say this is the Zombie:Reloaded remake but in C#. Here is the list of features.
+Zombie-Sharp is a Zombie Mode plugin for CS2 referencing the features and functions from the previous SourcePawn Zombie:Reloaded plugin. You can say this is the Zombie:Reloaded remake but in C#. Here is the list of features. <b>We're now in BETA.</b>
 
 ### Feature of Zombie-Sharp
 - [x] Basic Zombie Infection Initial with Timer
@@ -22,15 +22,21 @@ Zombie-Sharp is a Zombie Mode plugin for CS2 referencing the features and functi
 - [Newtonsoft.Json](https://github.com/JamesNK/Newtonsoft.Json/releases) (This is already included in Release)
 - [PrecaheResource](https://github.com/KillStr3aK/ResourcePrecacher/) for Zombie and Player model etc.
 
-### We are now in Beta!
+### Installation
+1. Install a Metamod and CounterStrikeSharp with Runtime build.
+2. Drag All files in zip to ``csgo/addons/counterstrikesharp/``.
+3. Doing command setting and file configuration.
+4. Start server and enjoy.
+
+### Command Setting
 It's recommend to set these Convar before using the plugin to prevent crashed and issues that may occur.
 ```
-mp_limitteams 0
-mp_autoteambalance 0
+mp_limitteams 0 // set in server.cfg
+mp_autoteambalance 0 // set in server.cfg
 mp_disconnect_kills_players 0 // set in gamemode_casual.cfg
 ```
 
-### Other config files
+### Configuration
 Here is a list of all the config files available and what they do.
 
 weapons.json - Configure specific weapon settings.
