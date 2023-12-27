@@ -15,8 +15,8 @@ namespace ZombieSharp
 
         private void Hook_OnPlayerCanUse()
         {
-            MemoryFunctionVoid<CCSPlayer_WeaponServices, CBasePlayerWeapon> CCSPlayer_WeaponServices_CanUseFunc = new(GameData.GetSignature("CCSPlayer_WeaponServices_CanUse"));
-            Action<CCSPlayer_WeaponServices, CBasePlayerWeapon> CCSPlayer_WeaponServices_CanUse = CCSPlayer_WeaponServices_CanUseFunc.Invoke;
+            MemoryFunctionWithReturn<CCSPlayer_WeaponServices, CBasePlayerWeapon, bool> CCSPlayer_WeaponServices_CanUseFunc = new(GameData.GetSignature("CCSPlayer_WeaponServices_CanUse"));
+            //Action<CCSPlayer_WeaponServices, CBasePlayerWeapon> CCSPlayer_WeaponServices_CanUse = CCSPlayer_WeaponServices_CanUseFunc.Invoke;
 
             CCSPlayer_WeaponServices_CanUseFunc.Hook((h =>
             {
@@ -24,6 +24,8 @@ namespace ZombieSharp
                 var clientweapon = h.GetParam<CBasePlayerWeapon>(1);
 
                 var client = new CCSPlayerController(weaponservices!.Pawn.Value.Controller.Value!.Handle);
+
+                Server.PrintToChatAll($"{client.PlayerName}: {CCSPlayer_WeaponServices_CanUseFunc.Invoke(weaponservices, clientweapon)}");
 
                 if (ZombieSpawned)
                 {

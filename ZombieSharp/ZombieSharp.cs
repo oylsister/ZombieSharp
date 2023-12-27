@@ -181,7 +181,11 @@ namespace ZombieSharp
             }
 
             // Remove all weapon.
-            StripAllWeapon(client);
+            if (ConfigSettings.ZombieDrop == 0)
+                StripAllWeapon(client);
+
+            else
+                ForceDropAllWeapon(client);
 
             // swith to terrorist side.
             client.SwitchTeam(CsTeam.Terrorist);
@@ -383,7 +387,11 @@ namespace ZombieSharp
                 client.ExecuteClientCommand("slot3");
                 client.ExecuteClientCommand($"slot{(int)vdata!.GearSlot + 1}");
 
-                client.DropActiveWeapon();
+                if (vdata!.GearSlot != gear_slot_t.GEAR_SLOT_KNIFE)
+                    client.DropActiveWeapon();
+
+                else
+                    weapons[i].Value.Remove();
             }
         }
 

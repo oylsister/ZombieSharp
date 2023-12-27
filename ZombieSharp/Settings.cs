@@ -42,6 +42,7 @@ public class GameSettings
     public bool TeleportMotherZombie { get; set; } = true;
     public bool EnableOnWarmup { get; set; } = false;
     public float RepeatKillerThreshold { get; set; } = 3.0f;
+    public int ZombieDrop { get; set; } = 0; // 0 = stip , 1 = force drop
 
     // Default Class
     public string Human_Default { get; set; } = "human_default";
