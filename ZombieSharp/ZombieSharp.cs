@@ -312,6 +312,8 @@ namespace ZombieSharp
         {
             if (!ZombieSpawned) return;
 
+            var teams = Utilities.FindAllEntitiesByDesignerName<CTeam>("cs_team_manager");
+
             int human = 0;
             int zombie = 0;
 
@@ -330,12 +332,23 @@ namespace ZombieSharp
 
             if (human <= 0)
             {
+                foreach (var team in teams)
+                {
+                    if (team.TeamNum == 3)
+                        team.Score++;
+                }
                 // round end.
                 CCSGameRules gameRules = GetGameRules();
                 gameRules.TerminateRound(5.0f, RoundEndReason.TerroristsWin);
             }
             else if (zombie <= 0)
             {
+                foreach (var team in teams)
+                {
+                    if (team.TeamNum == 2)
+                        team.Score++;
+                }
+
                 // round end.
                 CCSGameRules gameRules = GetGameRules();
                 gameRules.TerminateRound(5.0f, RoundEndReason.CTsWin);
