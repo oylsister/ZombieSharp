@@ -8,6 +8,7 @@ namespace ZombieSharp
         public PlayerClassConfig PlayerClassDatas { get; private set; }
 
         public Dictionary<int, PlayerClientClass> ClientPlayerClass { get; set; } = new Dictionary<int, PlayerClientClass>();
+        public Dictionary<int, CounterStrikeSharp.API.Modules.Timers.Timer> RegenTimer { get; set; } = new Dictionary<int, CounterStrikeSharp.API.Modules.Timers.Timer>();
 
         public bool PlayerClassIntialize()
         {
@@ -27,6 +28,9 @@ namespace ZombieSharp
 
         public bool ApplyClientPlayerClass(CCSPlayerController client, string class_string, int team)
         {
+            // stop regen timer first.
+            RegenTimerStop(client);
+
             // if cannot find the class, then false so they can use the default value.
             if (!PlayerClassDatas.PlayerClasses.ContainsKey(class_string))
             {
@@ -79,19 +83,17 @@ namespace ZombieSharp
 
             if (classData.Regen_Interval > 0.0f && classData.Regen_Amount > 0)
             {
-                CounterStrikeSharp.API.Modules.Timers.Timer regenTimer = null;
-
-                regenTimer = AddTimer(classData.Regen_Interval, () =>
+                RegenTimer[client.Slot] = AddTimer(classData.Regen_Interval, () =>
                 {
                     if (!client.IsValid)
                     {
-                        regenTimer.Kill();
+                        RegenTimer[client.Slot].Kill();
                         return;
                     }
 
                     if (!client.PawnIsAlive)
                     {
-                        regenTimer.Kill();
+                        RegenTimer[client.Slot].Kill();
                         return;
                     }
 
@@ -105,6 +107,17 @@ namespace ZombieSharp
 
             ClientPlayerClass[client.Slot].ActiveClass = class_string;
             return true;
+        }
+
+        public void RegenTimerStop(CCSPlayerController client)
+        {
+            if (!client.IsValid)
+                return;
+
+            if (RegenTimer[client.Slot] == null)
+                return;
+
+            RegenTimer[client.Slot].Kill();
         }
     }
 }

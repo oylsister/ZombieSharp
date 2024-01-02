@@ -38,6 +38,8 @@ namespace ZombieSharp
             ClientPlayerClass[clientindex].ActiveClass = null;
 
             PlayerDeathTime.Add(clientindex, 0.0f);
+
+            RegenTimer.Add(clientindex, null);
         }
 
         private void OnClientDisconnected(int client)
@@ -50,6 +52,9 @@ namespace ZombieSharp
             ZombiePlayers.Remove(clientindex);
             ClientPlayerClass.Remove(clientindex);
             PlayerDeathTime.Remove(clientindex);
+
+            RegenTimerStop(player);
+            RegenTimer.Remove(clientindex);
         }
 
         private void OnMapStart(string mapname)
@@ -180,6 +185,8 @@ namespace ZombieSharp
                     RespawnPlayer(client);
                     RepeatKillerOnPlayerDeath(client, attacker, weapon);
                 }
+
+                RegenTimerStop(client);
             }
 
             return HookResult.Continue;

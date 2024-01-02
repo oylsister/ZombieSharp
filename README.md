@@ -92,12 +92,12 @@ hitgroups.json - Hitgroup configuration for knockback.
 default.json - Custom Settings. These can be set for specific maps too. Example: de_dust2.json. If it doesn't find de_dust2.json first it will use the default.json file instead.
 ```json
 {
-    "RespawnTimer": 5.0, // respawn timer when die (in progress, not done yet)
+    "RespawnTimer": 5.0, // respawn timer when die
     "FirstInfectionTimer": 15.0, // First infection timer in seconds
     "MotherZombieRatio": 7.0, // Mother Zombie Spawn ratio (14 players / 7.0 ratio = 2 Mother zombie)
     "TeleportMotherZombie": true, // Teleport mother zombie to spawn after get infected (Useful for Zombie Escape)
     "EnableOnWarmup": false, // Enable Infection in warmup round or not?, this is not recommend to enable as it has potential memory corrupt to the server.
-    "RepeatKillerThreshold": 3.0, // Repeat Killer Threshould to prevent zombie dying from respawn over and over again.
+    "RepeatKillerThreshold": 3.0, // Repeat Killer Threshould to prevent zombie dying from respawn over and over again. (This is not approve by S2ZE as they have implemented the respawn trigger in the map instead.)
     "Human_Default": "human_default", // Default Human Class
     "Zombie_Default": "zombie_default", // Default Zombie Class
     "Mother_Zombie": "motherzombie" // Default Mother Zombie Class
