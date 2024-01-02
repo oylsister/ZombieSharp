@@ -13,8 +13,6 @@
         {
             if (ConfigSettings.RepeatKillerThreshold > 0.0)
                 RepeatKillerEnable = true;
-
-            RespawnTogglerSetup();
         }
 
         public void RepeatKillerOnPlayerDeath(CCSPlayerController client, CCSPlayerController attacker, string weapon)
@@ -41,7 +39,7 @@
 
         public void RespawnTogglerSetup()
         {
-            RespawnRelay = Utilities.CreateEntityByName<CBaseEntity>("logic_relay");
+            RespawnRelay = Utilities.CreateEntityByName<CLogicRelay>("logic_relay");
 
             RespawnRelay.Entity.Name = "zr_toggle_respawn";
             RespawnRelay.DispatchSpawn();
@@ -51,13 +49,15 @@
         {
             if ((!force && !RespawnEnable) || (force && value))
             {
-                ForceRespawnAllDeath();
+                //ForceRespawnAllDeath();
+                Server.PrintToChatAll("Respawn Become True");
                 RespawnEnable = true;
             }
             else
             {
                 RespawnEnable = false;
-                CheckGameStatus();
+                Server.PrintToChatAll("Respawn Become false");
+                //CheckGameStatus();
             }
         }
 
