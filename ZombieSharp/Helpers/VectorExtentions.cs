@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ZombieSharp.Helpers
+﻿namespace ZombieSharp.Helpers
 {
     public static class VectorExtentions
     {
@@ -15,8 +9,8 @@ namespace ZombieSharp.Helpers
             var z = vector.Z;
 
             var magnitude = MathF.Sqrt(x * x + y * y + z * z);
-            
-            if(magnitude != 0.0)
+
+            if (magnitude != 0.0)
             {
                 x /= magnitude;
                 y /= magnitude;

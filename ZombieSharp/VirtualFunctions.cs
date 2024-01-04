@@ -6,7 +6,7 @@ namespace ZombieSharp
     {
         MemoryFunctionVoid<CCSPlayerController, CCSPlayerPawn, bool, bool> CBasePlayerController_SetPawnFunc;
 
-        public CBaseEntity RespawnRelay;
+        public CLogicRelay RespawnRelay;
 
         public void VirtualFunctionsInitialize()
         {
@@ -93,21 +93,20 @@ namespace ZombieSharp
 
         private void Hook_CEntityIdentity()
         {
-            MemoryFunctionVoid<CEntityIdentity, string, CEntityInstance, CEntityInstance, string, int> CEntityInstance_AcceptInputFunc = new(GameData.GetSignature("CEntityInstance_AcceptInput"));
+            //MemoryFunctionVoid<CEntityIdentity, CUtlStringToken, CEntityInstance, CEntityInstance, string, int> CEntityIdentity_AcceptInputFunc = new(GameData.GetSignature("CEntityIdentity_AcceptInput"));
 
-            CEntityInstance_AcceptInputFunc.Hook((h =>
+            //CEntityIdentity_AcceptInputFunc.Hook((h =>
+            VirtualFunctions.AcceptInputFunc.Hook((h =>
             {
-                if (!RespawnRelay.IsValid)
-                {
-                    Server.PrintToChatAll("zr_toggle_respawn is invalid!");
-                    return HookResult.Stop;
-                }
-
-                var identity = h.GetParam<CEntityIdentity>(0);
+                var identity = h.GetParam<CEntityInstance>(0).Entity;
                 var input = h.GetParam<string>(1);
 
+                // Server.PrintToChatAll($"Found the entity {identity.Name} with {input}");
+
                 if (identity != RespawnRelay.Entity)
+                {
                     return HookResult.Stop;
+                }
 
                 if (input == "Trigger")
                     ToggleRespawn();

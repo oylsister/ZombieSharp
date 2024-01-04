@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using CounterStrikeSharp.API.Modules.Menu;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
 namespace ZombieSharp
@@ -118,6 +119,49 @@ namespace ZombieSharp
                 return;
 
             RegenTimer[client.Slot].Kill();
+        }
+
+        public void PlayerClassMainMenu(CCSPlayerController client)
+        {
+            var mainmenu = new ChatMenu($"{ChatColors.DarkBlue}[Z:Sharp] Player Class Main Menu");
+            mainmenu.AddMenuOption("Zombie Class", (client, option) => PlayerClassSelectMenu(client, 0));
+            mainmenu.AddMenuOption("Human Class", (client, option) => PlayerClassSelectMenu(client, 1));
+            ChatMenus.OpenMenu(client, mainmenu);
+        }
+
+        private void PlayerClassSelectMenu(CCSPlayerController client, int team)
+        {
+            string title;
+
+            if (team == 0)
+                title = $"{ChatColors.DarkBlue}[Z:Sharp] Zombie Class Selection (Current: {ChatColors.Green}{PlayerClassDatas.PlayerClasses[ClientPlayerClass[client.Slot].ZombieClass]}{ChatColors.DarkBlue})";
+
+            else
+                title = $"{ChatColors.DarkBlue}[Z:Sharp] Human Class Selection (Current: {ChatColors.Green}{PlayerClassDatas.PlayerClasses[ClientPlayerClass[client.Slot].HumanClass]}{ChatColors.DarkBlue})";
+
+            var selectmenu = new ChatMenu(title);
+            var menuhandle = (CCSPlayerController client, ChatMenuOption option) =>
+            {
+                if (team == 0)
+                {
+                    ClientPlayerClass[client.Slot].ZombieClass = PlayerClassDatas.PlayerClasses.FirstOrDefault(x => x.Value.Name == option.Text).Key;
+                }
+                else
+                {
+                    ClientPlayerClass[client.Slot].HumanClass = PlayerClassDatas.PlayerClasses.FirstOrDefault(x => x.Value.Name == option.Text).Key;
+                }
+
+                client.PrintToChat($"[Z:Sharp] You have selected a new class, the class you have selected will be applied in the next spawn.!");
+            };
+
+            foreach (var playerclass in PlayerClassDatas.PlayerClasses)
+            {
+                if (playerclass.Value.Team == team)
+                {
+                    bool alreadyselected = playerclass.Key.Equals(ClientPlayerClass[client.Slot].HumanClass) || playerclass.Key.Equals(ClientPlayerClass[client.Slot].ZombieClass);
+                    selectmenu.AddMenuOption(playerclass.Value.Name, menuhandle, alreadyselected);
+                }
+            }
         }
     }
 }
