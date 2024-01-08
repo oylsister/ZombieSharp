@@ -22,6 +22,9 @@ Zombie-Sharp is a Zombie Mode plugin for CS2 referencing the features and functi
 - [Newtonsoft.Json](https://github.com/JamesNK/Newtonsoft.Json/releases) (This is already included in Release)
 - [PrecaheResource](https://github.com/KillStr3aK/ResourcePrecacher/) for Zombie and Player model etc.
 
+### Recommend Plugin
+- [NoBlock](https://github.com/ManifestManah/NoBlock) for Zombie Escape mode.
+
 ### Installation
 1. Install a Metamod and CounterStrikeSharp with Runtime build.
 2. Drag All files in zip to ``csgo/addons/counterstrikesharp/``.
