@@ -61,10 +61,13 @@ namespace ZombieSharp
         {
             WeaponInitialize();
             bool load = SettingsIntialize(mapname);
-            PlayerClassIntialize();
+            bool classes = PlayerClassIntialize();
 
             if (!load)
                 ConfigSettings = new GameSettings();
+
+            if (classes)
+                PrecachePlayerModel();
 
             hitgroupLoad = HitGroupIntialize();
             RepeatKillerOnMapStart();

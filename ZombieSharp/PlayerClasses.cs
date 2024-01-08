@@ -27,6 +27,14 @@ namespace ZombieSharp
             return true;
         }
 
+        public void PrecachePlayerModel()
+        {
+            foreach (PlayerClassData data in PlayerClassDatas.PlayerClasses.Values)
+            {
+                Server.PrecacheModel(data.Model);
+            }
+        }
+
         public bool ApplyClientPlayerClass(CCSPlayerController client, string class_string, int team)
         {
             // stop regen timer first.
