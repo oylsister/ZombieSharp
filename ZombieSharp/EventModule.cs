@@ -39,11 +39,11 @@ namespace ZombieSharp
             RegenTimer.Add(clientindex, null);
         }
 
-        private void OnClientAuthorized(int client, SteamID steamId)
+        private async void OnClientAuthorized(int client, SteamID steamId)
         {
             var player = Utilities.GetPlayerFromSlot(client);
 
-            PlayerSettingsAuthorized(player);
+            await PlayerSettingsAuthorized(player);
         }
 
         private void OnClientDisconnected(int client)

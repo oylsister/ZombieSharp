@@ -72,7 +72,8 @@ playerclasses.json - Player Classes configuration.
             "Speed": 250.0, // class speed (not work yet)
             "Knockback": 0.0, // class knockback
             "Jump_Height": 3.0, // Jump height
-            "Jump_Distance": 1.0 // Jump Distance
+            "Jump_Distance": 1.0, // Jump Distance
+            "Fall_Damage": false // Disable fall damage or not
         }
     }
 }

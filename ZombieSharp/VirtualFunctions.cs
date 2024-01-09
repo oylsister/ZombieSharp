@@ -71,14 +71,17 @@ namespace ZombieSharp
 
                 var attackInfo = damageInfo.Attacker;
 
-                /*
                 var controller = new CCSPlayerController(client.Handle);
-                var attacker = new CCSPlayerController(damageInfo.Attacker.Value.Handle);
+                //var attacker = new CCSPlayerController(damageInfo.Attacker.Value.Handle);
 
                 // 32 for fall damage
+                /*
                 if (client.IsValid)
                     Server.PrintToChatAll($"{client.DesignerName} damaged by type: {attackInfo.Value.DesignerName}");
                 */
+
+                //int damagetype = 0;
+                bool falldamage = Int32.TryParse(attackInfo.Value.DesignerName, out int damagetype) && damagetype == 32;
 
                 bool warmup = GetGameRules().WarmupPeriod;
 
@@ -87,6 +90,12 @@ namespace ZombieSharp
                     if (client.DesignerName == "player" && attackInfo.Value.DesignerName == "player")
                         damageInfo.Damage = 0;
                 }
+
+                if (controller != null && !PlayerClassDatas.PlayerClasses[ClientPlayerClass[controller.Slot].ActiveClass].Fall_Damage && falldamage)
+                {
+                    damageInfo.Damage = 0;
+                }
+
                 return HookResult.Continue;
             }), HookMode.Pre);
         }

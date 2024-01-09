@@ -17,12 +17,9 @@ namespace ZombieSharp
             });
         }
 
-        public void CreatePlayerSettings(PlayerClassDB classDB)
+        public async Task CreatePlayerSettings(PlayerClassDB classDB)
         {
-            Task.Run(async () =>
-            {
-                await PlayerDB.ExecuteAsync("INSERT INTO player_class (SteamID, ZClass, HClass) VALUES(@SteamID, @ZClass, @HClass)", classDB);
-            });
+            await PlayerDB.ExecuteAsync("INSERT INTO player_class (SteamID, ZClass, HClass) VALUES(@SteamID, @ZClass, @HClass)", classDB);
         }
 
         public PlayerClassDB GetPlayerSettings(string steamid)
@@ -41,15 +38,12 @@ namespace ZombieSharp
             return db;
         }
 
-        public void UpdatePlayerSettings(PlayerClassDB classDB)
+        public async Task UpdatePlayerSettings(PlayerClassDB classDB)
         {
-            Task.Run(async () =>
-            {
-                await PlayerDB.ExecuteAsync("Update player_class SET ZClass = @ZClass, HClass = @HClass WHERE SteamID = @SteamID", classDB);
-            });
+            await PlayerDB.ExecuteAsync("Update player_class SET ZClass = @ZClass, HClass = @HClass WHERE SteamID = @SteamID", classDB);
         }
 
-        public void PlayerSettingsAuthorized(CCSPlayerController client)
+        public async Task PlayerSettingsAuthorized(CCSPlayerController client)
         {
             var clientindex = client.Slot;
 
@@ -80,7 +74,7 @@ namespace ZombieSharp
                 db.HClass = ClientPlayerClass[clientindex].HumanClass;
                 db.ZClass = ClientPlayerClass[clientindex].ZombieClass;
 
-                CreatePlayerSettings(db);
+                await CreatePlayerSettings(db);
 
                 return;
             }
