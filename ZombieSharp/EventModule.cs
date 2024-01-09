@@ -171,6 +171,8 @@ namespace ZombieSharp
                     InfectClient(client, attacker);
                 }
 
+                FindWeaponItemDefinition(attacker.PlayerPawn.Value.WeaponServices.ActiveWeapon, weapon);
+
                 KnockbackClient(client, attacker, dmgHealth, weapon, hitgroup);
             }
 
