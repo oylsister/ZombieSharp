@@ -3,13 +3,7 @@ using Microsoft.Data.Sqlite;
 
 namespace ZombieSharp
 {
-    public interface IPlayerClassDB
-    {
-        Task Create(PlayerClassDB classDB);
-        Task<PlayerClassDB> Get(string steamid);
-        Task Update(PlayerClassDB classDB);
-    }
-    public partial class ZombieSharp : IPlayerClassDB
+    public partial class ZombieSharp
     {
         private SqliteConnection PlayerDB = null!;
         public void PlayerSettingsOnLoad()
@@ -19,32 +13,85 @@ namespace ZombieSharp
 
             Task.Run(async () =>
             {
-                await PlayerDB.ExecuteAsync(@"CREATE TABLE IF NOT EXISTS `player_class` (`SteamID` UNSIGNED BIG INT NOT NULL, `ZClass` VARCHAR(64), `HClass` VARCHAR(64), PRIMARY KEY (`SteamID`));");
+                await PlayerDB.ExecuteAsync(@"CREATE TABLE IF NOT EXISTS `player_class` (`SteamID` VARCHAR(64), `ZClass` VARCHAR(64), `HClass` VARCHAR(64), PRIMARY KEY (`SteamID`));");
             });
         }
 
-        public async Task Create(PlayerClassDB classDB)
+        public void CreatePlayerSettings(PlayerClassDB classDB)
         {
-            await PlayerDB.ExecuteAsync("INSERT INTO player_class (SteamID, ZClass, HClass) VALUES(@SteamID, @ZClass, @HClass)", classDB);
+            Task.Run(async () =>
+            {
+                await PlayerDB.ExecuteAsync("INSERT INTO player_class (SteamID, ZClass, HClass) VALUES(@SteamID, @ZClass, @HClass)", classDB);
+            });
         }
 
-        public async Task<PlayerClassDB> Get(string steamid)
+        public PlayerClassDB GetPlayerSettings(string steamid)
         {
-            return await PlayerDB.QueryFirstAsync<PlayerClassDB>("SELECT * From player_class WHERE SteamID = @steamid",
+            PlayerClassDB db = null;
+
+            Task.Run(async () =>
+            {
+                db = await PlayerDB.QueryFirstAsync<PlayerClassDB>(@"SELECT * From `player_class` WHERE `SteamID` = @steamid",
                 new
                 {
                     steamid
                 });
+            });
+
+            return db;
         }
 
-        public async Task Update(PlayerClassDB classDB)
+        public void UpdatePlayerSettings(PlayerClassDB classDB)
         {
-            await PlayerDB.ExecuteAsync("Update player_class SET ZClass = @ZClass, HClass = @HClass WHERE SteamID = @SteamID", classDB);
+            Task.Run(async () =>
+            {
+                await PlayerDB.ExecuteAsync("Update player_class SET ZClass = @ZClass, HClass = @HClass WHERE SteamID = @SteamID", classDB);
+            });
         }
 
         public void PlayerSettingsAuthorized(CCSPlayerController client)
         {
-            var steamId = client.AuthorizedSteamID.SteamId64;
+            var clientindex = client.Slot;
+
+            if (client.IsBot)
+            {
+                ClientPlayerClass.Add(clientindex, new PlayerClientClass());
+
+                ClientPlayerClass[clientindex].HumanClass = ConfigSettings.Human_Default;
+                ClientPlayerClass[clientindex].ZombieClass = ConfigSettings.Zombie_Default;
+                ClientPlayerClass[clientindex].ActiveClass = null;
+
+                return;
+            }
+
+            var result = GetPlayerSettings(client.AuthorizedSteamID.SteamId3);
+
+            if (result == null)
+            {
+                ClientPlayerClass.Add(clientindex, new PlayerClientClass());
+
+                ClientPlayerClass[clientindex].HumanClass = ConfigSettings.Human_Default;
+                ClientPlayerClass[clientindex].ZombieClass = ConfigSettings.Zombie_Default;
+                ClientPlayerClass[clientindex].ActiveClass = null;
+
+                PlayerClassDB db = new PlayerClassDB();
+
+                db.SteamID = client.AuthorizedSteamID.SteamId3;
+                db.HClass = ClientPlayerClass[clientindex].HumanClass;
+                db.ZClass = ClientPlayerClass[clientindex].ZombieClass;
+
+                CreatePlayerSettings(db);
+
+                return;
+            }
+            else
+            {
+                ClientPlayerClass.Add(clientindex, new PlayerClientClass());
+
+                ClientPlayerClass[clientindex].HumanClass = result.HClass;
+                ClientPlayerClass[clientindex].ZombieClass = result.ZClass;
+                ClientPlayerClass[clientindex].ActiveClass = null;
+            }
         }
     }
 }

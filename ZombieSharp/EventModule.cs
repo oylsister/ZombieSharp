@@ -1,3 +1,5 @@
+using CounterStrikeSharp.API.Modules.Entities;
+
 namespace ZombieSharp
 {
     public partial class ZombieSharp
@@ -14,6 +16,7 @@ namespace ZombieSharp
             RegisterEventHandler<EventCsPreRestart>(OnPreRestart);
 
             RegisterListener<Listeners.OnClientPutInServer>(OnClientPutInServer);
+            RegisterListener<Listeners.OnClientAuthorized>(OnClientAuthorized);
             RegisterListener<Listeners.OnClientDisconnect>(OnClientDisconnected);
             RegisterListener<Listeners.OnMapStart>(OnMapStart);
         }
@@ -31,15 +34,16 @@ namespace ZombieSharp
             ZombiePlayers[clientindex].IsZombie = false;
             ZombiePlayers[clientindex].MotherZombieStatus = MotherZombieFlags.NONE;
 
-            ClientPlayerClass.Add(clientindex, new PlayerClientClass());
-
-            ClientPlayerClass[clientindex].HumanClass = ConfigSettings.Human_Default;
-            ClientPlayerClass[clientindex].ZombieClass = ConfigSettings.Zombie_Default;
-            ClientPlayerClass[clientindex].ActiveClass = null;
-
             PlayerDeathTime.Add(clientindex, 0.0f);
 
             RegenTimer.Add(clientindex, null);
+        }
+
+        private void OnClientAuthorized(int client, SteamID steamId)
+        {
+            var player = Utilities.GetPlayerFromSlot(client);
+
+            PlayerSettingsAuthorized(player);
         }
 
         private void OnClientDisconnected(int client)
