@@ -43,7 +43,7 @@ namespace ZombieSharp
             await PlayerDB.ExecuteAsync("Update player_class SET ZClass = @ZClass, HClass = @HClass WHERE SteamID = @SteamID", classDB);
         }
 
-        public async Task PlayerSettingsAuthorized(CCSPlayerController client)
+        public void PlayerSettingsAuthorized(CCSPlayerController client)
         {
             var clientindex = client.Slot;
 
@@ -58,34 +58,36 @@ namespace ZombieSharp
                 return;
             }
 
+            ClientPlayerClass.Add(clientindex, new PlayerClientClass());
+
+            ClientPlayerClass[clientindex].HumanClass = ConfigSettings.Human_Default;
+            ClientPlayerClass[clientindex].ZombieClass = ConfigSettings.Zombie_Default;
+            ClientPlayerClass[clientindex].ActiveClass = null;
+
+            /*
             var result = GetPlayerSettings(client.AuthorizedSteamID.SteamId3);
 
-            if (result == null)
+            if (result != null)
             {
-                ClientPlayerClass.Add(clientindex, new PlayerClientClass());
-
-                ClientPlayerClass[clientindex].HumanClass = ConfigSettings.Human_Default;
-                ClientPlayerClass[clientindex].ZombieClass = ConfigSettings.Zombie_Default;
-                ClientPlayerClass[clientindex].ActiveClass = null;
-
                 PlayerClassDB db = new PlayerClassDB();
 
                 db.SteamID = client.AuthorizedSteamID.SteamId3;
                 db.HClass = ClientPlayerClass[clientindex].HumanClass;
                 db.ZClass = ClientPlayerClass[clientindex].ZombieClass;
 
-                await CreatePlayerSettings(db);
+                _ = CreatePlayerSettings(db);
 
                 return;
             }
             else
             {
-                ClientPlayerClass.Add(clientindex, new PlayerClientClass());
-
                 ClientPlayerClass[clientindex].HumanClass = result.HClass;
                 ClientPlayerClass[clientindex].ZombieClass = result.ZClass;
                 ClientPlayerClass[clientindex].ActiveClass = null;
+
+                return;
             }
+            */
         }
     }
 }

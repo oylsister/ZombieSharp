@@ -37,13 +37,20 @@ namespace ZombieSharp
             PlayerDeathTime.Add(clientindex, 0.0f);
 
             RegenTimer.Add(clientindex, null);
+
+            PlayerSettingsAuthorized(player);
         }
 
-        private async void OnClientAuthorized(int client, SteamID steamId)
+        private void OnClientAuthorized(int client, SteamID steamId)
         {
+            /*
+            Logger.LogInformation("Client Authorized Happened here.");
             var player = Utilities.GetPlayerFromSlot(client);
 
-            await PlayerSettingsAuthorized(player);
+            Logger.LogInformation($"Found {player.PlayerName}.");
+            */
+
+            //PlayerSettingsAuthorized(player);
         }
 
         private void OnClientDisconnected(int client)
@@ -252,7 +259,11 @@ namespace ZombieSharp
         public HookResult OnPlayerJump(EventPlayerJump @event, GameEventInfo info)
         {
             var client = @event.Userid;
-            JumpBoost(client);
+
+            var warmup = GetGameRules().WarmupPeriod;
+
+            if (!warmup || ConfigSettings.EnableOnWarmup)
+                JumpBoost(client);
 
             return HookResult.Continue;
         }

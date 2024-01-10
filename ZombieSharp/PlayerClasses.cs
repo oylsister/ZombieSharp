@@ -142,10 +142,10 @@ namespace ZombieSharp
             string title;
 
             if (team == 0)
-                title = $"{ChatColors.DarkBlue}[Z:Sharp] Zombie Class Selection (Current: {ChatColors.Green}{PlayerClassDatas.PlayerClasses[ClientPlayerClass[client.Slot].ZombieClass]}{ChatColors.DarkBlue})";
+                title = $" {ChatColors.Green}[Z:Sharp]{ChatColors.Default} Zombie Class Selection (Current: {ChatColors.Green}{PlayerClassDatas.PlayerClasses[ClientPlayerClass[client.Slot].ZombieClass].Name}{ChatColors.Default})";
 
             else
-                title = $"{ChatColors.DarkBlue}[Z:Sharp] Human Class Selection (Current: {ChatColors.Green}{PlayerClassDatas.PlayerClasses[ClientPlayerClass[client.Slot].HumanClass]}{ChatColors.DarkBlue})";
+                title = $" {ChatColors.Green}[Z:Sharp]{ChatColors.Default} Human Class Selection (Current: {ChatColors.Green}{PlayerClassDatas.PlayerClasses[ClientPlayerClass[client.Slot].HumanClass].Name}{ChatColors.Default})";
 
             var selectmenu = new ChatMenu(title);
             var menuhandle = (CCSPlayerController client, ChatMenuOption option) =>
@@ -167,9 +167,14 @@ namespace ZombieSharp
                 if (playerclass.Value.Team == team)
                 {
                     bool alreadyselected = playerclass.Key.Equals(ClientPlayerClass[client.Slot].HumanClass) || playerclass.Key.Equals(ClientPlayerClass[client.Slot].ZombieClass);
-                    selectmenu.AddMenuOption(playerclass.Value.Name, menuhandle, alreadyselected);
+                    bool motherzombie = playerclass.Value.MotherZombie;
+                    bool disable = !playerclass.Value.Enable;
+
+                    selectmenu.AddMenuOption(playerclass.Value.Name, menuhandle, alreadyselected || motherzombie || disable);
                 }
             }
+
+            ChatMenus.OpenMenu(client, selectmenu);
         }
     }
 }
