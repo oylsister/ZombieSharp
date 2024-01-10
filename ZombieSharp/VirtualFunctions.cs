@@ -11,40 +11,34 @@ namespace ZombieSharp
         public void VirtualFunctionsInitialize()
         {
             CBasePlayerController_SetPawnFunc = new(GameData.GetSignature("CBasePlayerController_SetPawn"));
-            Hook_OnPlayerCanUse();
-            Hook_OnTakeDamageOld();
+
+            MemoryFunctionWithReturn<CCSPlayer_WeaponServices, CBasePlayerWeapon, bool> CCSPlayer_WeaponServices_CanUseFunc = new(GameData.GetSignature("CCSPlayer_WeaponServices_CanUse"));
+            CCSPlayer_WeaponServices_CanUseFunc.Hook(OnWeaponCanUse, HookMode.Pre);
+
+            VirtualFunctions.CBaseEntity_TakeDamageOldFunc.Hook(OnTakeDamage, HookMode.Pre);
+
             Hook_CEntityIdentity();
         }
 
-        private void Hook_OnPlayerCanUse()
+        private HookResult OnWeaponCanUse(DynamicHook hook)
         {
-            MemoryFunctionWithReturn<CCSPlayer_WeaponServices, CBasePlayerWeapon, bool> CCSPlayer_WeaponServices_CanUseFunc = new(GameData.GetSignature("CCSPlayer_WeaponServices_CanUse"));
-            //Action<CCSPlayer_WeaponServices, CBasePlayerWeapon> CCSPlayer_WeaponServices_CanUse = CCSPlayer_WeaponServices_CanUseFunc.Invoke;
+            var weaponservices = hook.GetParam<CCSPlayer_WeaponServices>(0);
+            var clientweapon = hook.GetParam<CBasePlayerWeapon>(1);
 
-            CCSPlayer_WeaponServices_CanUseFunc.Hook((h =>
+            var client = new CCSPlayerController(weaponservices!.Pawn.Value.Controller.Value!.Handle);
+
+            //Server.PrintToChatAll($"{client.PlayerName}: {CCSPlayer_WeaponServices_CanUseFunc.Invoke(weaponservices, clientweapon)}");
+
+            if (ZombieSpawned)
             {
-                var weaponservices = h.GetParam<CCSPlayer_WeaponServices>(0);
-                var clientweapon = h.GetParam<CBasePlayerWeapon>(1);
-
-                var client = new CCSPlayerController(weaponservices!.Pawn.Value.Controller.Value!.Handle);
-
-                //Server.PrintToChatAll($"{client.PlayerName}: {CCSPlayer_WeaponServices_CanUseFunc.Invoke(weaponservices, clientweapon)}");
-
-                if (ZombieSpawned)
+                if (IsClientZombie(client))
                 {
-                    if (IsClientZombie(client))
+                    if (clientweapon.DesignerName != "weapon_knife")
                     {
-                        if (clientweapon.DesignerName != "weapon_knife")
+                        if (!weaponservices.PreventWeaponPickup)
                         {
-                            if (!weaponservices.PreventWeaponPickup)
-                            {
-                                weaponservices.PreventWeaponPickup = true;
-                                clientweapon.Remove();
-                            }
-                        }
-                        else
-                        {
-                            weaponservices.PreventWeaponPickup = false;
+                            weaponservices.PreventWeaponPickup = true;
+                            clientweapon.Remove();
                         }
                     }
                     else
@@ -56,48 +50,48 @@ namespace ZombieSharp
                 {
                     weaponservices.PreventWeaponPickup = false;
                 }
+            }
+            else
+            {
+                weaponservices.PreventWeaponPickup = false;
+            }
 
-                return HookResult.Continue;
-
-            }), HookMode.Pre);
+            return HookResult.Continue;
         }
 
-        private void Hook_OnTakeDamageOld()
+        private HookResult OnTakeDamage(DynamicHook hook)
         {
-            VirtualFunctions.CBaseEntity_TakeDamageOldFunc.Hook((h =>
+            var client = hook.GetParam<CEntityInstance>(0);
+            var damageInfo = hook.GetParam<CTakeDamageInfo>(1);
+
+            var attackInfo = damageInfo.Attacker;
+
+            var controller = new CCSPlayerController(client.Handle);
+            //var attacker = new CCSPlayerController(damageInfo.Attacker.Value.Handle);
+
+            // 32 for fall damage
+            /*
+            if (client.IsValid)
+                Server.PrintToChatAll($"{client.DesignerName} damaged by type: {attackInfo.Value.DesignerName}");
+            */
+
+            //int damagetype = 0;
+            bool falldamage = Int32.TryParse(attackInfo.Value.DesignerName, out int damagetype) && damagetype == 32;
+
+            bool warmup = GetGameRules().WarmupPeriod;
+
+            if (warmup && !ConfigSettings.EnableOnWarmup)
             {
-                var client = h.GetParam<CEntityInstance>(0);
-                var damageInfo = h.GetParam<CTakeDamageInfo>(1);
-
-                var attackInfo = damageInfo.Attacker;
-
-                var controller = new CCSPlayerController(client.Handle);
-                //var attacker = new CCSPlayerController(damageInfo.Attacker.Value.Handle);
-
-                // 32 for fall damage
-                /*
-                if (client.IsValid)
-                    Server.PrintToChatAll($"{client.DesignerName} damaged by type: {attackInfo.Value.DesignerName}");
-                */
-
-                //int damagetype = 0;
-                bool falldamage = Int32.TryParse(attackInfo.Value.DesignerName, out int damagetype) && damagetype == 32;
-
-                bool warmup = GetGameRules().WarmupPeriod;
-
-                if (warmup && !ConfigSettings.EnableOnWarmup)
-                {
-                    if (client.DesignerName == "player" && attackInfo.Value.DesignerName == "player")
-                        damageInfo.Damage = 0;
-                }
-
-                if (controller != null && !PlayerClassDatas.PlayerClasses[ClientPlayerClass[controller.Slot].ActiveClass].Fall_Damage && falldamage)
-                {
+                if (client.DesignerName == "player" && attackInfo.Value.DesignerName == "player")
                     damageInfo.Damage = 0;
-                }
+            }
 
-                return HookResult.Continue;
-            }), HookMode.Pre);
+            if (controller != null && !PlayerClassDatas.PlayerClasses[ClientPlayerClass[controller.Slot].ActiveClass].Fall_Damage && falldamage)
+            {
+                damageInfo.Damage = 0;
+            }
+
+            return HookResult.Continue;
         }
 
         private void Hook_CEntityIdentity()
