@@ -72,7 +72,7 @@ namespace ZombieSharp
 
             if (controller != null)
             {
-                if (!PlayerClassDatas.PlayerClasses[ClientPlayerClass[controller.Slot].ActiveClass].Fall_Damage && falldamage)
+                if (warmup || (!PlayerClassDatas.PlayerClasses[ClientPlayerClass[controller.Slot].ActiveClass].Fall_Damage && falldamage))
                     damageInfo.Damage = 0;
             }
 
