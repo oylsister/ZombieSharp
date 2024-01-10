@@ -35,25 +35,10 @@ namespace ZombieSharp
                 {
                     if (clientweapon.DesignerName != "weapon_knife")
                     {
-                        if (!weaponservices.PreventWeaponPickup)
-                        {
-                            weaponservices.PreventWeaponPickup = true;
-                            clientweapon.Remove();
-                        }
-                    }
-                    else
-                    {
-                        weaponservices.PreventWeaponPickup = false;
+                        hook.SetReturn(false);
+                        return HookResult.Handled;
                     }
                 }
-                else
-                {
-                    weaponservices.PreventWeaponPickup = false;
-                }
-            }
-            else
-            {
-                weaponservices.PreventWeaponPickup = false;
             }
 
             return HookResult.Continue;
@@ -66,17 +51,14 @@ namespace ZombieSharp
 
             var attackInfo = damageInfo.Attacker;
 
-            var controller = new CCSPlayerController(client.Handle);
-            //var attacker = new CCSPlayerController(damageInfo.Attacker.Value.Handle);
+            var controller = player(client);
 
-            // 32 for fall damage
             /*
             if (client.IsValid)
-                Server.PrintToChatAll($"{client.DesignerName} damaged by type: {attackInfo.Value.DesignerName}");
+                Server.PrintToChatAll($"{client.DesignerName} damaged by type: {damageInfo.BitsDamageType}");
             */
 
-            //int damagetype = 0;
-            bool falldamage = Int32.TryParse(attackInfo.Value.DesignerName, out int damagetype) && damagetype == 32;
+            bool falldamage = damageInfo.BitsDamageType == 32;
 
             bool warmup = GetGameRules().WarmupPeriod;
 
@@ -86,9 +68,12 @@ namespace ZombieSharp
                     damageInfo.Damage = 0;
             }
 
-            if (controller != null && !PlayerClassDatas.PlayerClasses[ClientPlayerClass[controller.Slot].ActiveClass].Fall_Damage && falldamage)
+            // Server.PrintToChatAll($"{controller.PlayerName} take damaged");
+
+            if (controller != null)
             {
-                damageInfo.Damage = 0;
+                if (!PlayerClassDatas.PlayerClasses[ClientPlayerClass[controller.Slot].ActiveClass].Fall_Damage && falldamage)
+                    damageInfo.Damage = 0;
             }
 
             return HookResult.Continue;
@@ -133,6 +118,40 @@ namespace ZombieSharp
 
             CBasePlayerController_SetPawnFunc.Invoke(client, clientPawn, true, false);
             VirtualFunction.CreateVoid<CCSPlayerController>(client.Handle, GameData.GetOffset("CCSPlayerController_Respawn"))(client);
+        }
+
+        public static CCSPlayerController player(CEntityInstance instance)
+        {
+            if (instance == null)
+            {
+                return null;
+            }
+
+            if (instance.DesignerName != "player")
+            {
+                return null;
+            }
+
+            // grab the pawn index
+            int player_index = (int)instance.Index;
+
+            // grab player controller from pawn
+            CCSPlayerPawn player_pawn = Utilities.GetEntityFromIndex<CCSPlayerPawn>(player_index);
+
+            // pawn valid
+            if (player_pawn == null || !player_pawn.IsValid)
+            {
+                return null;
+            }
+
+            // controller valid
+            if (player_pawn.OriginalController == null || !player_pawn.OriginalController.IsValid)
+            {
+                return null;
+            }
+
+            // any further validity is up to the caller
+            return player_pawn.OriginalController.Value;
         }
     }
 }

@@ -38,7 +38,7 @@ namespace ZombieSharp
             EventInitialize();
             CommandInitialize();
             VirtualFunctionsInitialize();
-            PlayerSettingsOnLoad();
+            PlayerSettingsOnLoad().Wait();
         }
 
         public void InfectOnRoundFreezeEnd()
@@ -157,8 +157,6 @@ namespace ZombieSharp
             // make zombie status be true.
             ZombiePlayers[client.Slot].IsZombie = true;
 
-            client.PlayerPawn.Value.WeaponServices.PreventWeaponPickup = false;
-
             string ApplyClass;
 
             // if they from the motherzombie infection put status here to prevent being chosen for it again.
@@ -228,8 +226,6 @@ namespace ZombieSharp
             if (!ZombieSpawned)
                 ZombieSpawned = true;
 
-            client.PlayerPawn.Value.WeaponServices.PreventWeaponPickup = true;
-
             // if force then tell them that they has been punnished.
             if (force)
             {
@@ -243,8 +239,6 @@ namespace ZombieSharp
         {
             // zombie status to false
             ZombiePlayers[client.Slot].IsZombie = false;
-
-            client.PlayerPawn.Value.WeaponServices.PreventWeaponPickup = false;
 
             // switch client to CT
             client.SwitchTeam(CsTeam.CounterTerrorist);
