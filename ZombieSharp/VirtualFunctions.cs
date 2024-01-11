@@ -65,7 +65,10 @@ namespace ZombieSharp
             if (warmup && !ConfigSettings.EnableOnWarmup)
             {
                 if (client.DesignerName == "player" && attackInfo.Value.DesignerName == "player")
+                {
                     damageInfo.Damage = 0;
+                    return HookResult.Handled;
+                }
             }
 
             // Server.PrintToChatAll($"{controller.PlayerName} take damaged");
@@ -73,7 +76,10 @@ namespace ZombieSharp
             if (controller != null)
             {
                 if (warmup || (!PlayerClassDatas.PlayerClasses[ClientPlayerClass[controller.Slot].ActiveClass].Fall_Damage && falldamage))
+                {
                     damageInfo.Damage = 0;
+                    return HookResult.Handled;
+                }
             }
 
             return HookResult.Continue;
@@ -91,20 +97,17 @@ namespace ZombieSharp
 
                 // Server.PrintToChatAll($"Found the entity {identity.Name} with {input}");
 
-                if (identity != RespawnRelay.Entity)
+                if (identity == RespawnRelay.Entity)
                 {
-                    return HookResult.Stop;
+                    if (input == "Trigger")
+                        ToggleRespawn();
+
+                    else if (input == "Enable" && !RespawnEnable)
+                        ToggleRespawn(true, true);
+
+                    else if (input == "Disable" && RespawnEnable)
+                        ToggleRespawn(true, false);
                 }
-
-                if (input == "Trigger")
-                    ToggleRespawn();
-
-                else if (input == "Enable" && !RespawnEnable)
-                    ToggleRespawn(true, true);
-
-                else if (input == "Disable" && RespawnEnable)
-                    ToggleRespawn(true, false);
-
                 return HookResult.Continue;
             }), HookMode.Post);
         }
