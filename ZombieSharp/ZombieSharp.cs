@@ -280,10 +280,9 @@ namespace ZombieSharp
 
             Vector direction = (clientpos - attackerpos).NormalizeVector();
 
-            var clientVelocity = clientPawn.AbsVelocity;
-
             float weaponKnockback;
             var hitgroupknocback = HitGroupGetKnockback(hitgroup);
+
 
             // try to find the key then the knockback
             if (WeaponDatas.WeaponConfigs.ContainsKey(weapon))
@@ -298,9 +297,7 @@ namespace ZombieSharp
 
             Vector pushVelocity = direction * damage * weaponKnockback * WeaponDatas.KnockbackMultiply * hitgroupknocback;
 
-            Vector velocity = clientVelocity + pushVelocity;
-
-            clientPawn.AbsVelocity.Add(velocity);
+            clientPawn.AbsVelocity.Add(pushVelocity);
         }
 
         public void CheckGameStatus()
