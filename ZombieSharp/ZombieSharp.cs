@@ -7,7 +7,8 @@ namespace ZombieSharp
     {
         public override string ModuleName => "Zombie Sharp";
         public override string ModuleAuthor => "Oylsister, Kurumi, Sparky";
-        public override string ModuleVersion => "Beta 1.0.0";
+        public override string ModuleVersion => "Beta 1.1.0";
+        public override string ModuleDescription => "Infection/survival style gameplay for CS2 in C#";
 
         public bool ZombieSpawned;
         public int Countdown;
@@ -101,6 +102,11 @@ namespace ZombieSharp
             int alreadymade = 0;
 
             int maxmz = (int)(allplayer / ConfigSettings.MotherZombieRatio);
+
+            // if it is less than 1 then you need at least 1 mother zombie.
+            if (maxmz < 1)
+                maxmz = 1;
+
             // Server.PrintToChatAll($"Max Mother Zombie is: {maxmz}");
 
             if (candidate.Count < maxmz)
