@@ -1,3 +1,5 @@
+using CounterStrikeSharp.API.Modules.Entities;
+
 namespace ZombieSharp
 {
     public partial class ZombieSharp
@@ -14,6 +16,7 @@ namespace ZombieSharp
             RegisterEventHandler<EventCsPreRestart>(OnPreRestart);
 
             RegisterListener<Listeners.OnClientPutInServer>(OnClientPutInServer);
+            RegisterListener<Listeners.OnClientAuthorized>(OnClientAuthorized);
             RegisterListener<Listeners.OnClientDisconnect>(OnClientDisconnected);
             RegisterListener<Listeners.OnMapStart>(OnMapStart);
         }
@@ -31,13 +34,23 @@ namespace ZombieSharp
             ZombiePlayers[clientindex].IsZombie = false;
             ZombiePlayers[clientindex].MotherZombieStatus = MotherZombieFlags.NONE;
 
-            ClientPlayerClass.Add(clientindex, new PlayerClientClass());
-
-            ClientPlayerClass[clientindex].HumanClass = ConfigSettings.Human_Default;
-            ClientPlayerClass[clientindex].ZombieClass = ConfigSettings.Zombie_Default;
-            ClientPlayerClass[clientindex].ActiveClass = null;
-
             PlayerDeathTime.Add(clientindex, 0.0f);
+
+            RegenTimer.Add(clientindex, null);
+
+            PlayerSettingsAuthorized(player); //.Wait();
+        }
+
+        private void OnClientAuthorized(int client, SteamID steamId)
+        {
+            /*
+            Logger.LogInformation("Client Authorized Happened here.");
+            var player = Utilities.GetPlayerFromSlot(client);
+
+            Logger.LogInformation($"Found {player.PlayerName}.");
+            */
+
+            //PlayerSettingsAuthorized(player);
         }
 
         private void OnClientDisconnected(int client)
@@ -50,16 +63,22 @@ namespace ZombieSharp
             ZombiePlayers.Remove(clientindex);
             ClientPlayerClass.Remove(clientindex);
             PlayerDeathTime.Remove(clientindex);
+
+            RegenTimerStop(player);
+            RegenTimer.Remove(clientindex);
         }
 
         private void OnMapStart(string mapname)
         {
             WeaponInitialize();
             bool load = SettingsIntialize(mapname);
-            PlayerClassIntialize();
+            bool classes = PlayerClassIntialize();
 
             if (!load)
                 ConfigSettings = new GameSettings();
+
+            if (classes)
+                PrecachePlayerModel();
 
             hitgroupLoad = HitGroupIntialize();
             RepeatKillerOnMapStart();
@@ -69,6 +88,8 @@ namespace ZombieSharp
         {
             RemoveRoundObjective();
             RepeatKillerActivated = false;
+
+            RespawnTogglerSetup();
 
             Server.PrintToChatAll($" {ChatColors.Green}[Z:Sharp]{ChatColors.Default} The current game mode is the Human vs. Zombie, the zombie goal is to infect all human before time is running out.");
 
@@ -96,6 +117,8 @@ namespace ZombieSharp
 
             else if (!warmup || ConfigSettings.EnableOnWarmup)
             {
+                ToggleRespawn(true, true);
+
                 AddTimer(0.1f, () =>
                 {
                     List<CCSPlayerController> clientlist = Utilities.GetPlayers();
@@ -155,6 +178,8 @@ namespace ZombieSharp
                     InfectClient(client, attacker);
                 }
 
+                FindWeaponItemDefinition(attacker.PlayerPawn.Value.WeaponServices.ActiveWeapon, weapon);
+
                 KnockbackClient(client, attacker, dmgHealth, weapon, hitgroup);
             }
 
@@ -176,6 +201,8 @@ namespace ZombieSharp
                     RespawnPlayer(client);
                     RepeatKillerOnPlayerDeath(client, attacker, weapon);
                 }
+
+                RegenTimerStop(client);
             }
 
             return HookResult.Continue;
@@ -232,7 +259,11 @@ namespace ZombieSharp
         public HookResult OnPlayerJump(EventPlayerJump @event, GameEventInfo info)
         {
             var client = @event.Userid;
-            JumpBoost(client);
+
+            var warmup = GetGameRules().WarmupPeriod;
+
+            if (!warmup || ConfigSettings.EnableOnWarmup)
+                JumpBoost(client);
 
             return HookResult.Continue;
         }

@@ -13,6 +13,8 @@ namespace ZombieSharp
             AddCommand("css_hitgrouplist", "Hitgroup List Command", HiggroupsListCommand);
             AddCommand("css_rk", "Toggle Repeat Killer Command", ToggleRepeatKillerCommand);
             AddCommand("css_myclass", "Client PlayerClass Command", ClientPlayerClassCommand);
+            AddCommand("css_logiclist", "Logic Relay List", LogicRelayListCommand);
+            AddCommand("css_zclass", "Player Class Command", PlayerClassCommand);
         }
 
         [RequiresPermissions(@"css/slay")]
@@ -165,6 +167,7 @@ namespace ZombieSharp
             }
         }
 
+        [RequiresPermissions(@"css/slay")]
         private void ToggleRepeatKillerCommand(CCSPlayerController client, CommandInfo info)
         {
             if (!RepeatKillerEnable)
@@ -193,6 +196,26 @@ namespace ZombieSharp
             info.ReplyToCommand($"Human Class: {ClientPlayerClass[client.Slot].HumanClass}");
             info.ReplyToCommand($"Zombie Class: {ClientPlayerClass[client.Slot].ZombieClass}");
             info.ReplyToCommand($"Active Class: {ClientPlayerClass[client.Slot].HumanClass}");
+        }
+
+        [RequiresPermissions("@css/slay")]
+        private void LogicRelayListCommand(CCSPlayerController client, CommandInfo info)
+        {
+            var entities = Utilities.FindAllEntitiesByDesignerName<CLogicRelay>("logic_relay");
+
+            foreach (var entity in entities)
+            {
+                info.ReplyToCommand($"Found: {entity.Entity.Name}");
+            }
+        }
+
+        private void PlayerClassCommand(CCSPlayerController client, CommandInfo info)
+        {
+            // if you're not actual player you can't
+            if (client == null)
+                return;
+
+            PlayerClassMainMenu(client);
         }
     }
 }

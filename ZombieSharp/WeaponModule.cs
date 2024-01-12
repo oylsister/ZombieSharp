@@ -1,4 +1,5 @@
 using CounterStrikeSharp.API.Core.Logging;
+using CounterStrikeSharp.API.Modules.Entities.Constants;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
@@ -21,6 +22,40 @@ namespace ZombieSharp
             }
 
             WeaponDatas = JsonConvert.DeserializeObject<WeaponConfig>(File.ReadAllText(configPath));
+        }
+
+        public string FindWeaponItemDefinition(CHandle<CBasePlayerWeapon> weapon, string weaponstring)
+        {
+            var item = (ItemDefinition)weapon.Value.AttributeManager.Item.ItemDefinitionIndex;
+
+            if (weaponstring == "m4a1")
+            {
+                switch (item)
+                {
+                    case ItemDefinition.M4A1_S: return "m4a1_silencer";
+                    case ItemDefinition.M4A4: return "m4a1";
+                }
+            }
+
+            else if (weaponstring == "hkp2000")
+            {
+                switch (item)
+                {
+                    case ItemDefinition.P2000: return "hkp2000";
+                    case ItemDefinition.USP_S: return "usp_silencer";
+                }
+            }
+
+            else if (weaponstring == "mp7")
+            {
+                switch (item)
+                {
+                    case ItemDefinition.MP7: return "mp7";
+                    case ItemDefinition.MP5_SD: return "mp5sd";
+                }
+            }
+
+            return weaponstring;
         }
     }
 }

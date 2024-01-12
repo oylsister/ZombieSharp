@@ -7,7 +7,8 @@ namespace ZombieSharp
     {
         public override string ModuleName => "Zombie Sharp";
         public override string ModuleAuthor => "Oylsister, Kurumi, Sparky";
-        public override string ModuleVersion => "Beta 1.0.0";
+        public override string ModuleVersion => "Beta 1.1.0";
+        public override string ModuleDescription => "Infection/survival style gameplay for CS2 in C#";
 
         public bool ZombieSpawned;
         public int Countdown;
@@ -38,6 +39,7 @@ namespace ZombieSharp
             EventInitialize();
             CommandInitialize();
             VirtualFunctionsInitialize();
+            PlayerSettingsOnLoad().Wait();
         }
 
         public void InfectOnRoundFreezeEnd()
@@ -100,6 +102,11 @@ namespace ZombieSharp
             int alreadymade = 0;
 
             int maxmz = (int)(allplayer / ConfigSettings.MotherZombieRatio);
+
+            // if it is less than 1 then you need at least 1 mother zombie.
+            if (maxmz < 1)
+                maxmz = 1;
+
             // Server.PrintToChatAll($"Max Mother Zombie is: {maxmz}");
 
             if (candidate.Count < maxmz)
@@ -155,8 +162,6 @@ namespace ZombieSharp
         {
             // make zombie status be true.
             ZombiePlayers[client.Slot].IsZombie = true;
-
-            client.PlayerPawn.Value.WeaponServices.PreventWeaponPickup = false;
 
             string ApplyClass;
 
@@ -227,8 +232,6 @@ namespace ZombieSharp
             if (!ZombieSpawned)
                 ZombieSpawned = true;
 
-            client.PlayerPawn.Value.WeaponServices.PreventWeaponPickup = true;
-
             // if force then tell them that they has been punnished.
             if (force)
             {
@@ -242,8 +245,6 @@ namespace ZombieSharp
         {
             // zombie status to false
             ZombiePlayers[client.Slot].IsZombie = false;
-
-            client.PlayerPawn.Value.WeaponServices.PreventWeaponPickup = false;
 
             // switch client to CT
             client.SwitchTeam(CsTeam.CounterTerrorist);
@@ -285,10 +286,9 @@ namespace ZombieSharp
 
             Vector direction = (clientpos - attackerpos).NormalizeVector();
 
-            var clientVelocity = clientPawn.AbsVelocity;
-
             float weaponKnockback;
             var hitgroupknocback = HitGroupGetKnockback(hitgroup);
+
 
             // try to find the key then the knockback
             if (WeaponDatas.WeaponConfigs.ContainsKey(weapon))
@@ -303,9 +303,7 @@ namespace ZombieSharp
 
             Vector pushVelocity = direction * damage * weaponKnockback * WeaponDatas.KnockbackMultiply * hitgroupknocback;
 
-            Vector velocity = clientVelocity + pushVelocity;
-
-            clientPawn.AbsVelocity.Add(velocity);
+            clientPawn.AbsVelocity.Add(pushVelocity);
         }
 
         public void CheckGameStatus()

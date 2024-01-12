@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using CounterStrikeSharp.API.Modules.Menu;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
 namespace ZombieSharp
@@ -8,6 +9,7 @@ namespace ZombieSharp
         public PlayerClassConfig PlayerClassDatas { get; private set; }
 
         public Dictionary<int, PlayerClientClass> ClientPlayerClass { get; set; } = new Dictionary<int, PlayerClientClass>();
+        public Dictionary<int, CounterStrikeSharp.API.Modules.Timers.Timer> RegenTimer { get; set; } = new Dictionary<int, CounterStrikeSharp.API.Modules.Timers.Timer>();
 
         public bool PlayerClassIntialize()
         {
@@ -25,8 +27,19 @@ namespace ZombieSharp
             return true;
         }
 
+        public void PrecachePlayerModel()
+        {
+            foreach (PlayerClassData data in PlayerClassDatas.PlayerClasses.Values)
+            {
+                Server.PrecacheModel(data.Model);
+            }
+        }
+
         public bool ApplyClientPlayerClass(CCSPlayerController client, string class_string, int team)
         {
+            // stop regen timer first.
+            RegenTimerStop(client);
+
             // if cannot find the class, then false so they can use the default value.
             if (!PlayerClassDatas.PlayerClasses.ContainsKey(class_string))
             {
@@ -79,19 +92,17 @@ namespace ZombieSharp
 
             if (classData.Regen_Interval > 0.0f && classData.Regen_Amount > 0)
             {
-                CounterStrikeSharp.API.Modules.Timers.Timer regenTimer = null;
-
-                regenTimer = AddTimer(classData.Regen_Interval, () =>
+                RegenTimer[client.Slot] = AddTimer(classData.Regen_Interval, () =>
                 {
                     if (!client.IsValid)
                     {
-                        regenTimer.Kill();
+                        RegenTimer[client.Slot].Kill();
                         return;
                     }
 
                     if (!client.PawnIsAlive)
                     {
-                        regenTimer.Kill();
+                        RegenTimer[client.Slot].Kill();
                         return;
                     }
 
@@ -105,6 +116,69 @@ namespace ZombieSharp
 
             ClientPlayerClass[client.Slot].ActiveClass = class_string;
             return true;
+        }
+
+        public void RegenTimerStop(CCSPlayerController client)
+        {
+            if (!client.IsValid)
+                return;
+
+            // if can't find a player. then don't proceed.
+            if (!RegenTimer.ContainsKey(client.Slot))
+                return;
+
+            if (RegenTimer[client.Slot] == null)
+                return;
+
+            RegenTimer[client.Slot].Kill();
+        }
+
+        public void PlayerClassMainMenu(CCSPlayerController client)
+        {
+            var mainmenu = new ChatMenu($"{ChatColors.DarkBlue}[Z:Sharp] Player Class Main Menu");
+            mainmenu.AddMenuOption("Zombie Class", (client, option) => PlayerClassSelectMenu(client, 0));
+            mainmenu.AddMenuOption("Human Class", (client, option) => PlayerClassSelectMenu(client, 1));
+            ChatMenus.OpenMenu(client, mainmenu);
+        }
+
+        private void PlayerClassSelectMenu(CCSPlayerController client, int team)
+        {
+            string title;
+
+            if (team == 0)
+                title = $" {ChatColors.Green}[Z:Sharp]{ChatColors.Default} Zombie Class Selection (Current: {ChatColors.Green}{PlayerClassDatas.PlayerClasses[ClientPlayerClass[client.Slot].ZombieClass].Name}{ChatColors.Default})";
+
+            else
+                title = $" {ChatColors.Green}[Z:Sharp]{ChatColors.Default} Human Class Selection (Current: {ChatColors.Green}{PlayerClassDatas.PlayerClasses[ClientPlayerClass[client.Slot].HumanClass].Name}{ChatColors.Default})";
+
+            var selectmenu = new ChatMenu(title);
+            var menuhandle = (CCSPlayerController client, ChatMenuOption option) =>
+            {
+                if (team == 0)
+                {
+                    ClientPlayerClass[client.Slot].ZombieClass = PlayerClassDatas.PlayerClasses.FirstOrDefault(x => x.Value.Name == option.Text).Key;
+                }
+                else
+                {
+                    ClientPlayerClass[client.Slot].HumanClass = PlayerClassDatas.PlayerClasses.FirstOrDefault(x => x.Value.Name == option.Text).Key;
+                }
+
+                client.PrintToChat($" {ChatColors.Green}[Z:Sharp]{ChatColors.Default} You have selected a new class, the class you have selected will be applied in the next spawn!");
+            };
+
+            foreach (var playerclass in PlayerClassDatas.PlayerClasses)
+            {
+                if (playerclass.Value.Team == team)
+                {
+                    bool alreadyselected = playerclass.Key.Equals(ClientPlayerClass[client.Slot].HumanClass) || playerclass.Key.Equals(ClientPlayerClass[client.Slot].ZombieClass);
+                    bool motherzombie = playerclass.Value.MotherZombie;
+                    bool disable = !playerclass.Value.Enable;
+
+                    selectmenu.AddMenuOption(playerclass.Value.Name, menuhandle, alreadyselected || motherzombie || disable);
+                }
+            }
+
+            ChatMenus.OpenMenu(client, selectmenu);
         }
     }
 }
