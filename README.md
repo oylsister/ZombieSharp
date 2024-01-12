@@ -64,7 +64,7 @@ playerclasses.json - Player Classes configuration.
             "Description": "Default Class for human", // description
             "Enable": true, // enable it or not
             "Team": 1, // Team 0 = zombie, Team 1 = human
-            "Model": "", // Model path for this class
+            "Model": "", // Model path for this class it's not work yet
             "MotherZombie": false, // Specify if this class is for mother zombie.
             "Health": 150, // class health
             "Regen_Interval": 0.0, // Specify how much second to regen health
