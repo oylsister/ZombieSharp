@@ -123,6 +123,10 @@ namespace ZombieSharp
             if (!client.IsValid)
                 return;
 
+            // if can't find a player. then don't proceed.
+            if (!RegenTimer.ContainsKey(client.Slot))
+                return;
+
             if (RegenTimer[client.Slot] == null)
                 return;
 
@@ -159,7 +163,7 @@ namespace ZombieSharp
                     ClientPlayerClass[client.Slot].HumanClass = PlayerClassDatas.PlayerClasses.FirstOrDefault(x => x.Value.Name == option.Text).Key;
                 }
 
-                client.PrintToChat($"[Z:Sharp] You have selected a new class, the class you have selected will be applied in the next spawn.!");
+                client.PrintToChat($" {ChatColors.Green}[Z:Sharp]{ChatColors.Default} You have selected a new class, the class you have selected will be applied in the next spawn!");
             };
 
             foreach (var playerclass in PlayerClassDatas.PlayerClasses)
@@ -187,9 +191,9 @@ public class PlayerClassConfig
     {
         PlayerClasses = new Dictionary<string, PlayerClassData>(StringComparer.OrdinalIgnoreCase)
         {
-            { "human_default", new PlayerClassData("Human Config Default", "Default Class for human", true, 1, "", false, 100, 0.0f, 0, 250.0f, 0.0f, 3.0f, 1.0f, false) },
-            { "zombie_default", new PlayerClassData("Zombie Config Default", "Default Class for zombie", true, 0, "", false, 8000, 10.0f, 100, 255.0f, 3.0f, 1.0f, 1.0f, false) },
-            { "motherzombie", new PlayerClassData("Mother Zombie Config", "Mother Zombie Class", true, 0, "", false, 15000, 10.0f, 100, 255.0f, 3.0f, 1.0f, 1.0f, false) },
+            { "human_default", new PlayerClassData("Human Config Default", "Default Class for human", true, 1, "", false, 100, 0.0f, 0, 250.0f, 0.0f, 3.0f, 1.0f) },
+            { "zombie_default", new PlayerClassData("Zombie Config Default", "Default Class for zombie", true, 0, "", false, 8000, 10.0f, 100, 255.0f, 3.0f, 1.0f, 1.0f) },
+            { "motherzombie", new PlayerClassData("Mother Zombie Config", "Mother Zombie Class", true, 0, "", false, 15000, 10.0f, 100, 255.0f, 3.0f, 1.0f, 1.0f) },
         };
     }
 }
@@ -203,7 +207,7 @@ public class PlayerClientClass
 
 public class PlayerClassData
 {
-    public PlayerClassData(string name, string desc, bool enable, int team, string model, bool motherzombie, int hp, float regen_interval, int regen_amount, float speed, float knockback, float jump_height, float jump_distance, bool fall_damage)
+    public PlayerClassData(string name, string desc, bool enable, int team, string model, bool motherzombie, int hp, float regen_interval, int regen_amount, float speed, float knockback, float jump_height, float jump_distance)
     {
         Name = name;
         Description = desc;
@@ -218,7 +222,6 @@ public class PlayerClassData
         Knockback = knockback;
         Jump_Height = jump_height;
         Jump_Distance = jump_distance;
-        Fall_Damage = fall_damage;
     }
 
     public string Name { get; set; }
@@ -237,5 +240,4 @@ public class PlayerClassData
     public float Knockback { get; set; }
     public float Jump_Height { get; set; }
     public float Jump_Distance { get; set; }
-    public bool Fall_Damage { get; set; } = false;
 }

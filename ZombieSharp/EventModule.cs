@@ -38,7 +38,7 @@ namespace ZombieSharp
 
             RegenTimer.Add(clientindex, null);
 
-            PlayerSettingsAuthorized(player).Wait();
+            PlayerSettingsAuthorized(player); //.Wait();
         }
 
         private void OnClientAuthorized(int client, SteamID steamId)

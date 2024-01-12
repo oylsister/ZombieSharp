@@ -35,7 +35,7 @@ namespace ZombieSharp
             await PlayerDB.ExecuteAsync("Update player_class SET ZClass = @ZClass, HClass = @HClass WHERE SteamID = @SteamID", classDB);
         }
 
-        public async Task PlayerSettingsAuthorized(CCSPlayerController client)
+        public void PlayerSettingsAuthorized(CCSPlayerController client)
         {
             var clientindex = client.Slot;
 
@@ -48,6 +48,7 @@ namespace ZombieSharp
             if (client.IsBot)
                 return;
 
+            /*
             var result = await GetPlayerSettings(client.AuthorizedSteamID.SteamId3);
 
             if (result == null)
@@ -69,6 +70,7 @@ namespace ZombieSharp
 
                 return;
             }
+            */
         }
     }
 }

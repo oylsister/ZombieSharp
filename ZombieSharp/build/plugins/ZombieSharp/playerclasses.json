@@ -13,8 +13,7 @@
             "Speed": 250.0,
             "Knockback": 0.0,
             "Jump_Height": 1.0,
-            "Jump_Distance": 1.0,
-            "Fall_Damage": false
+            "Jump_Distance": 1.0
         },
         "zombie_default": {
             "Name": "Zombie Default",
@@ -29,8 +28,7 @@
             "Speed": 280,
             "Knockback": 3.0,
             "Jump_Height": 1.0,
-            "Jump_Distance": 1.0,
-            "Fall_Damage": false
+            "Jump_Distance": 1.0
         },
         "motherzombie": {
             "Name": "Mother Zombie",
@@ -45,8 +43,7 @@
             "Speed": 280,
             "Knockback": 3.0,
             "Jump_Height": 1.0,
-            "Jump_Distance": 1.0,
-            "Fall_Damage": false
+            "Jump_Distance": 1.0
         }
     }
 }

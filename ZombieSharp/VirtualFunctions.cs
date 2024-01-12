@@ -51,14 +51,7 @@ namespace ZombieSharp
 
             var attackInfo = damageInfo.Attacker;
 
-            var controller = player(client);
-
-            /*
-            if (client.IsValid)
-                Server.PrintToChatAll($"{client.DesignerName} damaged by type: {damageInfo.BitsDamageType}");
-            */
-
-            bool falldamage = damageInfo.BitsDamageType == 32;
+            // var controller = player(client);
 
             bool warmup = GetGameRules().WarmupPeriod;
 
@@ -72,16 +65,6 @@ namespace ZombieSharp
             }
 
             // Server.PrintToChatAll($"{controller.PlayerName} take damaged");
-
-            if (controller != null)
-            {
-                if (warmup || (!PlayerClassDatas.PlayerClasses[ClientPlayerClass[controller.Slot].ActiveClass].Fall_Damage && falldamage))
-                {
-                    damageInfo.Damage = 0;
-                    return HookResult.Handled;
-                }
-            }
-
             return HookResult.Continue;
         }
 
