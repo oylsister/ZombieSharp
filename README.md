@@ -56,6 +56,9 @@ weapons.json - Configure specific weapon settings.
 }
 ```
 playerclasses.json - Player Classes configuration.
+<b>Placing Custom model at</b> ``game/csgo`` <b>for both server and client (player)</b>
+
+Example: ``game/csgo/characters/models/nozb1/2b_nier_automata_player_model/2b_nier_player_model.vmdl_c``
 ```json
 {
     "PlayerClasses":{
@@ -64,7 +67,7 @@ playerclasses.json - Player Classes configuration.
             "Description": "Default Class for human", // description
             "Enable": true, // enable it or not
             "Team": 1, // Team 0 = zombie, Team 1 = human
-            "Model": "", // Model path for this class it's not work yet
+            "Model": "characters\\models\\nozb1\\2b_nier_automata_player_model\\2b_nier_player_model.vmdl", // Model path for this class change .vmdl_c to .vmdl in this config
             "MotherZombie": false, // Specify if this class is for mother zombie.
             "Health": 150, // class health
             "Regen_Interval": 0.0, // Specify how much second to regen health
