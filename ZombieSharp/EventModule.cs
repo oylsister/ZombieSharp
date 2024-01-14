@@ -1,5 +1,3 @@
-using CounterStrikeSharp.API.Modules.Entities;
-
 namespace ZombieSharp
 {
     public partial class ZombieSharp
@@ -12,11 +10,11 @@ namespace ZombieSharp
             RegisterEventHandler<EventPlayerHurt>(OnPlayerHurt);
             RegisterEventHandler<EventPlayerDeath>(OnPlayerDeath);
             RegisterEventHandler<EventPlayerSpawn>(OnPlayerSpawn);
+            RegisterEventHandler<EventPlayerConnectFull>(OnPlayerConnectFull);
             RegisterEventHandler<EventPlayerJump>(OnPlayerJump);
             RegisterEventHandler<EventCsPreRestart>(OnPreRestart);
 
             RegisterListener<Listeners.OnClientPutInServer>(OnClientPutInServer);
-            RegisterListener<Listeners.OnClientAuthorized>(OnClientAuthorized);
             RegisterListener<Listeners.OnClientDisconnect>(OnClientDisconnected);
             RegisterListener<Listeners.OnMapStart>(OnMapStart);
         }
@@ -38,19 +36,15 @@ namespace ZombieSharp
 
             RegenTimer.Add(clientindex, null);
 
-            PlayerSettingsAuthorized(player); //.Wait();
+            PlayerSettingsOnPutInServer(player);
         }
 
-        private void OnClientAuthorized(int client, SteamID steamId)
+        private HookResult OnPlayerConnectFull(EventPlayerConnectFull @event, GameEventInfo info)
         {
-            /*
-            Logger.LogInformation("Client Authorized Happened here.");
-            var player = Utilities.GetPlayerFromSlot(client);
+            var client = @event.Userid;
 
-            Logger.LogInformation($"Found {player.PlayerName}.");
-            */
-
-            //PlayerSettingsAuthorized(player);
+            PlayerSettingsAuthorized(client).Wait();
+            return HookResult.Continue;
         }
 
         private void OnClientDisconnected(int client)
