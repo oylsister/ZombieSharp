@@ -94,6 +94,9 @@ namespace ZombieSharp
         {
             bool warmup = GetGameRules().WarmupPeriod;
 
+            if (warmup && !ConfigSettings.EnableOnWarmup)
+                Server.PrintToChatAll($" {ChatColors.Green}[Z:Sharp]{ChatColors.Default} The current server has disabled infection in warmup round.");
+
             if (!warmup || ConfigSettings.EnableOnWarmup)
                 InfectOnRoundFreezeEnd();
 
@@ -104,12 +107,7 @@ namespace ZombieSharp
         {
             bool warmup = GetGameRules().WarmupPeriod;
 
-            if (warmup && !ConfigSettings.EnableOnWarmup)
-            {
-                Server.PrintToChatAll($" {ChatColors.Green}[Z:Sharp]{ChatColors.Default} The current server has disabled infection in warmup round.");
-            }
-
-            else if (!warmup || ConfigSettings.EnableOnWarmup)
+            if (!warmup || ConfigSettings.EnableOnWarmup)
             {
                 ToggleRespawn(true, true);
 
@@ -166,15 +164,17 @@ namespace ZombieSharp
                 var dmgHealth = @event.DmgHealth;
                 var hitgroup = @event.Hitgroup;
 
-                if (IsClientZombie(attacker) && IsClientHuman(client) && string.Equals(weapon, "knife"))
+                if (attacker != null && IsClientZombie(attacker) && IsClientHuman(client) && string.Equals(weapon, "knife"))
                 {
                     // Server.PrintToChatAll($"{client.PlayerName} Infected by {attacker.PlayerName}");
                     InfectClient(client, attacker);
                 }
 
-                FindWeaponItemDefinition(attacker.PlayerPawn.Value.WeaponServices.ActiveWeapon, weapon);
+                if (attacker.Slot != 32766)
+                    FindWeaponItemDefinition(attacker.PlayerPawn.Value.WeaponServices.ActiveWeapon, weapon);
 
-                KnockbackClient(client, attacker, dmgHealth, weapon, hitgroup);
+                if (IsClientZombie(client))
+                    KnockbackClient(client, attacker, dmgHealth, weapon, hitgroup);
             }
 
             return HookResult.Continue;

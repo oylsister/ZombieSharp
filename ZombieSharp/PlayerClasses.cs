@@ -111,7 +111,8 @@ namespace ZombieSharp
 
                     else
                         clientPawn.Health += classData.Regen_Amount;
-                }, TimerFlags.REPEAT);
+                },
+                TimerFlags.REPEAT);
             }
 
             ClientPlayerClass[client.Slot].ActiveClass = class_string;

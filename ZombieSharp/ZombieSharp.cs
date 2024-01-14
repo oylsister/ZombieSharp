@@ -396,11 +396,17 @@ namespace ZombieSharp
 
         public bool IsClientZombie(CCSPlayerController controller)
         {
+            if (controller.Slot == 32766)
+                return false;
+
             return ZombiePlayers[controller.Slot].IsZombie;
         }
 
         public bool IsClientHuman(CCSPlayerController controller)
         {
+            if (controller.Slot == 32766)
+                return false;
+
             return !ZombiePlayers[controller.Slot].IsZombie;
         }
     }
