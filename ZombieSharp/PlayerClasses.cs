@@ -154,6 +154,12 @@ namespace ZombieSharp
             var selectmenu = new ChatMenu(title);
             var menuhandle = (CCSPlayerController client, ChatMenuOption option) =>
             {
+                if (option.Text == "Back")
+                {
+                    PlayerClassMainMenu(client);
+                    return;
+                }
+
                 if (team == 0)
                 {
                     ClientPlayerClass[client.Slot].ZombieClass = PlayerClassDatas.PlayerClasses.FirstOrDefault(x => x.Value.Name == option.Text).Key;
@@ -162,6 +168,14 @@ namespace ZombieSharp
                 {
                     ClientPlayerClass[client.Slot].HumanClass = PlayerClassDatas.PlayerClasses.FirstOrDefault(x => x.Value.Name == option.Text).Key;
                 }
+
+                var updateDB = new PlayerClassDB();
+
+                updateDB.SteamID = client.AuthorizedSteamID.SteamId3;
+                updateDB.ZClass = ClientPlayerClass[client.Slot].ZombieClass;
+                updateDB.HClass = ClientPlayerClass[client.Slot].HumanClass;
+
+                CreatePlayerSettings(updateDB).Wait();
 
                 client.PrintToChat($" {ChatColors.Green}[Z:Sharp]{ChatColors.Default} You have selected a new class, the class you have selected will be applied in the next spawn!");
             };
@@ -177,6 +191,8 @@ namespace ZombieSharp
                     selectmenu.AddMenuOption(playerclass.Value.Name, menuhandle, alreadyselected || motherzombie || disable);
                 }
             }
+
+            selectmenu.AddMenuOption("Back", menuhandle);
 
             ChatMenus.OpenMenu(client, selectmenu);
         }

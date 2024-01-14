@@ -16,12 +16,12 @@ namespace ZombieSharp
 
         public async Task CreatePlayerSettings(PlayerClassDB classDB)
         {
-            await PlayerDB.ExecuteAsync("INSERT INTO player_class (SteamID, ZClass, HClass) VALUES(@SteamID, @ZClass, @HClass)", classDB);
+            await PlayerDB.ExecuteAsync("INSERT INTO `player_class` (`SteamID`, `ZClass`, `HClass`) VALUES(@SteamID, @ZClass, @HClass) ON CONFLICT(`SteamID`) DO UPDATE SET `ZClass` = @ZClass, `HClass` = @HClass;", classDB);
         }
 
         public async Task<PlayerClassDB> GetPlayerSettings(string steamid)
         {
-            PlayerClassDB db = await PlayerDB.QueryFirstAsync<PlayerClassDB>(@"SELECT * From `player_class` WHERE `SteamID` = @steamid",
+            PlayerClassDB db = await PlayerDB.QueryFirstOrDefaultAsync<PlayerClassDB>(@"SELECT * From `player_class` WHERE `SteamID` = @steamid",
                 new
                 {
                     steamid
@@ -35,7 +35,7 @@ namespace ZombieSharp
             await PlayerDB.ExecuteAsync("Update player_class SET ZClass = @ZClass, HClass = @HClass WHERE SteamID = @SteamID", classDB);
         }
 
-        public void PlayerSettingsAuthorized(CCSPlayerController client)
+        public void PlayerSettingsOnPutInServer(CCSPlayerController client)
         {
             var clientindex = client.Slot;
 
@@ -44,11 +44,14 @@ namespace ZombieSharp
             ClientPlayerClass[clientindex].HumanClass = ConfigSettings.Human_Default;
             ClientPlayerClass[clientindex].ZombieClass = ConfigSettings.Zombie_Default;
             ClientPlayerClass[clientindex].ActiveClass = null;
+        }
 
+        public async Task PlayerSettingsAuthorized(CCSPlayerController client)
+        {
             if (client.IsBot)
                 return;
 
-            /*
+            var clientindex = client.Slot;
             var result = await GetPlayerSettings(client.AuthorizedSteamID.SteamId3);
 
             if (result == null)
@@ -70,7 +73,6 @@ namespace ZombieSharp
 
                 return;
             }
-            */
         }
     }
 }

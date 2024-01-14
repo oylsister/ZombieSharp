@@ -80,7 +80,7 @@ namespace ZombieSharp
 
                 // Server.PrintToChatAll($"Found the entity {identity.Name} with {input}");
 
-                if (identity == RespawnRelay.Entity)
+                if (RespawnRelay.IsValid && identity == RespawnRelay.Entity)
                 {
                     if (input == "Trigger")
                         ToggleRespawn();
