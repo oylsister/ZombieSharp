@@ -103,7 +103,8 @@ namespace ZombieSharp
             var identity = hook.GetParam<CEntityIdentity>(0);
             var input = hook.GetParam<IntPtr>(1);
 
-            var stringinput = Utilities.ReadStringUtf8(input);
+            // var stringinput = Utilities.ReadStringUtf8(input);
+            var stringinput = Schema.GetUtf8String(input, "CUtlSymbolLarge", "m_pString");
 
             Server.PrintToChatAll($"Found: {identity.Name} input: {stringinput}");
 
