@@ -6,7 +6,7 @@ namespace ZombieSharp
     {
         MemoryFunctionVoid<CCSPlayerController, CCSPlayerPawn, bool, bool> CBasePlayerController_SetPawnFunc;
 
-        public CLogicRelay RespawnRelay;
+        public CHandle<CLogicRelay> RespawnRelay = null;
 
         public void VirtualFunctionsInitialize()
         {
@@ -16,8 +16,9 @@ namespace ZombieSharp
             CCSPlayer_WeaponServices_CanUseFunc.Hook(OnWeaponCanUse, HookMode.Pre);
 
             VirtualFunctions.CBaseEntity_TakeDamageOldFunc.Hook(OnTakeDamage, HookMode.Pre);
+            VirtualFunctions.AcceptInputFunc.Hook(OnEntityInstanceAcceptInput, HookMode.Post);
 
-            Hook_CEntityIdentity();
+            // Hook_CEntityIdentity();
         }
 
         private HookResult OnWeaponCanUse(DynamicHook hook)
@@ -68,6 +69,34 @@ namespace ZombieSharp
             return HookResult.Continue;
         }
 
+        public HookResult OnEntityInstanceAcceptInput(DynamicHook hook)
+        {
+            var identity = hook.GetParam<CEntityInstance>(0).Entity;
+            var input = hook.GetParam<string>(1);
+
+            // Server.PrintToChatAll($"Found the entity {identity.Name} with {input}");
+
+            if (RespawnRelay != null && RespawnRelay.IsValid)
+            {
+                CLogicRelay relay = RespawnRelay.Value;
+
+                if (relay.Entity == identity)
+                {
+                    if (input == "Trigger")
+                        ToggleRespawn();
+
+                    else if (input == "Enable" && !RespawnEnable)
+                        ToggleRespawn(true, true);
+
+                    else if (input == "Disable" && RespawnEnable)
+                        ToggleRespawn(true, false);
+                }
+            }
+
+            return HookResult.Continue;
+        }
+
+        /*
         private void Hook_CEntityIdentity()
         {
             //MemoryFunctionVoid<CEntityIdentity, CUtlStringToken, CEntityInstance, CEntityInstance, string, int> CEntityIdentity_AcceptInputFunc = new(GameData.GetSignature("CEntityIdentity_AcceptInput"));
@@ -80,20 +109,26 @@ namespace ZombieSharp
 
                 // Server.PrintToChatAll($"Found the entity {identity.Name} with {input}");
 
-                if (RespawnRelay.IsValid && identity == RespawnRelay.Entity)
+                if (RespawnRelay != null && RespawnRelay.IsValid)
                 {
-                    if (input == "Trigger")
-                        ToggleRespawn();
+                    CLogicRelay relay = RespawnRelay.Value;
 
-                    else if (input == "Enable" && !RespawnEnable)
-                        ToggleRespawn(true, true);
+                    if (relay.Entity == identity)
+                    {
+                        if (input == "Trigger")
+                            ToggleRespawn();
 
-                    else if (input == "Disable" && RespawnEnable)
-                        ToggleRespawn(true, false);
+                        else if (input == "Enable" && !RespawnEnable)
+                            ToggleRespawn(true, true);
+
+                        else if (input == "Disable" && RespawnEnable)
+                            ToggleRespawn(true, false);
+                    }
                 }
                 return HookResult.Continue;
             }), HookMode.Post);
         }
+        */
 
         public void RespawnClient(CCSPlayerController client)
         {

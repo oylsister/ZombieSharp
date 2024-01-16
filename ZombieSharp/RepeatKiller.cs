@@ -39,10 +39,15 @@
 
         public void RespawnTogglerSetup()
         {
-            RespawnRelay = Utilities.CreateEntityByName<CLogicRelay>("logic_relay");
+            if (RespawnRelay != null)
+                RespawnRelay = null;
 
-            RespawnRelay.Entity.Name = "zr_toggle_respawn";
-            RespawnRelay.DispatchSpawn();
+            CLogicRelay relay = Utilities.CreateEntityByName<CLogicRelay>("logic_relay");
+
+            relay.Entity.Name = "zr_toggle_respawn";
+            relay.DispatchSpawn();
+
+            RespawnRelay = new CHandle<CLogicRelay>(relay.Handle);
         }
 
         public void ToggleRespawn(bool force = false, bool value = false)
