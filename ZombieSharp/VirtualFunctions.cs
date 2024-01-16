@@ -18,7 +18,8 @@ namespace ZombieSharp
             VirtualFunctions.CBaseEntity_TakeDamageOldFunc.Hook(OnTakeDamage, HookMode.Pre);
             VirtualFunctions.AcceptInputFunc.Hook(OnEntityInstanceAcceptInput, HookMode.Post);
 
-            // Hook_CEntityIdentity();
+            MemoryFunctionVoid<CEntityIdentity, IntPtr, CEntityInstance, CEntityInstance, string, int> CEntityIdentity_AcceptInputFunc = new(GameData.GetSignature("CEntityIdentity_AcceptInput"));
+            CEntityIdentity_AcceptInputFunc.Hook(OnEntityIdentityAcceptInput, HookMode.Pre);
         }
 
         private HookResult OnWeaponCanUse(DynamicHook hook)
@@ -96,39 +97,18 @@ namespace ZombieSharp
             return HookResult.Continue;
         }
 
-        /*
-        private void Hook_CEntityIdentity()
+
+        private HookResult OnEntityIdentityAcceptInput(DynamicHook hook)
         {
-            //MemoryFunctionVoid<CEntityIdentity, CUtlStringToken, CEntityInstance, CEntityInstance, string, int> CEntityIdentity_AcceptInputFunc = new(GameData.GetSignature("CEntityIdentity_AcceptInput"));
+            var identity = hook.GetParam<CEntityIdentity>(0);
+            var input = hook.GetParam<IntPtr>(1);
 
-            //CEntityIdentity_AcceptInputFunc.Hook((h =>
-            VirtualFunctions.AcceptInputFunc.Hook((h =>
-            {
-                var identity = h.GetParam<CEntityInstance>(0).Entity;
-                var input = h.GetParam<string>(1);
+            var stringinput = Utilities.ReadStringUtf8(input);
 
-                // Server.PrintToChatAll($"Found the entity {identity.Name} with {input}");
+            Server.PrintToChatAll($"Found: {identity.Name} input: {stringinput}");
 
-                if (RespawnRelay != null && RespawnRelay.IsValid)
-                {
-                    CLogicRelay relay = RespawnRelay.Value;
-
-                    if (relay.Entity == identity)
-                    {
-                        if (input == "Trigger")
-                            ToggleRespawn();
-
-                        else if (input == "Enable" && !RespawnEnable)
-                            ToggleRespawn(true, true);
-
-                        else if (input == "Disable" && RespawnEnable)
-                            ToggleRespawn(true, false);
-                    }
-                }
-                return HookResult.Continue;
-            }), HookMode.Post);
+            return HookResult.Continue;
         }
-        */
 
         public void RespawnClient(CCSPlayerController client)
         {
