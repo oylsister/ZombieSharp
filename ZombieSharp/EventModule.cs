@@ -81,8 +81,6 @@ namespace ZombieSharp
         private HookResult OnRoundStart(EventRoundStart @event, GameEventInfo info)
         {
             RemoveRoundObjective();
-            RepeatKillerActivated = false;
-
             RespawnTogglerSetup();
 
             Server.PrintToChatAll($" {ChatColors.Green}[Z:Sharp]{ChatColors.Default} The current game mode is the Human vs. Zombie, the zombie goal is to infect all human before time is running out.");
@@ -190,7 +188,7 @@ namespace ZombieSharp
             {
                 CheckGameStatus();
 
-                if (!RepeatKillerActivated)
+                if (RespawnEnable)
                 {
                     RespawnPlayer(client);
                     RepeatKillerOnPlayerDeath(client, attacker, weapon);

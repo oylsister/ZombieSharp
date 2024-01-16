@@ -6,8 +6,6 @@ namespace ZombieSharp
     {
         MemoryFunctionVoid<CCSPlayerController, CCSPlayerPawn, bool, bool> CBasePlayerController_SetPawnFunc;
 
-        public CHandle<CLogicRelay> RespawnRelay = null;
-
         public void VirtualFunctionsInitialize()
         {
             CBasePlayerController_SetPawnFunc = new(GameData.GetSignature("CBasePlayerController_SetPawn"));
@@ -16,7 +14,6 @@ namespace ZombieSharp
             CCSPlayer_WeaponServices_CanUseFunc.Hook(OnWeaponCanUse, HookMode.Pre);
 
             VirtualFunctions.CBaseEntity_TakeDamageOldFunc.Hook(OnTakeDamage, HookMode.Pre);
-            VirtualFunctions.AcceptInputFunc.Hook(OnEntityInstanceAcceptInput, HookMode.Post);
 
             MemoryFunctionVoid<CEntityIdentity, IntPtr, CEntityInstance, CEntityInstance, string, int> CEntityIdentity_AcceptInputFunc = new(GameData.GetSignature("CEntityIdentity_AcceptInput"));
             CEntityIdentity_AcceptInputFunc.Hook(OnEntityIdentityAcceptInput, HookMode.Pre);
@@ -70,12 +67,14 @@ namespace ZombieSharp
             return HookResult.Continue;
         }
 
-        public HookResult OnEntityInstanceAcceptInput(DynamicHook hook)
+        private HookResult OnEntityIdentityAcceptInput(DynamicHook hook)
         {
-            var identity = hook.GetParam<CEntityInstance>(0).Entity;
-            var input = hook.GetParam<string>(1);
+            var identity = hook.GetParam<CEntityIdentity>(0);
+            var input = hook.GetParam<IntPtr>(1);
 
-            // Server.PrintToChatAll($"Found the entity {identity.Name} with {input}");
+            var stringinput = Utilities.ReadStringUtf8(input);
+
+            //Server.PrintToChatAll($"Found: {identity.Name}, input: {stringinput}");
 
             if (RespawnRelay != null && RespawnRelay.IsValid)
             {
@@ -83,30 +82,16 @@ namespace ZombieSharp
 
                 if (relay.Entity == identity)
                 {
-                    if (input == "Trigger")
+                    if (stringinput == "Trigger")
                         ToggleRespawn();
 
-                    else if (input == "Enable" && !RespawnEnable)
+                    else if (stringinput == "Enable" && !RespawnEnable)
                         ToggleRespawn(true, true);
 
-                    else if (input == "Disable" && RespawnEnable)
+                    else if (stringinput == "Disable" && RespawnEnable)
                         ToggleRespawn(true, false);
                 }
             }
-
-            return HookResult.Continue;
-        }
-
-
-        private HookResult OnEntityIdentityAcceptInput(DynamicHook hook)
-        {
-            var identity = hook.GetParam<CEntityIdentity>(0);
-            var input = hook.GetParam<IntPtr>(1);
-
-            // var stringinput = Utilities.ReadStringUtf8(input);
-            var stringinput = Schema.GetUtf8String(input, "CUtlSymbolLarge", "m_pString");
-
-            Server.PrintToChatAll($"Found: {identity.Name} input: {stringinput}");
 
             return HookResult.Continue;
         }

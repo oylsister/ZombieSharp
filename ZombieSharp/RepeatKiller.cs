@@ -2,12 +2,9 @@
 {
     public partial class ZombieSharp
     {
-        public bool RepeatKillerActivated { get; set; } = false;
         public bool RepeatKillerEnable { get; set; } = false;
 
         public Dictionary<int, float> PlayerDeathTime = new Dictionary<int, float>();
-
-        public bool RespawnEnable { get; set; } = true;
 
         public void RepeatKillerOnMapStart()
         {
@@ -20,7 +17,7 @@
             if (!RepeatKillerEnable)
                 return;
 
-            if (RepeatKillerActivated)
+            if (!RespawnEnable)
                 return;
 
             if (client.IsValid && (attacker == null || !attacker.IsValid) && weapon == "trigger_hurt")
@@ -30,48 +27,10 @@
                 if ((GameTime - PlayerDeathTime[client.Slot] - ConfigSettings.RespawnTimer) < ConfigSettings.RepeatKillerThreshold)
                 {
                     Server.PrintToChatAll($" {ChatColors.Green}[Z:Sharp]{ChatColors.Default} Repeat Killer detected. Disabling respawn for this round");
-                    RepeatKillerActivated = true;
+                    RespawnEnable = true;
                 }
 
                 PlayerDeathTime[client.Slot] = GameTime;
-            }
-        }
-
-        public void RespawnTogglerSetup()
-        {
-            if (RespawnRelay != null)
-                RespawnRelay = null;
-
-            CLogicRelay relay = Utilities.CreateEntityByName<CLogicRelay>("logic_relay");
-
-            relay.Entity.Name = "zr_toggle_respawn";
-            relay.DispatchSpawn();
-
-            RespawnRelay = new CHandle<CLogicRelay>(relay.Handle);
-        }
-
-        public void ToggleRespawn(bool force = false, bool value = false)
-        {
-            if ((!force && !RespawnEnable) || (force && value))
-            {
-                //ForceRespawnAllDeath();
-                Server.PrintToChatAll("Respawn Become True");
-                RespawnEnable = true;
-            }
-            else
-            {
-                RespawnEnable = false;
-                Server.PrintToChatAll("Respawn Become false");
-                //CheckGameStatus();
-            }
-        }
-
-        public void ForceRespawnAllDeath()
-        {
-            foreach (var client in Utilities.GetPlayers())
-            {
-                if (client.IsValid && !client.PawnIsAlive && client.TeamNum > 1)
-                    RespawnClient(client);
             }
         }
     }
