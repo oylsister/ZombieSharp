@@ -37,6 +37,8 @@ namespace ZombieSharp
             RegenTimer.Add(clientindex, null);
 
             PlayerSettingsOnPutInServer(player);
+
+            WeaponOnClientPutInServer(clientindex);
         }
 
         private HookResult OnPlayerConnectFull(EventPlayerConnectFull @event, GameEventInfo info)
@@ -60,6 +62,8 @@ namespace ZombieSharp
 
             RegenTimerStop(player);
             RegenTimer.Remove(clientindex);
+
+            WeaponOnClientDisconnect(clientindex);
         }
 
         private void OnMapStart(string mapname)
@@ -229,6 +233,8 @@ namespace ZombieSharp
                     var clientPawn = client.PlayerPawn.Value;
                     var spawnPos = clientPawn.AbsOrigin!;
                     var spawnAngle = clientPawn.AbsRotation!;
+
+                    WeaponOnPlayerSpawn(client.Slot);
 
                     // if zombie already spawned then they become zombie.
                     if (ZombieSpawned)

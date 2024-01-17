@@ -40,6 +40,15 @@ namespace ZombieSharp
                         return HookResult.Handled;
                     }
                 }
+
+                else
+                {
+                    if (WeaponIsRestricted(clientweapon.DesignerName))
+                    {
+                        hook.SetReturn(false);
+                        return HookResult.Handled;
+                    }
+                }
             }
 
             return HookResult.Continue;
