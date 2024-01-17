@@ -27,7 +27,7 @@
                 if ((GameTime - PlayerDeathTime[client.Slot] - ConfigSettings.RespawnTimer) < ConfigSettings.RepeatKillerThreshold)
                 {
                     Server.PrintToChatAll($" {ChatColors.Green}[Z:Sharp]{ChatColors.Default} Repeat Killer detected. Disabling respawn for this round");
-                    RespawnEnable = true;
+                    ToggleRespawn(true, false);
                 }
 
                 PlayerDeathTime[client.Slot] = GameTime;

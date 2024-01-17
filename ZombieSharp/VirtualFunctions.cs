@@ -5,10 +5,12 @@ namespace ZombieSharp
     public partial class ZombieSharp
     {
         MemoryFunctionVoid<CCSPlayerController, CCSPlayerPawn, bool, bool> CBasePlayerController_SetPawnFunc;
+        MemoryFunctionVoid<CEntityIdentity, string> CEntityIdentity_SetEntityNameFunc;
 
         public void VirtualFunctionsInitialize()
         {
             CBasePlayerController_SetPawnFunc = new(GameData.GetSignature("CBasePlayerController_SetPawn"));
+            CEntityIdentity_SetEntityNameFunc = new(GameData.GetSignature("CEntityIdentity_SetEntityName"));
 
             MemoryFunctionWithReturn<CCSPlayer_WeaponServices, CBasePlayerWeapon, bool> CCSPlayer_WeaponServices_CanUseFunc = new(GameData.GetSignature("CCSPlayer_WeaponServices_CanUse"));
             CCSPlayer_WeaponServices_CanUseFunc.Hook(OnWeaponCanUse, HookMode.Pre);
@@ -76,7 +78,10 @@ namespace ZombieSharp
 
             //Server.PrintToChatAll($"Found: {identity.Name}, input: {stringinput}");
 
-            if (RespawnRelay != null && RespawnRelay.IsValid)
+            if (RespawnRelay == null || identity == null)
+                return HookResult.Continue;
+
+            else if (RespawnRelay != null && RespawnRelay.IsValid)
             {
                 CLogicRelay relay = RespawnRelay.Value;
 
@@ -105,6 +110,14 @@ namespace ZombieSharp
 
             CBasePlayerController_SetPawnFunc.Invoke(client, clientPawn, true, false);
             VirtualFunction.CreateVoid<CCSPlayerController>(client.Handle, GameData.GetOffset("CCSPlayerController_Respawn"))(client);
+        }
+
+        public void CEntityIdentity_SetEntityName(CEntityIdentity entity, string name)
+        {
+            if (entity == null || string.IsNullOrEmpty(name))
+                return;
+
+            CEntityIdentity_SetEntityNameFunc.Invoke(entity, name);
         }
 
         public static CCSPlayerController player(CEntityInstance instance)

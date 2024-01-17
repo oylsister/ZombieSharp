@@ -14,6 +14,7 @@
             CLogicRelay relay = Utilities.CreateEntityByName<CLogicRelay>("logic_relay");
 
             relay.Entity.Name = "zr_toggle_respawn";
+            CEntityIdentity_SetEntityName(relay.Entity, "zr_toggle_respawn");
             relay.DispatchSpawn();
 
             RespawnRelay = new CHandle<CLogicRelay>(relay.Handle);
