@@ -7,7 +7,7 @@ namespace ZombieSharp
     {
         public override string ModuleName => "Zombie Sharp";
         public override string ModuleAuthor => "Oylsister, Kurumi, Sparky";
-        public override string ModuleVersion => "Beta 1.2.0";
+        public override string ModuleVersion => "1.0.0";
         public override string ModuleDescription => "Infection/survival style gameplay for CS2 in C#";
 
         public bool ZombieSpawned;

@@ -1,19 +1,19 @@
 # ZombieSharp
  
-Zombie-Sharp is a Zombie Mode plugin for CS2 referencing the features and functions from the previous SourcePawn Zombie:Reloaded plugin. You can say this is the Zombie:Reloaded remake but in C#. Here is the list of features. <b>We're now in BETA.</b>
+Zombie-Sharp is a Zombie Mode plugin for CS2 referencing the features and functions from the previous SourcePawn Zombie:Reloaded plugin. You can say this is the Zombie:Reloaded remake but in C#. Here is the list of features.
 
 ### Feature of Zombie-Sharp
 - [x] Basic Zombie Infection Initial with Timer
 - [x] Mother Zombie Cycle
 - [x] Infect and Human Command
-- [x] Respawn Option
+- [x] Respawn Toggle option
 - [x] Player Class Module (Mostly work, except player speed.)
-- [x] Weapon Module
+- [x] Weapon Module with purchase command.
 - [x] Hitgroups Module
 - [x] Knockback Module
 - [x] ZTeleport Module
 - [x] Configuration for Infection Settings (Previously: ConVar)
-- [x] Repeat Killer Module (NEW!)
+- [x] Repeat Killer Module (Obsolete now)
 
 ### Requirements
 - [Metamode:Source](https://www.sourcemm.net/downloads.php/?branch=master) Dev build (2.x).
@@ -36,7 +36,7 @@ It's recommend to set these Convar before using the plugin to prevent crashed an
 ```
 mp_limitteams 0 // set in server.cfg
 mp_autoteambalance 0 // set in server.cfg
-mp_disconnect_kills_players 0 // set in gamemode_casual.cfg
+mp_disconnect_kills_players 1 // set in gamemode_casual.cfg
 ```
 
 ### Configuration
@@ -104,7 +104,7 @@ default.json - Custom Settings. These can be set for specific maps too. Example:
     "MotherZombieRatio": 7.0, // Mother Zombie Spawn ratio (14 players / 7.0 ratio = 2 Mother zombie)
     "TeleportMotherZombie": true, // Teleport mother zombie to spawn after get infected (Useful for Zombie Escape)
     "EnableOnWarmup": false, // Enable Infection in warmup round or not?, this is not recommend to enable as it has potential memory corrupt to the server.
-    "RepeatKillerThreshold": 3.0, // Repeat Killer Threshould to prevent zombie dying from respawn over and over again. (This is not approve by S2ZE as they have implemented the respawn trigger in the map instead.)
+    "RepeatKillerThreshold": 0.0, // Repeat Killer Threshould to prevent zombie dying from respawn over and over again. (Should disable it since ZE map has logic_relay trigger respawn.)
     "Human_Default": "human_default", // Default Human Class
     "Zombie_Default": "zombie_default", // Default Zombie Class
     "Mother_Zombie": "motherzombie" // Default Mother Zombie Class
