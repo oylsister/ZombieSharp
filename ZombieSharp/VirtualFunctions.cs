@@ -5,19 +5,20 @@ namespace ZombieSharp
     public partial class ZombieSharp
     {
         MemoryFunctionVoid<CCSPlayerController, CCSPlayerPawn, bool, bool> CBasePlayerController_SetPawnFunc;
-
-        public CLogicRelay RespawnRelay;
+        MemoryFunctionVoid<CEntityIdentity, string> CEntityIdentity_SetEntityNameFunc;
 
         public void VirtualFunctionsInitialize()
         {
             CBasePlayerController_SetPawnFunc = new(GameData.GetSignature("CBasePlayerController_SetPawn"));
+            CEntityIdentity_SetEntityNameFunc = new(GameData.GetSignature("CEntityIdentity_SetEntityName"));
 
             MemoryFunctionWithReturn<CCSPlayer_WeaponServices, CBasePlayerWeapon, bool> CCSPlayer_WeaponServices_CanUseFunc = new(GameData.GetSignature("CCSPlayer_WeaponServices_CanUse"));
             CCSPlayer_WeaponServices_CanUseFunc.Hook(OnWeaponCanUse, HookMode.Pre);
 
             VirtualFunctions.CBaseEntity_TakeDamageOldFunc.Hook(OnTakeDamage, HookMode.Pre);
 
-            Hook_CEntityIdentity();
+            MemoryFunctionVoid<CEntityIdentity, IntPtr, CEntityInstance, CEntityInstance, string, int> CEntityIdentity_AcceptInputFunc = new(GameData.GetSignature("CEntityIdentity_AcceptInput"));
+            CEntityIdentity_AcceptInputFunc.Hook(OnEntityIdentityAcceptInput, HookMode.Pre);
         }
 
         private HookResult OnWeaponCanUse(DynamicHook hook)
@@ -34,6 +35,15 @@ namespace ZombieSharp
                 if (IsClientZombie(client))
                 {
                     if (clientweapon.DesignerName != "weapon_knife")
+                    {
+                        hook.SetReturn(false);
+                        return HookResult.Handled;
+                    }
+                }
+
+                else
+                {
+                    if (WeaponIsRestricted(clientweapon.DesignerName))
                     {
                         hook.SetReturn(false);
                         return HookResult.Handled;
@@ -68,31 +78,31 @@ namespace ZombieSharp
             return HookResult.Continue;
         }
 
-        private void Hook_CEntityIdentity()
+        private HookResult OnEntityIdentityAcceptInput(DynamicHook hook)
         {
-            //MemoryFunctionVoid<CEntityIdentity, CUtlStringToken, CEntityInstance, CEntityInstance, string, int> CEntityIdentity_AcceptInputFunc = new(GameData.GetSignature("CEntityIdentity_AcceptInput"));
+            var identity = hook.GetParam<CEntityIdentity>(0);
+            var input = hook.GetParam<IntPtr>(1);
 
-            //CEntityIdentity_AcceptInputFunc.Hook((h =>
-            VirtualFunctions.AcceptInputFunc.Hook((h =>
+            var stringinput = Utilities.ReadStringUtf8(input);
+
+            //Server.PrintToChatAll($"Found: {identity.Name}, input: {stringinput}");
+
+            if (RespawnRelay != null && identity != null)
             {
-                var identity = h.GetParam<CEntityInstance>(0).Entity;
-                var input = h.GetParam<string>(1);
-
-                // Server.PrintToChatAll($"Found the entity {identity.Name} with {input}");
-
-                if (RespawnRelay.IsValid && identity == RespawnRelay.Entity)
+                if (identity.Name == "zr_toggle_respawn")
                 {
-                    if (input == "Trigger")
+                    if (stringinput.Equals("Trigger", StringComparison.OrdinalIgnoreCase))
                         ToggleRespawn();
 
-                    else if (input == "Enable" && !RespawnEnable)
+                    else if (stringinput.Equals("Enable", StringComparison.OrdinalIgnoreCase) && !RespawnEnable)
                         ToggleRespawn(true, true);
 
-                    else if (input == "Disable" && RespawnEnable)
+                    else if (stringinput.Equals("Disable", StringComparison.OrdinalIgnoreCase) && RespawnEnable)
                         ToggleRespawn(true, false);
                 }
-                return HookResult.Continue;
-            }), HookMode.Post);
+            }
+
+            return HookResult.Continue;
         }
 
         public void RespawnClient(CCSPlayerController client)
@@ -104,6 +114,14 @@ namespace ZombieSharp
 
             CBasePlayerController_SetPawnFunc.Invoke(client, clientPawn, true, false);
             VirtualFunction.CreateVoid<CCSPlayerController>(client.Handle, GameData.GetOffset("CCSPlayerController_Respawn"))(client);
+        }
+
+        public void CEntityIdentity_SetEntityName(CEntityIdentity entity, string name)
+        {
+            if (entity == null || string.IsNullOrEmpty(name))
+                return;
+
+            CEntityIdentity_SetEntityNameFunc.Invoke(entity, name);
         }
 
         public static CCSPlayerController player(CEntityInstance instance)

@@ -11,7 +11,7 @@ namespace ZombieSharp
             AddCommand("css_classlist", "Class List Command", CommandClassList);
             AddCommand("css_weaponlist", "Weapon List Command", WeaponListCommand);
             AddCommand("css_hitgrouplist", "Hitgroup List Command", HiggroupsListCommand);
-            AddCommand("css_rk", "Toggle Repeat Killer Command", ToggleRepeatKillerCommand);
+            AddCommand("css_togglerespawn", "Toggle Respawn Command", ToggleRespawnCommand);
             AddCommand("css_myclass", "Client PlayerClass Command", ClientPlayerClassCommand);
             AddCommand("css_logiclist", "Logic Relay List", LogicRelayListCommand);
             AddCommand("css_zclass", "Player Class Command", PlayerClassCommand);
@@ -168,25 +168,34 @@ namespace ZombieSharp
         }
 
         [RequiresPermissions(@"css/slay")]
-        private void ToggleRepeatKillerCommand(CCSPlayerController client, CommandInfo info)
+        private void ToggleRespawnCommand(CCSPlayerController client, CommandInfo info)
         {
-            if (!RepeatKillerEnable)
+            if (info.ArgCount <= 0)
             {
-                info.ReplyToCommand($" {ChatColors.Green}[Z:Sharp]{ChatColors.Default} This feature is currently disabled.");
+                if (!RespawnEnable)
+                {
+                    ToggleRespawn(true, true);
+                    ForceRespawnAllDeath();
+                    return;
+                }
+
+                else
+                {
+                    ToggleRespawn(true, false);
+                    return;
+                }
+            }
+            var arg = int.Parse(info.GetArg(1));
+
+            if (arg <= 0)
+            {
+                ToggleRespawn(true, false);
                 return;
             }
-
-            if (RepeatKillerActivated)
-            {
-                info.ReplyToCommand($" {ChatColors.Green}[Z:Sharp]{ChatColors.Default} Repeat killer detector force toggled off. Re-enabling respawn for this round.");
-                RepeatKillerActivated = false;
-                ForceRespawnAllDeath();
-                return;
-            }
-
             else
             {
-                info.ReplyToCommand($" {ChatColors.Green}[Z:Sharp]{ChatColors.Default} Repeat killer is already turned off!");
+                ToggleRespawn(true, true);
+                ForceRespawnAllDeath();
                 return;
             }
         }

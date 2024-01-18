@@ -37,6 +37,8 @@ namespace ZombieSharp
             RegenTimer.Add(clientindex, null);
 
             PlayerSettingsOnPutInServer(player);
+
+            WeaponOnClientPutInServer(clientindex);
         }
 
         private HookResult OnPlayerConnectFull(EventPlayerConnectFull @event, GameEventInfo info)
@@ -60,6 +62,8 @@ namespace ZombieSharp
 
             RegenTimerStop(player);
             RegenTimer.Remove(clientindex);
+
+            WeaponOnClientDisconnect(clientindex);
         }
 
         private void OnMapStart(string mapname)
@@ -81,8 +85,6 @@ namespace ZombieSharp
         private HookResult OnRoundStart(EventRoundStart @event, GameEventInfo info)
         {
             RemoveRoundObjective();
-            RepeatKillerActivated = false;
-
             RespawnTogglerSetup();
 
             Server.PrintToChatAll($" {ChatColors.Green}[Z:Sharp]{ChatColors.Default} The current game mode is the Human vs. Zombie, the zombie goal is to infect all human before time is running out.");
@@ -94,6 +96,9 @@ namespace ZombieSharp
         {
             bool warmup = GetGameRules().WarmupPeriod;
 
+            if (warmup && !ConfigSettings.EnableOnWarmup)
+                Server.PrintToChatAll($" {ChatColors.Green}[Z:Sharp]{ChatColors.Default} The current server has disabled infection in warmup round.");
+
             if (!warmup || ConfigSettings.EnableOnWarmup)
                 InfectOnRoundFreezeEnd();
 
@@ -104,12 +109,7 @@ namespace ZombieSharp
         {
             bool warmup = GetGameRules().WarmupPeriod;
 
-            if (warmup && !ConfigSettings.EnableOnWarmup)
-            {
-                Server.PrintToChatAll($" {ChatColors.Green}[Z:Sharp]{ChatColors.Default} The current server has disabled infection in warmup round.");
-            }
-
-            else if (!warmup || ConfigSettings.EnableOnWarmup)
+            if (!warmup || ConfigSettings.EnableOnWarmup)
             {
                 ToggleRespawn(true, true);
 
@@ -131,26 +131,31 @@ namespace ZombieSharp
 
         private HookResult OnRoundEnd(EventRoundEnd @event, GameEventInfo info)
         {
-            // Reset Client Status
-            AddTimer(0.2f, () =>
+            bool warmup = GetGameRules().WarmupPeriod;
+
+            if (!warmup || ConfigSettings.EnableOnWarmup)
             {
-                // Reset Zombie Spawned here.
-                ZombieSpawned = false;
-
-                // avoiding zombie status glitch on human class like in zombie:reloaded
-                List<CCSPlayerController> clientlist = Utilities.GetPlayers();
-
                 // Reset Client Status
-                foreach (var client in clientlist)
+                AddTimer(0.2f, () =>
                 {
-                    // Reset Client Status.
-                    ZombiePlayers[client.Slot].IsZombie = false;
+                    // Reset Zombie Spawned here.
+                    ZombieSpawned = false;
 
-                    // if they were chosen as motherzombie then let's make them not to get chosen again.
-                    if (ZombiePlayers[client.Slot].MotherZombieStatus == MotherZombieFlags.CHOSEN)
-                        ZombiePlayers[client.Slot].MotherZombieStatus = MotherZombieFlags.LAST;
-                }
-            });
+                    // avoiding zombie status glitch on human class like in zombie:reloaded
+                    List<CCSPlayerController> clientlist = Utilities.GetPlayers();
+
+                    // Reset Client Status
+                    foreach (var client in clientlist)
+                    {
+                        // Reset Client Status.
+                        ZombiePlayers[client.Slot].IsZombie = false;
+
+                        // if they were chosen as motherzombie then let's make them not to get chosen again.
+                        if (ZombiePlayers[client.Slot].MotherZombieStatus == MotherZombieFlags.CHOSEN)
+                            ZombiePlayers[client.Slot].MotherZombieStatus = MotherZombieFlags.LAST;
+                    }
+                });
+            }
 
             return HookResult.Continue;
         }
@@ -166,15 +171,17 @@ namespace ZombieSharp
                 var dmgHealth = @event.DmgHealth;
                 var hitgroup = @event.Hitgroup;
 
-                if (IsClientZombie(attacker) && IsClientHuman(client) && string.Equals(weapon, "knife"))
+                if (attacker != null && IsClientZombie(attacker) && IsClientHuman(client) && string.Equals(weapon, "knife"))
                 {
                     // Server.PrintToChatAll($"{client.PlayerName} Infected by {attacker.PlayerName}");
                     InfectClient(client, attacker);
                 }
 
-                FindWeaponItemDefinition(attacker.PlayerPawn.Value.WeaponServices.ActiveWeapon, weapon);
+                if (attacker.Slot != 32766)
+                    FindWeaponItemDefinition(attacker.PlayerPawn.Value.WeaponServices.ActiveWeapon, weapon);
 
-                KnockbackClient(client, attacker, dmgHealth, weapon, hitgroup);
+                if (IsClientZombie(client))
+                    KnockbackClient(client, attacker, dmgHealth, weapon, hitgroup);
             }
 
             return HookResult.Continue;
@@ -190,7 +197,7 @@ namespace ZombieSharp
             {
                 CheckGameStatus();
 
-                if (!RepeatKillerActivated)
+                if (RespawnEnable)
                 {
                     RespawnPlayer(client);
                     RepeatKillerOnPlayerDeath(client, attacker, weapon);
@@ -231,6 +238,8 @@ namespace ZombieSharp
                     var clientPawn = client.PlayerPawn.Value;
                     var spawnPos = clientPawn.AbsOrigin!;
                     var spawnAngle = clientPawn.AbsRotation!;
+
+                    WeaponOnPlayerSpawn(client.Slot);
 
                     // if zombie already spawned then they become zombie.
                     if (ZombieSpawned)
