@@ -131,26 +131,31 @@ namespace ZombieSharp
 
         private HookResult OnRoundEnd(EventRoundEnd @event, GameEventInfo info)
         {
-            // Reset Client Status
-            AddTimer(0.2f, () =>
+            bool warmup = GetGameRules().WarmupPeriod;
+
+            if (!warmup || ConfigSettings.EnableOnWarmup)
             {
-                // Reset Zombie Spawned here.
-                ZombieSpawned = false;
-
-                // avoiding zombie status glitch on human class like in zombie:reloaded
-                List<CCSPlayerController> clientlist = Utilities.GetPlayers();
-
                 // Reset Client Status
-                foreach (var client in clientlist)
+                AddTimer(0.2f, () =>
                 {
-                    // Reset Client Status.
-                    ZombiePlayers[client.Slot].IsZombie = false;
+                    // Reset Zombie Spawned here.
+                    ZombieSpawned = false;
 
-                    // if they were chosen as motherzombie then let's make them not to get chosen again.
-                    if (ZombiePlayers[client.Slot].MotherZombieStatus == MotherZombieFlags.CHOSEN)
-                        ZombiePlayers[client.Slot].MotherZombieStatus = MotherZombieFlags.LAST;
-                }
-            });
+                    // avoiding zombie status glitch on human class like in zombie:reloaded
+                    List<CCSPlayerController> clientlist = Utilities.GetPlayers();
+
+                    // Reset Client Status
+                    foreach (var client in clientlist)
+                    {
+                        // Reset Client Status.
+                        ZombiePlayers[client.Slot].IsZombie = false;
+
+                        // if they were chosen as motherzombie then let's make them not to get chosen again.
+                        if (ZombiePlayers[client.Slot].MotherZombieStatus == MotherZombieFlags.CHOSEN)
+                            ZombiePlayers[client.Slot].MotherZombieStatus = MotherZombieFlags.LAST;
+                    }
+                });
+            }
 
             return HookResult.Continue;
         }

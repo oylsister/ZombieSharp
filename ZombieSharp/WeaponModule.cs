@@ -63,7 +63,7 @@ namespace ZombieSharp
                 }
             }
 
-            CommandInitialized = false;
+            CommandInitialized = true;
         }
 
         public void PurchaseWeaponCommand(CCSPlayerController client, CommandInfo info)
@@ -82,6 +82,7 @@ namespace ZombieSharp
                         if (weaponCommand == command)
                         {
                             PurchaseWeapon(client, weapon);
+                            break;
                         }
                     }
                 }

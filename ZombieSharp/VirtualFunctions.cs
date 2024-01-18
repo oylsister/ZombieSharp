@@ -87,22 +87,17 @@ namespace ZombieSharp
 
             //Server.PrintToChatAll($"Found: {identity.Name}, input: {stringinput}");
 
-            if (RespawnRelay == null || identity == null)
-                return HookResult.Continue;
-
-            else if (RespawnRelay != null && RespawnRelay.IsValid)
+            if (RespawnRelay != null && identity != null)
             {
-                CLogicRelay relay = RespawnRelay.Value;
-
-                if (relay.Entity == identity)
+                if (identity.Name == "zr_toggle_respawn")
                 {
-                    if (stringinput == "Trigger")
+                    if (stringinput.Equals("Trigger", StringComparison.OrdinalIgnoreCase))
                         ToggleRespawn();
 
-                    else if (stringinput == "Enable" && !RespawnEnable)
+                    else if (stringinput.Equals("Enable", StringComparison.OrdinalIgnoreCase) && !RespawnEnable)
                         ToggleRespawn(true, true);
 
-                    else if (stringinput == "Disable" && RespawnEnable)
+                    else if (stringinput.Equals("Disable", StringComparison.OrdinalIgnoreCase) && RespawnEnable)
                         ToggleRespawn(true, false);
                 }
             }
