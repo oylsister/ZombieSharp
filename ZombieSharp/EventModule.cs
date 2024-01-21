@@ -119,7 +119,7 @@ namespace ZombieSharp
 
                     foreach (var client in clientlist)
                     {
-                        if (client.IsValid && client.PawnIsAlive)
+                        if (client.IsValid && IsPlayerAlive(client))
                         {
                             HumanizeClient(client);
                         }
@@ -215,12 +215,8 @@ namespace ZombieSharp
             {
                 AddTimer(ConfigSettings.RespawnTimer, () =>
                 {
-                    // Respawn the client.
-                    if (!client.PawnIsAlive)
-                    {
-                        // Server.PrintToChatAll($"Player {client.PlayerName} should be respawn here.");
-                        RespawnClient(client);
-                    }
+                    // Server.PrintToChatAll($"Player {client.PlayerName} should be respawn here.");
+                    RespawnClient(client);
                 });
             }
         }

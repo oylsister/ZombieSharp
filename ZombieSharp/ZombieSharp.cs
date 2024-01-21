@@ -87,7 +87,7 @@ namespace ZombieSharp
 
             foreach (var client in targetlist)
             {
-                if (client.PawnIsAlive! && client.IsValid!)
+                if (IsPlayerAlive(client) && client.IsValid!)
                 {
                     if (ZombiePlayers[client.Slot].MotherZombieStatus == MotherZombieFlags.NONE)
                     {
@@ -321,10 +321,10 @@ namespace ZombieSharp
                 if (!ZombiePlayers.ContainsKey(client.Slot))
                     continue;
 
-                if (ZombiePlayers[client.Slot].IsZombie && client.PawnIsAlive)
+                if (IsClientZombie(client) && IsPlayerAlive(client))
                     zombie++;
 
-                else if (!ZombiePlayers[client.Slot].IsZombie && client.PawnIsAlive)
+                else if (IsClientHuman(client) && IsPlayerAlive(client))
                     human++;
             }
 
@@ -372,20 +372,24 @@ namespace ZombieSharp
 
             var weapons = client!.PlayerPawn.Value!.WeaponServices!.MyWeapons;
 
-            client!.PlayerPawn.Value!.WeaponServices.AllowSwitchToNoWeapon = true;
-
             for (int i = weapons.Count - 1; i >= 0; i--)
             {
                 CCSWeaponBaseVData vdata = weapons[i].Value!.As<CCSWeaponBase>().GetVData<CCSWeaponBaseVData>()!;
 
-                client.ExecuteClientCommand("slot3");
-                client.ExecuteClientCommand($"slot{(int)vdata!.GearSlot + 1}");
-
                 if (vdata!.GearSlot != gear_slot_t.GEAR_SLOT_KNIFE)
+                {
+                    client.ExecuteClientCommand("slot3");
+                    client.ExecuteClientCommand($"slot{(int)vdata!.GearSlot + 1}");
                     client.DropActiveWeapon();
+                }
+            }
 
-                else
-                    weapons[i].Value.Remove();
+            client!.PlayerPawn.Value!.WeaponServices.AllowSwitchToNoWeapon = true;
+
+            if (client.PlayerPawn.Value!.WeaponServices!.ActiveWeapon.Value.DesignerName != "weapon_knife")
+            {
+                client.ExecuteClientCommand("slot3");
+                client.RemoveItemByDesignerName("weapon_knife");
             }
         }
 
@@ -408,6 +412,18 @@ namespace ZombieSharp
                 return false;
 
             return !ZombiePlayers[controller.Slot].IsZombie;
+        }
+
+        public bool IsPlayerAlive(CCSPlayerController controller)
+        {
+            if (controller.Slot == 32766)
+                return false;
+
+            if (controller.LifeState == (byte)LifeState_t.LIFE_ALIVE)
+                return true;
+
+            else
+                return false;
         }
     }
 }

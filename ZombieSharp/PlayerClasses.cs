@@ -100,7 +100,7 @@ namespace ZombieSharp
                         return;
                     }
 
-                    if (!client.PawnIsAlive)
+                    if (!IsPlayerAlive(client))
                     {
                         RegenTimer[client.Slot].Kill();
                         return;

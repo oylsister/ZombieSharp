@@ -107,7 +107,7 @@ namespace ZombieSharp
 
         public void RespawnClient(CCSPlayerController client)
         {
-            if (!client.IsValid || client.PawnIsAlive || client.TeamNum < 2)
+            if (!client.IsValid || IsPlayerAlive(client) || client.TeamNum < 2)
                 return;
 
             var clientPawn = client.PlayerPawn.Value;
