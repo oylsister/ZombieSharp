@@ -180,11 +180,6 @@ namespace ZombieSharp
                 ApplyClass = ClientPlayerClass[client.Slot].ZombieClass;
             }
 
-            if (respawn)
-            {
-                ZTele_TeleportClientToSpawn(client);
-            }
-
             // Create an event for killfeed
             if (attacker != null)
             {
