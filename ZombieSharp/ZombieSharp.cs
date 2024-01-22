@@ -1,4 +1,5 @@
 ﻿using CounterStrikeSharp.API.Modules.Entities.Constants;
+using Microsoft.Extensions.Logging;
 using ZombieSharp.Helpers;
 
 namespace ZombieSharp
@@ -33,6 +34,9 @@ namespace ZombieSharp
         private CounterStrikeSharp.API.Modules.Timers.Timer g_hInfectMZ = null;
 
         public bool hitgroupLoad = false;
+
+        CHandle<CTeam> CTTeam = null;
+        CHandle<CTeam> TTeam = null;
 
         public override void Load(bool HotReload)
         {
@@ -325,21 +329,30 @@ namespace ZombieSharp
 
             if (human <= 0)
             {
-                foreach (var team in teams)
+                if (TTeam == null)
                 {
-                    if (team.TeamNum == 3)
-                        team.Score++;
+                    Logger.LogError("CTeam for T is invalided!");
                 }
+
+                else
+                {
+                    TTeam.Value.Score = TTeam.Value.Score + 1;
+                }
+
                 // round end.
                 CCSGameRules gameRules = GetGameRules();
                 gameRules.TerminateRound(5.0f, RoundEndReason.TerroristsWin);
             }
             else if (zombie <= 0)
             {
-                foreach (var team in teams)
+                if (TTeam == null)
                 {
-                    if (team.TeamNum == 2)
-                        team.Score++;
+                    Logger.LogError("CTeam for CT is invalided!");
+                }
+
+                else
+                {
+                    CTTeam.Value.Score = CTTeam.Value.Score + 1;
                 }
 
                 // round end.
@@ -385,6 +398,20 @@ namespace ZombieSharp
             {
                 client.ExecuteClientCommand("slot3");
                 client.RemoveItemByDesignerName("weapon_knife");
+            }
+        }
+
+        void SetupTeam()
+        {
+            var teams = Utilities.FindAllEntitiesByDesignerName<CTeam>("cs_team_manager");
+
+            foreach (var team in teams)
+            {
+                if (team.TeamNum == 2)
+                    TTeam = new CHandle<CTeam>(team.Handle);
+
+                else if (team.TeamNum == 3)
+                    CTTeam = new CHandle<CTeam>(team.Handle);
             }
         }
 

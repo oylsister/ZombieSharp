@@ -5,6 +5,7 @@
 	"TeleportMotherZombie": true,
 	"EnableOnWarmup": false,
 	"RepeatKillerThreshold": 0.0,
+	"CashOnDamage": true,
 	"Human_Default": "human_default",
 	"Zombie_Default": "zombie_default",
 	"Mother_Zombie": "motherzombie"

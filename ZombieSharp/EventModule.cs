@@ -80,6 +80,7 @@ namespace ZombieSharp
 
             hitgroupLoad = HitGroupIntialize();
             RepeatKillerOnMapStart();
+            SetupTeam();
         }
 
         private HookResult OnRoundStart(EventRoundStart @event, GameEventInfo info)
@@ -181,7 +182,12 @@ namespace ZombieSharp
                     FindWeaponItemDefinition(attacker.PlayerPawn.Value.WeaponServices.ActiveWeapon, weapon);
 
                 if (IsClientZombie(client))
+                {
+                    if (ConfigSettings.CashOnDamage)
+                        DamageCash(attacker, dmgHealth);
+
                     KnockbackClient(client, attacker, dmgHealth, weapon, hitgroup);
+                }
             }
 
             return HookResult.Continue;
@@ -294,6 +300,13 @@ namespace ZombieSharp
                     }
                 });
             }
+        }
+
+        private void DamageCash(CCSPlayerController client, int dmgHealth)
+        {
+            var money = client.InGameMoneyServices.Account;
+            client.InGameMoneyServices.Account = money + dmgHealth;
+            Utilities.SetStateChanged(client, "CCSPlayerController", "m_pInGameMoneyServices");
         }
 
         private void RemoveRoundObjective()
