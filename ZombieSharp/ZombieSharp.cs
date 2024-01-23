@@ -195,7 +195,16 @@ namespace ZombieSharp
             }
 
             // Remove all weapon.
-            StripAllWeapon(client);
+            var dropmode = ConfigSettings.ZombieDrop;
+
+            if (dropmode == 0)
+                StripAllWeapon(client);
+
+            else
+                ForceDropAllWeapon(client);
+
+            client.GiveNamedItem("weapon_knife");
+            client!.PlayerPawn.Value!.WeaponServices!.AllowSwitchToNoWeapon = false;
 
             // swith to terrorist side.
             client.SwitchTeam(CsTeam.Terrorist);
@@ -218,10 +227,6 @@ namespace ZombieSharp
 
                 ClientPlayerClass[client.Slot].ActiveClass = null;
             }
-
-            client!.PlayerPawn.Value!.WeaponServices!.AllowSwitchToNoWeapon = false;
-
-            client.GiveNamedItem("weapon_knife");
 
             // if all human died then let's end the round.
             if (ZombieSpawned)
@@ -393,12 +398,8 @@ namespace ZombieSharp
             }
 
             client!.PlayerPawn.Value!.WeaponServices.AllowSwitchToNoWeapon = true;
-
-            if (client.PlayerPawn.Value!.WeaponServices!.ActiveWeapon.Value.DesignerName != "weapon_knife")
-            {
-                client.ExecuteClientCommand("slot3");
-                client.RemoveItemByDesignerName("weapon_knife");
-            }
+            client.ExecuteClientCommand("slot3");
+            client.RemoveItemByDesignerName("weapon_knife");
         }
 
         void SetupTeam()
