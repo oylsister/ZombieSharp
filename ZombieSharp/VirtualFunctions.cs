@@ -63,6 +63,16 @@ namespace ZombieSharp
 
             // var controller = player(client);
 
+            // blocking inferno damage because Nori is a fucking idiot want to burn himself
+            if (damageInfo.Inflictor.Value.DesignerName == "inferno")
+            {
+                var inferno = new CInferno(damageInfo.Inflictor.Value.Handle);
+                if (client == inferno.OwnerEntity.Value)
+                {
+                    damageInfo.Damage = 0;
+                }
+            }
+
             bool warmup = GetGameRules().WarmupPeriod;
 
             if (warmup && !ConfigSettings.EnableOnWarmup)
@@ -107,7 +117,7 @@ namespace ZombieSharp
 
         public void RespawnClient(CCSPlayerController client)
         {
-            if (!client.IsValid || IsPlayerAlive(client) || client.TeamNum < 2)
+            if (!client.IsValid || client.PawnIsAlive || client.TeamNum < 2)
                 return;
 
             var clientPawn = client.PlayerPawn.Value;

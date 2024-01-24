@@ -1,5 +1,4 @@
 ﻿using CounterStrikeSharp.API.Modules.Entities.Constants;
-using Microsoft.Extensions.Logging;
 using ZombieSharp.Helpers;
 
 namespace ZombieSharp
@@ -34,9 +33,6 @@ namespace ZombieSharp
         private CounterStrikeSharp.API.Modules.Timers.Timer g_hInfectMZ = null;
 
         public bool hitgroupLoad = false;
-
-        CHandle<CTeam> CTTeam = null;
-        CHandle<CTeam> TTeam = null;
 
         public override void Load(bool HotReload)
         {
@@ -319,6 +315,18 @@ namespace ZombieSharp
             int human = 0;
             int zombie = 0;
 
+            CTeam CTTeam = null;
+            CTeam TTeam = null;
+
+            foreach (var team in teams)
+            {
+                if (team.TeamNum == 2)
+                    TTeam = team;
+
+                else if (team.TeamNum == 3)
+                    CTTeam = team;
+            }
+
             List<CCSPlayerController> clientlist = Utilities.GetPlayers();
             foreach (var client in clientlist)
             {
@@ -334,15 +342,7 @@ namespace ZombieSharp
 
             if (human <= 0)
             {
-                if (TTeam == null)
-                {
-                    Logger.LogError("CTeam for T is invalided!");
-                }
-
-                else
-                {
-                    TTeam.Value.Score = TTeam.Value.Score + 1;
-                }
+                TTeam.Score += 1;
 
                 // round end.
                 CCSGameRules gameRules = GetGameRules();
@@ -350,15 +350,7 @@ namespace ZombieSharp
             }
             else if (zombie <= 0)
             {
-                if (TTeam == null)
-                {
-                    Logger.LogError("CTeam for CT is invalided!");
-                }
-
-                else
-                {
-                    CTTeam.Value.Score = CTTeam.Value.Score + 1;
-                }
+                CTTeam.Score += 1;
 
                 // round end.
                 CCSGameRules gameRules = GetGameRules();
@@ -399,21 +391,8 @@ namespace ZombieSharp
 
             client!.PlayerPawn.Value!.WeaponServices.AllowSwitchToNoWeapon = true;
             client.ExecuteClientCommand("slot3");
-            client.RemoveItemByDesignerName("weapon_knife");
-        }
-
-        void SetupTeam()
-        {
-            var teams = Utilities.FindAllEntitiesByDesignerName<CTeam>("cs_team_manager");
-
-            foreach (var team in teams)
-            {
-                if (team.TeamNum == 2)
-                    TTeam = new CHandle<CTeam>(team.Handle);
-
-                else if (team.TeamNum == 3)
-                    CTTeam = new CHandle<CTeam>(team.Handle);
-            }
+            CBasePlayerWeapon activeweapon = new CBasePlayerWeapon(client!.PlayerPawn.Value!.WeaponServices!.ActiveWeapon.Value.Handle);
+            activeweapon.AcceptInput("Kill");
         }
 
         public CCSGameRules GetGameRules()

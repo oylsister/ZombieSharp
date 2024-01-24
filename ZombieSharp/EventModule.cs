@@ -80,7 +80,6 @@ namespace ZombieSharp
 
             hitgroupLoad = HitGroupIntialize();
             RepeatKillerOnMapStart();
-            SetupTeam();
         }
 
         private HookResult OnRoundStart(EventRoundStart @event, GameEventInfo info)
@@ -178,7 +177,7 @@ namespace ZombieSharp
                     InfectClient(client, attacker);
                 }
 
-                if (attacker.Slot != 32766)
+                if (attacker.Slot != 32766 && attacker.DesignerName == "player")
                     FindWeaponItemDefinition(attacker.PlayerPawn.Value.WeaponServices.ActiveWeapon, weapon);
 
                 if (IsClientZombie(client))

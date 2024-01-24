@@ -68,8 +68,22 @@ namespace ZombieSharp
             }
             else
             {
-                ClientPlayerClass[clientindex].HumanClass = result.HClass;
-                ClientPlayerClass[clientindex].ZombieClass = result.ZClass;
+                if (result.HClass == null || result.ZClass == null)
+                {
+                    PlayerClassDB db = new();
+
+                    db.SteamID = client.AuthorizedSteamID.SteamId3;
+                    db.HClass = ClientPlayerClass[clientindex].HumanClass;
+                    db.ZClass = ClientPlayerClass[clientindex].ZombieClass;
+
+                    await CreatePlayerSettings(db);
+                }
+
+                else
+                {
+                    ClientPlayerClass[clientindex].HumanClass = result.HClass;
+                    ClientPlayerClass[clientindex].ZombieClass = result.ZClass;
+                }
 
                 return;
             }
