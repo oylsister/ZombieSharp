@@ -374,6 +374,7 @@ namespace ZombieSharp
                 {
                     client.ExecuteClientCommand("slot3");
                     client.ExecuteClientCommand($"slot{weaponslot + 1}");
+                    client.DropActiveWeapon();
                 }
             }
 
