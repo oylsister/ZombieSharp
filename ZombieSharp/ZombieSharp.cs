@@ -365,6 +365,18 @@ namespace ZombieSharp
 
             var weapons = client!.PlayerPawn.Value!.WeaponServices!.MyWeapons;
 
+            foreach (var weapon in weapons)
+            {
+                CCSWeaponBaseVData vdata = weapon.Value!.As<CCSWeaponBase>().GetVData<CCSWeaponBaseVData>()!;
+                int weaponslot = (int)vdata!.GearSlot;
+
+                if (!string.IsNullOrEmpty(weapon.Value.UniqueHammerID) && vdata!.GearSlot != gear_slot_t.GEAR_SLOT_KNIFE)
+                {
+                    client.ExecuteClientCommand("slot3");
+                    client.ExecuteClientCommand($"slot{weaponslot + 1}");
+                }
+            }
+
             client!.PlayerPawn.Value!.WeaponServices!.AllowSwitchToNoWeapon = true;
 
             client.RemoveWeapons();
