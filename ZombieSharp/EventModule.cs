@@ -147,6 +147,9 @@ namespace ZombieSharp
                     // Reset Client Status
                     foreach (var client in clientlist)
                     {
+                        if (!client.IsValid)
+                            continue;
+
                         // Reset Client Status.
                         ZombiePlayers[client.Slot].IsZombie = false;
 
@@ -171,19 +174,21 @@ namespace ZombieSharp
                 var dmgHealth = @event.DmgHealth;
                 var hitgroup = @event.Hitgroup;
 
-                if (attacker != null && IsClientZombie(attacker) && IsClientHuman(client) && string.Equals(weapon, "knife"))
+                if (!attacker.IsValid || !client.IsValid)
+                    return HookResult.Continue;
+
+                if (IsClientZombie(attacker) && IsClientHuman(client) && string.Equals(weapon, "knife"))
                 {
                     // Server.PrintToChatAll($"{client.PlayerName} Infected by {attacker.PlayerName}");
                     InfectClient(client, attacker);
                 }
 
-                if (attacker.Slot != 32766 && attacker.DesignerName == "player")
-                    FindWeaponItemDefinition(attacker.PlayerPawn.Value.WeaponServices.ActiveWeapon, weapon);
-
                 if (IsClientZombie(client))
                 {
                     if (ConfigSettings.CashOnDamage)
                         DamageCash(attacker, dmgHealth);
+
+                    FindWeaponItemDefinition(attacker.PlayerPawn.Value.WeaponServices.ActiveWeapon, weapon);
 
                     KnockbackClient(client, attacker, dmgHealth, weapon, hitgroup);
                 }
@@ -236,10 +241,6 @@ namespace ZombieSharp
             {
                 AddTimer(0.2f, () =>
                 {
-                    var clientPawn = client.PlayerPawn.Value;
-                    var spawnPos = clientPawn.AbsOrigin!;
-                    var spawnAngle = clientPawn.AbsRotation!;
-
                     WeaponOnPlayerSpawn(client.Slot);
 
                     // if zombie already spawned then they become zombie.
@@ -252,6 +253,10 @@ namespace ZombieSharp
                     // else they're human!
                     else
                         HumanizeClient(client);
+
+                    var clientPawn = client.PlayerPawn.Value;
+                    var spawnPos = clientPawn.AbsOrigin!;
+                    var spawnAngle = clientPawn.AbsRotation!;
 
                     ZTele_GetClientSpawnPoint(client, spawnPos, spawnAngle);
                 });

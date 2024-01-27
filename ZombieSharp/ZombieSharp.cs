@@ -1,13 +1,15 @@
-﻿using CounterStrikeSharp.API.Modules.Entities.Constants;
+﻿using CounterStrikeSharp.API.Core.Attributes;
+using CounterStrikeSharp.API.Modules.Entities.Constants;
 using ZombieSharp.Helpers;
 
 namespace ZombieSharp
 {
+    [MinimumApiVersion(159)]
     public partial class ZombieSharp : BasePlugin
     {
         public override string ModuleName => "Zombie Sharp";
         public override string ModuleAuthor => "Oylsister, Kurumi, Sparky";
-        public override string ModuleVersion => "1.0.0";
+        public override string ModuleVersion => "1.0.1";
         public override string ModuleDescription => "Infection/survival style gameplay for CS2 in C#";
 
         public bool ZombieSpawned;
@@ -117,7 +119,10 @@ namespace ZombieSharp
                 {
                     foreach (var client in candidate)
                     {
-                        Server.PrintToChatAll($"Infect {client.PlayerName} as Mother Zombie.");
+                        // Server.PrintToChatAll($"Infect {client.PlayerName} as Mother Zombie.");
+                        if (!client.IsValid || !IsPlayerAlive(client))
+                            continue;
+
                         InfectClient(client, null, true);
                         alreadymade++;
                     }
@@ -127,6 +132,9 @@ namespace ZombieSharp
 
                 foreach (var client in Utilities.GetPlayers())
                 {
+                    if (!client.IsValid || !IsPlayerAlive(client))
+                        continue;
+
                     if (ZombiePlayers[client.Slot].MotherZombieStatus == MotherZombieFlags.LAST)
                     {
                         ZombiePlayers[client.Slot].MotherZombieStatus = MotherZombieFlags.NONE;
@@ -139,6 +147,9 @@ namespace ZombieSharp
                     if (alreadymade >= maxmz)
                         break;
 
+                    if (!client.IsValid || !IsPlayerAlive(client))
+                        continue;
+
                     //Server.PrintToChatAll($"Infect {client.PlayerName} as Mother Zombie.");
                     InfectClient(client, null, true);
                     alreadymade++;
@@ -150,6 +161,9 @@ namespace ZombieSharp
                 {
                     if (alreadymade >= maxmz)
                         break;
+
+                    if (!client.IsValid || !IsPlayerAlive(client))
+                        continue;
 
                     //Server.PrintToChatAll($"Infect {client.PlayerName} as Mother Zombie.");
                     InfectClient(client, null, true);
@@ -434,7 +448,7 @@ namespace ZombieSharp
             if (controller.Slot == 32766)
                 return false;
 
-            if (controller.LifeState == (byte)LifeState_t.LIFE_ALIVE)
+            if (controller.LifeState == (byte)LifeState_t.LIFE_ALIVE || controller.PawnIsAlive)
                 return true;
 
             else
