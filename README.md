@@ -42,7 +42,7 @@ mp_disconnect_kills_players 1 // set in gamemode_casual.cfg
 ### Configuration
 Here is a list of all the config files available and what they do.
 
-weapons.json - Configure specific weapon settings.
+weapons.json - Configure specific weapon settings. And purchase settings
 ```json
 {
     "KnockbackMultiply": 1.0, // Knockback Multiply for all weapon
@@ -50,7 +50,12 @@ weapons.json - Configure specific weapon settings.
         "glock": { // The weaponname get from event when get fired.
             "WeaponName": "Glock", // weapon name you wish
             "WeaponEntity": "weapon_glock", // weapon entity
-            "Knockback": 1.1 // knockback
+            "Knockback": 1.1, // knockback
+            "WeaponSlot": 1, // weaponslot (0 = Primary, 1 = Secondary, 2 = knife, 3 = grenade)
+            "Price": 200, // price you want
+            "MaxPurchase": 0, // Allowing how many time client to purchase in one live.
+            "Restrict": false, // Allow client to use or not.
+            "PurchaseCommand": [ "css_glock", "css_gs" ] // Purchase command. Set whatever you want.
         }
     }
 }

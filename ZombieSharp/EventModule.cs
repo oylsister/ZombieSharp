@@ -119,7 +119,7 @@ namespace ZombieSharp
 
                     foreach (var client in clientlist)
                     {
-                        if (client.IsValid && client.PawnIsAlive)
+                        if (client.IsValid && IsPlayerAlive(client))
                         {
                             HumanizeClient(client);
                         }
@@ -147,6 +147,9 @@ namespace ZombieSharp
                     // Reset Client Status
                     foreach (var client in clientlist)
                     {
+                        if (!client.IsValid)
+                            continue;
+
                         // Reset Client Status.
                         ZombiePlayers[client.Slot].IsZombie = false;
 
@@ -171,17 +174,24 @@ namespace ZombieSharp
                 var dmgHealth = @event.DmgHealth;
                 var hitgroup = @event.Hitgroup;
 
-                if (attacker != null && IsClientZombie(attacker) && IsClientHuman(client) && string.Equals(weapon, "knife"))
+                if (!attacker.IsValid || !client.IsValid)
+                    return HookResult.Continue;
+
+                if (IsClientZombie(attacker) && IsClientHuman(client) && string.Equals(weapon, "knife"))
                 {
                     // Server.PrintToChatAll($"{client.PlayerName} Infected by {attacker.PlayerName}");
                     InfectClient(client, attacker);
                 }
 
-                if (attacker.Slot != 32766)
+                if (IsClientZombie(client))
+                {
+                    if (ConfigSettings.CashOnDamage)
+                        DamageCash(attacker, dmgHealth);
+
                     FindWeaponItemDefinition(attacker.PlayerPawn.Value.WeaponServices.ActiveWeapon, weapon);
 
-                if (IsClientZombie(client))
                     KnockbackClient(client, attacker, dmgHealth, weapon, hitgroup);
+                }
             }
 
             return HookResult.Continue;
@@ -215,12 +225,8 @@ namespace ZombieSharp
             {
                 AddTimer(ConfigSettings.RespawnTimer, () =>
                 {
-                    // Respawn the client.
-                    if (!client.PawnIsAlive)
-                    {
-                        // Server.PrintToChatAll($"Player {client.PlayerName} should be respawn here.");
-                        RespawnClient(client);
-                    }
+                    // Server.PrintToChatAll($"Player {client.PlayerName} should be respawn here.");
+                    RespawnClient(client);
                 });
             }
         }
@@ -235,10 +241,6 @@ namespace ZombieSharp
             {
                 AddTimer(0.2f, () =>
                 {
-                    var clientPawn = client.PlayerPawn.Value;
-                    var spawnPos = clientPawn.AbsOrigin!;
-                    var spawnAngle = clientPawn.AbsRotation!;
-
                     WeaponOnPlayerSpawn(client.Slot);
 
                     // if zombie already spawned then they become zombie.
@@ -251,6 +253,10 @@ namespace ZombieSharp
                     // else they're human!
                     else
                         HumanizeClient(client);
+
+                    var clientPawn = client.PlayerPawn.Value;
+                    var spawnPos = clientPawn.AbsOrigin!;
+                    var spawnAngle = clientPawn.AbsRotation!;
 
                     ZTele_GetClientSpawnPoint(client, spawnPos, spawnAngle);
                 });
@@ -298,6 +304,13 @@ namespace ZombieSharp
                     }
                 });
             }
+        }
+
+        private void DamageCash(CCSPlayerController client, int dmgHealth)
+        {
+            var money = client.InGameMoneyServices.Account;
+            client.InGameMoneyServices.Account = money + dmgHealth;
+            Utilities.SetStateChanged(client, "CCSPlayerController", "m_pInGameMoneyServices");
         }
 
         private void RemoveRoundObjective()

@@ -100,7 +100,7 @@ namespace ZombieSharp
                         return;
                     }
 
-                    if (!client.PawnIsAlive)
+                    if (!IsPlayerAlive(client))
                     {
                         RegenTimer[client.Slot].Kill();
                         return;
@@ -139,7 +139,7 @@ namespace ZombieSharp
             var mainmenu = new ChatMenu($"{ChatColors.DarkBlue}[Z:Sharp] Player Class Main Menu");
             mainmenu.AddMenuOption("Zombie Class", (client, option) => PlayerClassSelectMenu(client, 0));
             mainmenu.AddMenuOption("Human Class", (client, option) => PlayerClassSelectMenu(client, 1));
-            ChatMenus.OpenMenu(client, mainmenu);
+            MenuManager.OpenChatMenu(client, mainmenu);
         }
 
         private void PlayerClassSelectMenu(CCSPlayerController client, int team)
@@ -195,7 +195,7 @@ namespace ZombieSharp
 
             selectmenu.AddMenuOption("Back", menuhandle);
 
-            ChatMenus.OpenMenu(client, selectmenu);
+            MenuManager.OpenChatMenu(client, selectmenu);
         }
     }
 }

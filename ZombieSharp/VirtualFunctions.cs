@@ -12,8 +12,7 @@ namespace ZombieSharp
             CBasePlayerController_SetPawnFunc = new(GameData.GetSignature("CBasePlayerController_SetPawn"));
             CEntityIdentity_SetEntityNameFunc = new(GameData.GetSignature("CEntityIdentity_SetEntityName"));
 
-            MemoryFunctionWithReturn<CCSPlayer_WeaponServices, CBasePlayerWeapon, bool> CCSPlayer_WeaponServices_CanUseFunc = new(GameData.GetSignature("CCSPlayer_WeaponServices_CanUse"));
-            CCSPlayer_WeaponServices_CanUseFunc.Hook(OnWeaponCanUse, HookMode.Pre);
+            VirtualFunctions.CCSPlayer_WeaponServices_CanUseFunc.Hook(OnWeaponCanUse, HookMode.Pre);
 
             VirtualFunctions.CBaseEntity_TakeDamageOldFunc.Hook(OnTakeDamage, HookMode.Pre);
 
@@ -62,6 +61,16 @@ namespace ZombieSharp
             var attackInfo = damageInfo.Attacker;
 
             // var controller = player(client);
+
+            // blocking inferno damage because Nori is a fucking idiot want to burn himself
+            if (damageInfo.Inflictor.Value.DesignerName == "inferno")
+            {
+                var inferno = new CInferno(damageInfo.Inflictor.Value.Handle);
+                if (client == inferno.OwnerEntity.Value)
+                {
+                    damageInfo.Damage = 0;
+                }
+            }
 
             bool warmup = GetGameRules().WarmupPeriod;
 

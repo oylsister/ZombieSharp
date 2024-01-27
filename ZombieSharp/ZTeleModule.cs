@@ -18,7 +18,7 @@
                 return;
             }
 
-            if (!client.PawnIsAlive)
+            if (!IsPlayerAlive(client))
                 return;
 
             var clientPawn = client.PlayerPawn.Value;

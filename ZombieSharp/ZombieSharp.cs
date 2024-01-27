@@ -1,13 +1,15 @@
-﻿using CounterStrikeSharp.API.Modules.Entities.Constants;
+﻿using CounterStrikeSharp.API.Core.Attributes;
+using CounterStrikeSharp.API.Modules.Entities.Constants;
 using ZombieSharp.Helpers;
 
 namespace ZombieSharp
 {
+    [MinimumApiVersion(159)]
     public partial class ZombieSharp : BasePlugin
     {
         public override string ModuleName => "Zombie Sharp";
         public override string ModuleAuthor => "Oylsister, Kurumi, Sparky";
-        public override string ModuleVersion => "1.0.0";
+        public override string ModuleVersion => "1.0.1";
         public override string ModuleDescription => "Infection/survival style gameplay for CS2 in C#";
 
         public bool ZombieSpawned;
@@ -87,7 +89,7 @@ namespace ZombieSharp
 
             foreach (var client in targetlist)
             {
-                if (client.PawnIsAlive! && client.IsValid!)
+                if (IsPlayerAlive(client) && client.IsValid!)
                 {
                     if (ZombiePlayers[client.Slot].MotherZombieStatus == MotherZombieFlags.NONE)
                     {
@@ -117,7 +119,10 @@ namespace ZombieSharp
                 {
                     foreach (var client in candidate)
                     {
-                        Server.PrintToChatAll($"Infect {client.PlayerName} as Mother Zombie.");
+                        // Server.PrintToChatAll($"Infect {client.PlayerName} as Mother Zombie.");
+                        if (!client.IsValid || !IsPlayerAlive(client))
+                            continue;
+
                         InfectClient(client, null, true);
                         alreadymade++;
                     }
@@ -127,6 +132,9 @@ namespace ZombieSharp
 
                 foreach (var client in Utilities.GetPlayers())
                 {
+                    if (!client.IsValid || !IsPlayerAlive(client))
+                        continue;
+
                     if (ZombiePlayers[client.Slot].MotherZombieStatus == MotherZombieFlags.LAST)
                     {
                         ZombiePlayers[client.Slot].MotherZombieStatus = MotherZombieFlags.NONE;
@@ -139,6 +147,9 @@ namespace ZombieSharp
                     if (alreadymade >= maxmz)
                         break;
 
+                    if (!client.IsValid || !IsPlayerAlive(client))
+                        continue;
+
                     //Server.PrintToChatAll($"Infect {client.PlayerName} as Mother Zombie.");
                     InfectClient(client, null, true);
                     alreadymade++;
@@ -150,6 +161,9 @@ namespace ZombieSharp
                 {
                     if (alreadymade >= maxmz)
                         break;
+
+                    if (!client.IsValid || !IsPlayerAlive(client))
+                        continue;
 
                     //Server.PrintToChatAll($"Infect {client.PlayerName} as Mother Zombie.");
                     InfectClient(client, null, true);
@@ -191,7 +205,16 @@ namespace ZombieSharp
             }
 
             // Remove all weapon.
-            StripAllWeapon(client);
+            var dropmode = ConfigSettings.ZombieDrop;
+
+            if (dropmode == 0)
+                StripAllWeapon(client);
+
+            else
+                ForceDropAllWeapon(client);
+
+            client.GiveNamedItem("weapon_knife");
+            client!.PlayerPawn.Value!.WeaponServices!.AllowSwitchToNoWeapon = false;
 
             // swith to terrorist side.
             client.SwitchTeam(CsTeam.Terrorist);
@@ -214,10 +237,6 @@ namespace ZombieSharp
 
                 ClientPlayerClass[client.Slot].ActiveClass = null;
             }
-
-            client!.PlayerPawn.Value!.WeaponServices!.AllowSwitchToNoWeapon = false;
-
-            client.GiveNamedItem("weapon_knife");
 
             // if all human died then let's end the round.
             if (ZombieSpawned)
@@ -310,37 +329,42 @@ namespace ZombieSharp
             int human = 0;
             int zombie = 0;
 
+            CTeam CTTeam = null;
+            CTeam TTeam = null;
+
+            foreach (var team in teams)
+            {
+                if (team.TeamNum == 2)
+                    TTeam = team;
+
+                else if (team.TeamNum == 3)
+                    CTTeam = team;
+            }
+
             List<CCSPlayerController> clientlist = Utilities.GetPlayers();
             foreach (var client in clientlist)
             {
                 if (!ZombiePlayers.ContainsKey(client.Slot))
                     continue;
 
-                if (ZombiePlayers[client.Slot].IsZombie && client.PawnIsAlive)
+                if (IsClientZombie(client) && IsPlayerAlive(client))
                     zombie++;
 
-                else if (!ZombiePlayers[client.Slot].IsZombie && client.PawnIsAlive)
+                else if (IsClientHuman(client) && IsPlayerAlive(client))
                     human++;
             }
 
             if (human <= 0)
             {
-                foreach (var team in teams)
-                {
-                    if (team.TeamNum == 3)
-                        team.Score++;
-                }
+                TTeam.Score += 1;
+
                 // round end.
                 CCSGameRules gameRules = GetGameRules();
                 gameRules.TerminateRound(5.0f, RoundEndReason.TerroristsWin);
             }
             else if (zombie <= 0)
             {
-                foreach (var team in teams)
-                {
-                    if (team.TeamNum == 2)
-                        team.Score++;
-                }
+                CTTeam.Score += 1;
 
                 // round end.
                 CCSGameRules gameRules = GetGameRules();
@@ -355,6 +379,19 @@ namespace ZombieSharp
 
             var weapons = client!.PlayerPawn.Value!.WeaponServices!.MyWeapons;
 
+            foreach (var weapon in weapons)
+            {
+                CCSWeaponBaseVData vdata = weapon.Value!.As<CCSWeaponBase>().GetVData<CCSWeaponBaseVData>()!;
+                int weaponslot = (int)vdata!.GearSlot;
+
+                if (!string.IsNullOrEmpty(weapon.Value.UniqueHammerID) && vdata!.GearSlot != gear_slot_t.GEAR_SLOT_KNIFE)
+                {
+                    client.ExecuteClientCommand("slot3");
+                    client.ExecuteClientCommand($"slot{weaponslot + 1}");
+                    client.DropActiveWeapon();
+                }
+            }
+
             client!.PlayerPawn.Value!.WeaponServices!.AllowSwitchToNoWeapon = true;
 
             client.RemoveWeapons();
@@ -367,21 +404,22 @@ namespace ZombieSharp
 
             var weapons = client!.PlayerPawn.Value!.WeaponServices!.MyWeapons;
 
-            client!.PlayerPawn.Value!.WeaponServices.AllowSwitchToNoWeapon = true;
-
             for (int i = weapons.Count - 1; i >= 0; i--)
             {
                 CCSWeaponBaseVData vdata = weapons[i].Value!.As<CCSWeaponBase>().GetVData<CCSWeaponBaseVData>()!;
 
-                client.ExecuteClientCommand("slot3");
-                client.ExecuteClientCommand($"slot{(int)vdata!.GearSlot + 1}");
-
                 if (vdata!.GearSlot != gear_slot_t.GEAR_SLOT_KNIFE)
+                {
+                    client.ExecuteClientCommand("slot3");
+                    client.ExecuteClientCommand($"slot{(int)vdata!.GearSlot + 1}");
                     client.DropActiveWeapon();
-
-                else
-                    weapons[i].Value.Remove();
+                }
             }
+
+            client!.PlayerPawn.Value!.WeaponServices.AllowSwitchToNoWeapon = true;
+            client.ExecuteClientCommand("slot3");
+            CBasePlayerWeapon activeweapon = new CBasePlayerWeapon(client!.PlayerPawn.Value!.WeaponServices!.ActiveWeapon.Value.Handle);
+            activeweapon.AcceptInput("Kill");
         }
 
         public CCSGameRules GetGameRules()
@@ -403,6 +441,18 @@ namespace ZombieSharp
                 return false;
 
             return !ZombiePlayers[controller.Slot].IsZombie;
+        }
+
+        public bool IsPlayerAlive(CCSPlayerController controller)
+        {
+            if (controller.Slot == 32766)
+                return false;
+
+            if (controller.LifeState == (byte)LifeState_t.LIFE_ALIVE || controller.PawnIsAlive)
+                return true;
+
+            else
+                return false;
         }
     }
 }

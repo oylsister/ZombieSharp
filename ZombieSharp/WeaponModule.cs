@@ -99,7 +99,7 @@ namespace ZombieSharp
                 return;
             }
 
-            if (!client.PawnIsAlive || client.LifeState == (byte)LifeState_t.LIFE_DEAD)
+            if (!IsPlayerAlive(client))
             {
                 client.PrintToChat($" {ChatColors.Green}[Z:Sharp]{ChatColors.Default} this feature need you to be alive!");
                 return;

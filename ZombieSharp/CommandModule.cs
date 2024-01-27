@@ -15,6 +15,7 @@ namespace ZombieSharp
             AddCommand("css_myclass", "Client PlayerClass Command", ClientPlayerClassCommand);
             AddCommand("css_logiclist", "Logic Relay List", LogicRelayListCommand);
             AddCommand("css_zclass", "Player Class Command", PlayerClassCommand);
+            AddCommand("css_dropme", "Test Force All Drop Weapon Command", ForceDropCommand);
         }
 
         [RequiresPermissions(@"css/slay")]
@@ -39,7 +40,7 @@ namespace ZombieSharp
                 if (!target.IsValid)
                     continue;
 
-                if (!target.PawnIsAlive)
+                if (!IsPlayerAlive(target))
                 {
                     if (targets.Players.Count < 2)
                         info.ReplyToCommand($" {ChatColors.Green}[Z:Sharp]{ChatColors.Default} target {target.PlayerName} is not alive.");
@@ -86,7 +87,7 @@ namespace ZombieSharp
                 if (!target.IsValid)
                     continue;
 
-                if (!target.PawnIsAlive)
+                if (!IsPlayerAlive(target))
                 {
                     if (targets.Players.Count < 2)
                         info.ReplyToCommand($" {ChatColors.Green}[Z:Sharp]{ChatColors.Default} target {target.PlayerName} is not alive.");
@@ -115,7 +116,7 @@ namespace ZombieSharp
             if (!client.IsValid)
                 return;
 
-            if (!client.PawnIsAlive)
+            if (!IsPlayerAlive(client))
             {
                 info.ReplyToCommand($" {ChatColors.Green}[Z:Sharp]{ChatColors.Default} This feature requires that you are alive.");
                 return;
@@ -225,6 +226,19 @@ namespace ZombieSharp
                 return;
 
             PlayerClassMainMenu(client);
+        }
+
+        private void ForceDropCommand(CCSPlayerController client, CommandInfo info)
+        {
+            if (client == null)
+                return;
+
+            if (!IsPlayerAlive(client))
+                return;
+
+            ForceDropAllWeapon(client);
+            client.GiveNamedItem("weapon_knife");
+            client!.PlayerPawn.Value!.WeaponServices.AllowSwitchToNoWeapon = false;
         }
     }
 }
