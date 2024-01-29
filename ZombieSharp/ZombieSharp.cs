@@ -359,13 +359,16 @@ namespace ZombieSharp
 
         public void StripAllWeapon(CCSPlayerController client)
         {
-            if (client == null)
+            if (client == null || !client.IsValid)
                 return;
 
             var weapons = client!.PlayerPawn.Value!.WeaponServices!.MyWeapons;
 
             foreach (var weapon in weapons)
             {
+                if (!weapon.IsValid)
+                    continue;
+
                 var vdata = new CCSWeaponBaseVData(weapon.Value!.VData.Handle);
                 int weaponslot = (int)vdata!.GearSlot;
 
