@@ -36,19 +36,20 @@ namespace ZombieSharp
             CBasePlayerController_SetPawnFunc = new(GameData.GetSignature("CBasePlayerController_SetPawn"));
             CEntityIdentity_SetEntityNameFunc = new(GameData.GetSignature("CEntityIdentity_SetEntityName"));
 
-            // VirtualFunctions.CCSPlayer_WeaponServices_CanUseFunc.Hook(OnWeaponCanUse, HookMode.Pre);
+            VirtualFunctions.CCSPlayer_WeaponServices_CanUseFunc.Hook(OnWeaponCanUse, HookMode.Pre);
 
             VirtualFunctions.CBaseEntity_TakeDamageOldFunc.Hook(OnTakeDamage, HookMode.Pre);
 
             GetCSWeaponDataFromKeyFunc = new(GameData.GetSignature("GetCSWeaponDataFromKey"));
 
-            MemoryFunctionWithReturn<CCSPlayer_ItemServices, CEconItemView, AcquireMethod, NativeObject, AcquireResult> CCSPlayer_CanAcquireFunc = new(GameData.GetSignature("CCSPlayer_CanAcquire"));
-            CCSPlayer_CanAcquireFunc.Hook(OnWeaponAcquire, HookMode.Pre);
+            // MemoryFunctionWithReturn<CCSPlayer_ItemServices, CEconItemView, AcquireMethod, NativeObject, AcquireResult> CCSPlayer_CanAcquireFunc = new(GameData.GetSignature("CCSPlayer_CanAcquire"));
+            // CCSPlayer_CanAcquireFunc.Hook(OnWeaponAcquire, HookMode.Pre);
 
             MemoryFunctionVoid<CEntityIdentity, IntPtr, CEntityInstance, CEntityInstance, string, int> CEntityIdentity_AcceptInputFunc = new(GameData.GetSignature("CEntityIdentity_AcceptInput"));
             CEntityIdentity_AcceptInputFunc.Hook(OnEntityIdentityAcceptInput, HookMode.Pre);
         }
 
+        /*
         private HookResult OnWeaponAcquire(DynamicHook hook)
         {
             var item = hook.GetParam<CCSPlayer_ItemServices>(0);
@@ -57,6 +58,27 @@ namespace ZombieSharp
             var vdata = GetWeaponVData(-1, hook.GetParam<CEconItemView>(1).ItemDefinitionIndex.ToString());
 
             var client = new CCSPlayerController(item.Pawn.Value.Controller.Value.Handle);
+
+            if (method == AcquireMethod.PickUp)
+            {
+                Server.PrintToChatAll($"Try pick up {vdata.Name}");
+                if (WeaponIsRestricted(vdata.Name))
+                {
+                    hook.SetReturn(AcquireResult.NotAllowedByMode);
+                    return HookResult.Handled;
+                }
+            }
+            else
+            {
+                var weapon = GetKeyByWeaponEntity(vdata.Name);
+                Server.PrintToChatAll($"Try buy {vdata.Name}, Key: {weapon}");
+                if (weapon != null && WeaponDatas.WeaponConfigs[weapon].Price > 0)
+                {
+                    PurchaseWeapon(client, weapon);
+                    hook.SetReturn(AcquireResult.AlreadyPurchased);
+                    return HookResult.Handled;
+                }
+            }
 
             if (ZombieSpawned)
             {
@@ -68,34 +90,12 @@ namespace ZombieSharp
                         return HookResult.Handled;
                     }
                 }
-                else
-                {
-                    if (method == AcquireMethod.PickUp)
-                    {
-                        if (WeaponIsRestricted(vdata.Name))
-                        {
-                            hook.SetReturn(AcquireResult.NotAllowedByMode);
-                            return HookResult.Handled;
-                        }
-                    }
-                    else
-                    {
-                        var weapon = GetKeyByWeaponEntity(vdata.Name);
-
-                        if (weapon != null && WeaponDatas.WeaponConfigs[weapon].Price > 0)
-                        {
-                            PurchaseWeapon(client, weapon);
-                            hook.SetReturn(AcquireResult.AlreadyPurchased);
-                            return HookResult.Handled;
-                        }
-                    }
-                }
             }
 
             return HookResult.Continue;
         }
+        */
 
-        /*
         private HookResult OnWeaponCanUse(DynamicHook hook)
         {
             var weaponservices = hook.GetParam<CCSPlayer_WeaponServices>(0);
@@ -104,6 +104,12 @@ namespace ZombieSharp
             var client = new CCSPlayerController(weaponservices!.Pawn.Value.Controller.Value!.Handle);
 
             //Server.PrintToChatAll($"{client.PlayerName}: {CCSPlayer_WeaponServices_CanUseFunc.Invoke(weaponservices, clientweapon)}");
+
+            if (WeaponIsRestricted(clientweapon.DesignerName))
+            {
+                hook.SetReturn(false);
+                return HookResult.Handled;
+            }
 
             if (ZombieSpawned)
             {
@@ -115,20 +121,10 @@ namespace ZombieSharp
                         return HookResult.Handled;
                     }
                 }
-
-                else
-                {
-                    if (WeaponIsRestricted(clientweapon.DesignerName))
-                    {
-                        hook.SetReturn(false);
-                        return HookResult.Handled;
-                    }
-                }
             }
 
             return HookResult.Continue;
         }
-        */
 
         private HookResult OnTakeDamage(DynamicHook hook)
         {

@@ -252,7 +252,8 @@ namespace ZombieSharp
 
             foreach (var weapon in weapons)
             {
-                info.ReplyToCommand($"Slot {weapon.Value.VData.Slot}: {weapon.Value.DesignerName}");
+                var vdata = new CCSWeaponBaseVData(weapon.Value.VData.Handle);
+                info.ReplyToCommand($"Slot: {vdata.Slot} GearSlot {(int)vdata.GearSlot}: {weapon.Value.DesignerName}");
             }
         }
     }

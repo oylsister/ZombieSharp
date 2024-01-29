@@ -366,10 +366,10 @@ namespace ZombieSharp
 
             foreach (var weapon in weapons)
             {
-                var vdata = weapon.Value!.VData;
-                int weaponslot = vdata!.Slot;
+                var vdata = new CCSWeaponBaseVData(weapon.Value!.VData.Handle);
+                int weaponslot = (int)vdata!.GearSlot;
 
-                if (!string.IsNullOrEmpty(weapon.Value.UniqueHammerID) && vdata.Slot != (int)gear_slot_t.GEAR_SLOT_KNIFE)
+                if (!string.IsNullOrEmpty(weapon.Value.UniqueHammerID) && vdata.GearSlot != gear_slot_t.GEAR_SLOT_KNIFE)
                 {
                     client.ExecuteClientCommand("slot3");
                     client.ExecuteClientCommand($"slot{weaponslot + 1}");
