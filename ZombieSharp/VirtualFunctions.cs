@@ -4,22 +4,89 @@ namespace ZombieSharp
 {
     public partial class ZombieSharp
     {
+        // Possible results for CSPlayer::CanAcquire
+        enum AcquireResult : int
+        {
+            Allowed = 0,
+            InvalidItem,
+            AlreadyOwned,
+            AlreadyPurchased,
+            ReachedGrenadeTypeLimit,
+            ReachedGrenadeTotalLimit,
+            NotAllowedByTeam,
+            NotAllowedByMap,
+            NotAllowedByMode,
+            NotAllowedForPurchase,
+            NotAllowedByProhibition,
+        };
+
+        // Possible method for CSPlayer::CanAcquire
+        enum AcquireMethod : int
+        {
+            PickUp = 0,
+            Buy,
+        };
+
         MemoryFunctionVoid<CCSPlayerController, CCSPlayerPawn, bool, bool> CBasePlayerController_SetPawnFunc;
         MemoryFunctionVoid<CEntityIdentity, string> CEntityIdentity_SetEntityNameFunc;
+        MemoryFunctionWithReturn<int, string, CCSWeaponBaseVData> GetCSWeaponDataFromKeyFunc;
 
         public void VirtualFunctionsInitialize()
         {
             CBasePlayerController_SetPawnFunc = new(GameData.GetSignature("CBasePlayerController_SetPawn"));
             CEntityIdentity_SetEntityNameFunc = new(GameData.GetSignature("CEntityIdentity_SetEntityName"));
 
-            VirtualFunctions.CCSPlayer_WeaponServices_CanUseFunc.Hook(OnWeaponCanUse, HookMode.Pre);
+            // VirtualFunctions.CCSPlayer_WeaponServices_CanUseFunc.Hook(OnWeaponCanUse, HookMode.Pre);
 
             VirtualFunctions.CBaseEntity_TakeDamageOldFunc.Hook(OnTakeDamage, HookMode.Pre);
+
+            GetCSWeaponDataFromKeyFunc = new(GameData.GetSignature("GetCSWeaponDataFromKey"));
+
+            MemoryFunctionWithReturn<CCSPlayer_ItemServices, CEconItemView, AcquireMethod, NativeObject, AcquireResult> CCSPlayer_CanAcquireFunc = new(GameData.GetSignature("CCSPlayer_CanAcquire"));
+            CCSPlayer_CanAcquireFunc.Hook(OnWeaponAcquire, HookMode.Pre);
 
             MemoryFunctionVoid<CEntityIdentity, IntPtr, CEntityInstance, CEntityInstance, string, int> CEntityIdentity_AcceptInputFunc = new(GameData.GetSignature("CEntityIdentity_AcceptInput"));
             CEntityIdentity_AcceptInputFunc.Hook(OnEntityIdentityAcceptInput, HookMode.Pre);
         }
 
+        private HookResult OnWeaponAcquire(DynamicHook hook)
+        {
+            var item = hook.GetParam<CCSPlayer_ItemServices>(0);
+            var method = hook.GetParam<AcquireMethod>(2);
+            //var vdata = GetCSWeaponDataFromKeyFunc.Invoke(-1, hook.GetParam<CEconItemView>(1).ItemDefinitionIndex.ToString());
+            var vdata = GetWeaponVData(-1, hook.GetParam<CEconItemView>(1).ItemDefinitionIndex.ToString());
+
+            var client = new CCSPlayerController(item.Pawn.Value.Controller.Value.Handle);
+
+            if (ZombieSpawned)
+            {
+                if (IsClientZombie(client))
+                {
+                    if (vdata.Name != "weapon_knife")
+                    {
+                        hook.SetReturn(AcquireResult.NotAllowedByTeam);
+                        return HookResult.Handled;
+                    }
+                }
+                else
+                {
+                    if (WeaponIsRestricted(vdata.Name))
+                    {
+                        if (method == AcquireMethod.Buy)
+                            hook.SetReturn(AcquireResult.NotAllowedForPurchase);
+
+                        else
+                            hook.SetReturn(AcquireResult.NotAllowedByMode);
+
+                        return HookResult.Handled;
+                    }
+                }
+            }
+
+            return HookResult.Continue;
+        }
+
+        /*
         private HookResult OnWeaponCanUse(DynamicHook hook)
         {
             var weaponservices = hook.GetParam<CCSPlayer_WeaponServices>(0);
@@ -52,6 +119,7 @@ namespace ZombieSharp
 
             return HookResult.Continue;
         }
+        */
 
         private HookResult OnTakeDamage(DynamicHook hook)
         {
@@ -112,6 +180,11 @@ namespace ZombieSharp
             }
 
             return HookResult.Continue;
+        }
+
+        private CCSWeaponBaseVData GetWeaponVData(int index, string definition)
+        {
+            return GetCSWeaponDataFromKeyFunc.Invoke(index, definition);
         }
 
         public void RespawnClient(CCSPlayerController client)
