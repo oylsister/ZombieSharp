@@ -217,6 +217,22 @@ namespace ZombieSharp
             }
             return false;
         }
+
+        public string GetKeyByWeaponEntity(string weaponentity)
+        {
+            string result = null;
+
+            foreach (string weapon in WeaponDatas.WeaponConfigs.Keys)
+            {
+                if (WeaponDatas.WeaponConfigs[weapon].WeaponEntity == weaponentity)
+                {
+                    result = weapon;
+                    return result;
+                }
+            }
+
+            return result;
+        }
     }
 }
 

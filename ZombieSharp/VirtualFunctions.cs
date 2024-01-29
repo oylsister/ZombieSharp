@@ -62,7 +62,7 @@ namespace ZombieSharp
             {
                 if (IsClientZombie(client))
                 {
-                    if (vdata.Name != "weapon_knife")
+                    if (vdata.GearSlot != gear_slot_t.GEAR_SLOT_KNIFE)
                     {
                         hook.SetReturn(AcquireResult.NotAllowedByTeam);
                         return HookResult.Handled;
@@ -70,15 +70,24 @@ namespace ZombieSharp
                 }
                 else
                 {
-                    if (WeaponIsRestricted(vdata.Name))
+                    if (method == AcquireMethod.PickUp)
                     {
-                        if (method == AcquireMethod.Buy)
-                            hook.SetReturn(AcquireResult.NotAllowedForPurchase);
-
-                        else
+                        if (WeaponIsRestricted(vdata.Name))
+                        {
                             hook.SetReturn(AcquireResult.NotAllowedByMode);
+                            return HookResult.Handled;
+                        }
+                    }
+                    else
+                    {
+                        var weapon = GetKeyByWeaponEntity(vdata.Name);
 
-                        return HookResult.Handled;
+                        if (weapon != null && WeaponDatas.WeaponConfigs[weapon].Price > 0)
+                        {
+                            PurchaseWeapon(client, weapon);
+                            hook.SetReturn(AcquireResult.AlreadyPurchased);
+                            return HookResult.Handled;
+                        }
                     }
                 }
             }
