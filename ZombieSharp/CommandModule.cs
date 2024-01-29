@@ -16,6 +16,7 @@ namespace ZombieSharp
             AddCommand("css_logiclist", "Logic Relay List", LogicRelayListCommand);
             AddCommand("css_zclass", "Player Class Command", PlayerClassCommand);
             AddCommand("css_dropme", "Test Force All Drop Weapon Command", ForceDropCommand);
+            AddCommand("css_myweapon", "Get Client Weapon VData List", MyWeaponCommand);
         }
 
         [RequiresPermissions(@"css/slay")]
@@ -239,6 +240,20 @@ namespace ZombieSharp
             ForceDropAllWeapon(client);
             client.GiveNamedItem("weapon_knife");
             client!.PlayerPawn.Value!.WeaponServices.AllowSwitchToNoWeapon = false;
+        }
+
+        private void MyWeaponCommand(CCSPlayerController client, CommandInfo info)
+        {
+            if (client == null) return;
+
+            if (!client.PawnIsAlive) return;
+
+            var weapons = client.PlayerPawn.Value.WeaponServices.MyWeapons;
+
+            foreach (var weapon in weapons)
+            {
+                info.ReplyToCommand($"Slot {weapon.Value.VData.Slot}: {weapon.Value.DesignerName}");
+            }
         }
     }
 }
