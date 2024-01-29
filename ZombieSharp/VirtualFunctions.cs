@@ -4,8 +4,32 @@ namespace ZombieSharp
 {
     public partial class ZombieSharp
     {
+        // Possible results for CSPlayer::CanAcquire
+        enum AcquireResult : int
+        {
+            Allowed = 0,
+            InvalidItem,
+            AlreadyOwned,
+            AlreadyPurchased,
+            ReachedGrenadeTypeLimit,
+            ReachedGrenadeTotalLimit,
+            NotAllowedByTeam,
+            NotAllowedByMap,
+            NotAllowedByMode,
+            NotAllowedForPurchase,
+            NotAllowedByProhibition,
+        };
+
+        // Possible method for CSPlayer::CanAcquire
+        enum AcquireMethod : int
+        {
+            PickUp = 0,
+            Buy,
+        };
+
         MemoryFunctionVoid<CCSPlayerController, CCSPlayerPawn, bool, bool> CBasePlayerController_SetPawnFunc;
         MemoryFunctionVoid<CEntityIdentity, string> CEntityIdentity_SetEntityNameFunc;
+        MemoryFunctionWithReturn<int, string, CCSWeaponBaseVData> GetCSWeaponDataFromKeyFunc;
 
         public void VirtualFunctionsInitialize()
         {
@@ -16,9 +40,61 @@ namespace ZombieSharp
 
             VirtualFunctions.CBaseEntity_TakeDamageOldFunc.Hook(OnTakeDamage, HookMode.Pre);
 
+            GetCSWeaponDataFromKeyFunc = new(GameData.GetSignature("GetCSWeaponDataFromKey"));
+
+            // MemoryFunctionWithReturn<CCSPlayer_ItemServices, CEconItemView, AcquireMethod, NativeObject, AcquireResult> CCSPlayer_CanAcquireFunc = new(GameData.GetSignature("CCSPlayer_CanAcquire"));
+            // CCSPlayer_CanAcquireFunc.Hook(OnWeaponAcquire, HookMode.Pre);
+
             MemoryFunctionVoid<CEntityIdentity, IntPtr, CEntityInstance, CEntityInstance, string, int> CEntityIdentity_AcceptInputFunc = new(GameData.GetSignature("CEntityIdentity_AcceptInput"));
             CEntityIdentity_AcceptInputFunc.Hook(OnEntityIdentityAcceptInput, HookMode.Pre);
         }
+
+        /*
+        private HookResult OnWeaponAcquire(DynamicHook hook)
+        {
+            var item = hook.GetParam<CCSPlayer_ItemServices>(0);
+            var method = hook.GetParam<AcquireMethod>(2);
+            //var vdata = GetCSWeaponDataFromKeyFunc.Invoke(-1, hook.GetParam<CEconItemView>(1).ItemDefinitionIndex.ToString());
+            var vdata = GetWeaponVData(-1, hook.GetParam<CEconItemView>(1).ItemDefinitionIndex.ToString());
+
+            var client = new CCSPlayerController(item.Pawn.Value.Controller.Value.Handle);
+
+            if (method == AcquireMethod.PickUp)
+            {
+                Server.PrintToChatAll($"Try pick up {vdata.Name}");
+                if (WeaponIsRestricted(vdata.Name))
+                {
+                    hook.SetReturn(AcquireResult.NotAllowedByMode);
+                    return HookResult.Handled;
+                }
+            }
+            else
+            {
+                var weapon = GetKeyByWeaponEntity(vdata.Name);
+                Server.PrintToChatAll($"Try buy {vdata.Name}, Key: {weapon}");
+                if (weapon != null && WeaponDatas.WeaponConfigs[weapon].Price > 0)
+                {
+                    PurchaseWeapon(client, weapon);
+                    hook.SetReturn(AcquireResult.AlreadyPurchased);
+                    return HookResult.Handled;
+                }
+            }
+
+            if (ZombieSpawned)
+            {
+                if (IsClientZombie(client))
+                {
+                    if (vdata.GearSlot != gear_slot_t.GEAR_SLOT_KNIFE)
+                    {
+                        hook.SetReturn(AcquireResult.NotAllowedByTeam);
+                        return HookResult.Handled;
+                    }
+                }
+            }
+
+            return HookResult.Continue;
+        }
+        */
 
         private HookResult OnWeaponCanUse(DynamicHook hook)
         {
@@ -29,20 +105,17 @@ namespace ZombieSharp
 
             //Server.PrintToChatAll($"{client.PlayerName}: {CCSPlayer_WeaponServices_CanUseFunc.Invoke(weaponservices, clientweapon)}");
 
+            if (WeaponIsRestricted(clientweapon.DesignerName))
+            {
+                hook.SetReturn(false);
+                return HookResult.Handled;
+            }
+
             if (ZombieSpawned)
             {
                 if (IsClientZombie(client))
                 {
                     if (clientweapon.DesignerName != "weapon_knife")
-                    {
-                        hook.SetReturn(false);
-                        return HookResult.Handled;
-                    }
-                }
-
-                else
-                {
-                    if (WeaponIsRestricted(clientweapon.DesignerName))
                     {
                         hook.SetReturn(false);
                         return HookResult.Handled;
@@ -112,6 +185,11 @@ namespace ZombieSharp
             }
 
             return HookResult.Continue;
+        }
+
+        private CCSWeaponBaseVData GetWeaponVData(int index, string definition)
+        {
+            return GetCSWeaponDataFromKeyFunc.Invoke(index, definition);
         }
 
         public void RespawnClient(CCSPlayerController client)

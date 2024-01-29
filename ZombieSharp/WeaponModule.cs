@@ -211,11 +211,35 @@ namespace ZombieSharp
 
         public bool WeaponIsRestricted(string weaponentity)
         {
+            /*
             foreach (string weapon in WeaponDatas.WeaponConfigs.Keys)
             {
                 return WeaponDatas.WeaponConfigs[weapon].Restrict;
             }
+            */
+
+            var key = GetKeyByWeaponEntity(weaponentity);
+
+            if (key != null)
+                return WeaponDatas.WeaponConfigs[key].Restrict;
+
             return false;
+        }
+
+        public string GetKeyByWeaponEntity(string weaponentity)
+        {
+            string result = null;
+
+            foreach (string weapon in WeaponDatas.WeaponConfigs.Keys)
+            {
+                if (WeaponDatas.WeaponConfigs[weapon].WeaponEntity == weaponentity)
+                {
+                    result = weapon;
+                    return result;
+                }
+            }
+
+            return result;
         }
     }
 }
