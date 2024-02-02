@@ -17,6 +17,7 @@ namespace ZombieSharp
             AddCommand("css_zclass", "Player Class Command", PlayerClassCommand);
             AddCommand("css_dropme", "Test Force All Drop Weapon Command", ForceDropCommand);
             AddCommand("css_myweapon", "Get Client Weapon VData List", MyWeaponCommand);
+            AddCommand("css_scream", "Scream Command", ScreamCommand);
         }
 
         [RequiresPermissions(@"css/slay")]
@@ -255,6 +256,17 @@ namespace ZombieSharp
                 var vdata = new CCSWeaponBaseVData(weapon.Value.VData.Handle);
                 info.ReplyToCommand($"Slot: {vdata.Slot} GearSlot {(int)vdata.GearSlot}: {weapon.Value.DesignerName}");
             }
+        }
+
+        private void ScreamCommand(CCSPlayerController client, CommandInfo info)
+        {
+            if (client == null)
+                return;
+
+            if (!client.PawnIsAlive)
+                return;
+
+            CBaseEntity_EmitSoundParams(client, "zr/fz_scream.mp3");
         }
     }
 }
