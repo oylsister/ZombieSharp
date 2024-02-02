@@ -6,6 +6,8 @@
 
         public CHandle<CLogicRelay> RespawnRelay = null;
 
+        public Dictionary<int, bool> ClientProtected = new();
+
         public void RespawnTogglerSetup()
         {
             if (RespawnRelay != null)

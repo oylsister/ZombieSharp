@@ -39,6 +39,8 @@ namespace ZombieSharp
             PlayerSettingsOnPutInServer(player);
 
             WeaponOnClientPutInServer(clientindex);
+
+            ClientProtected.Add(clientindex, false);
         }
 
         private HookResult OnPlayerConnectFull(EventPlayerConnectFull @event, GameEventInfo info)
@@ -64,6 +66,8 @@ namespace ZombieSharp
             RegenTimer.Remove(clientindex);
 
             WeaponOnClientDisconnect(clientindex);
+
+            ClientProtected.Remove(clientindex);
         }
 
         private void OnMapStart(string mapname)
@@ -177,7 +181,7 @@ namespace ZombieSharp
                 if (!attacker.IsValid || !client.IsValid)
                     return HookResult.Continue;
 
-                if (IsClientZombie(attacker) && IsClientHuman(client) && string.Equals(weapon, "knife"))
+                if (IsClientZombie(attacker) && IsClientHuman(client) && string.Equals(weapon, "knife") && !ClientProtected[client.Slot])
                 {
                     // Server.PrintToChatAll($"{client.PlayerName} Infected by {attacker.PlayerName}");
                     InfectClient(client, attacker);
@@ -225,6 +229,9 @@ namespace ZombieSharp
             {
                 AddTimer(ConfigSettings.RespawnTimer, () =>
                 {
+                    if (ConfigSettings.Respawn_ProtectHuman && ConfigSettings.Respawn_Team == 1)
+                        ClientProtected[client.Slot] = true;
+
                     // Server.PrintToChatAll($"Player {client.PlayerName} should be respawn here.");
                     RespawnClient(client);
                 });
@@ -241,13 +248,18 @@ namespace ZombieSharp
             {
                 AddTimer(0.2f, () =>
                 {
+                    AddTimer(ConfigSettings.Respawn_ProtectTime, () => { ResetProtectedClient(client); });
                     WeaponOnPlayerSpawn(client.Slot);
 
                     // if zombie already spawned then they become zombie.
                     if (ZombieSpawned)
                     {
-                        // Server.PrintToChatAll($"Infect {client.PlayerName} on Spawn.");
-                        InfectClient(client, null, false, false, true);
+                        if (ConfigSettings.Respawn_Team == 0)
+                            // Server.PrintToChatAll($"Infect {client.PlayerName} on Spawn.");
+                            InfectClient(client, null, false, false, true);
+
+                        else if (ConfigSettings.Respawn_Team == 1)
+                            HumanizeClient(client);
                     }
 
                     // else they're human!
@@ -311,6 +323,14 @@ namespace ZombieSharp
             var money = client.InGameMoneyServices.Account;
             client.InGameMoneyServices.Account = money + dmgHealth;
             Utilities.SetStateChanged(client, "CCSPlayerController", "m_pInGameMoneyServices");
+        }
+
+        private void ResetProtectedClient(CCSPlayerController client)
+        {
+            if (!client.IsValid)
+                return;
+
+            ClientProtected[client.Slot] = false;
         }
 
         private void RemoveRoundObjective()

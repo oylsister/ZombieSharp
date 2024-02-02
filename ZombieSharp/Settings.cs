@@ -49,4 +49,9 @@ public class GameSettings
     public string Human_Default { get; set; } = "human_default";
     public string Zombie_Default { get; set; } = "zombie_default";
     public string Mother_Zombie { get; set; } = "motherzombie";
+
+    // Respawn Protection
+    public int Respawn_Team { get; set; } = 0;
+    public bool Respawn_ProtectHuman { get; set; } = false;
+    public float Respawn_ProtectTime { get; set; } = 5.0f;
 }

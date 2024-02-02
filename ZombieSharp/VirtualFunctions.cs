@@ -145,6 +145,11 @@ namespace ZombieSharp
                 }
             }
 
+            if (ClientProtected[player(client).Slot])
+            {
+                damageInfo.Damage = 0;
+            }
+
             bool warmup = GetGameRules().WarmupPeriod;
 
             if (warmup && !ConfigSettings.EnableOnWarmup)

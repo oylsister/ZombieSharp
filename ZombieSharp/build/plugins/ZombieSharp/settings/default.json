@@ -8,5 +8,8 @@
 	"CashOnDamage": true,
 	"Human_Default": "human_default",
 	"Zombie_Default": "zombie_default",
-	"Mother_Zombie": "motherzombie"
+	"Mother_Zombie": "motherzombie",
+	"Respawn_Team": 0,
+	"Respawn_ProtectHuman": false,
+	"Respawn_ProtectTimer": 5.0
 }
