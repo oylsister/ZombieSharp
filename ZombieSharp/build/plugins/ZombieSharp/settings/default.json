@@ -2,6 +2,7 @@
 	"RespawnTimer": 5.0,
 	"FirstInfectionTimer": 15.0,
 	"MotherZombieRatio": 7.0,
+	"MotherZombieMinimum": 2,
 	"TeleportMotherZombie": true,
 	"EnableOnWarmup": false,
 	"RepeatKillerThreshold": 0.0,
@@ -9,7 +10,10 @@
 	"Human_Default": "human_default",
 	"Zombie_Default": "zombie_default",
 	"Mother_Zombie": "motherzombie",
+	"Respawn_Late": true,
 	"Respawn_Team": 0,
 	"Respawn_ProtectHuman": false,
-	"Respawn_ProtectTimer": 5.0
+	"Respawn_ProtectTimer": 5.0,
+	"Respawn_Speed": 600.0,
+	"EnableTopDefender": true
 }

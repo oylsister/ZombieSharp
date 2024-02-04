@@ -6,7 +6,7 @@
 
         public CHandle<CLogicRelay> RespawnRelay = null;
 
-        public Dictionary<int, bool> ClientProtected = new();
+        public Dictionary<int, RespawnProtectData> ClientProtected = new();
 
         public void RespawnTogglerSetup()
         {
@@ -20,6 +20,26 @@
             relay.DispatchSpawn();
 
             RespawnRelay = new CHandle<CLogicRelay>(relay.Handle);
+        }
+
+        public void RespawnProtectClient(CCSPlayerController client, bool reset = false)
+        {
+            if (!client.IsValid || !client.PawnIsAlive)
+                return;
+
+            if (!reset)
+            {
+                ClientProtected[client.Slot].Velocity = client.PlayerPawn.Value.VelocityModifier;
+                client.PlayerPawn.Value.VelocityModifier = ConfigSettings.Respawn_Speed / 250.0f;
+                client.PlayerPawn.Value.GravityScale = ConfigSettings.Respawn_Speed / 250.0f;
+            }
+
+            else
+            {
+                client.PrintToChat($" {ChatColors.Green}[Z:Sharp]{ChatColors.Default} You're no longer protected.");
+                client.PlayerPawn.Value.VelocityModifier = ClientProtected[client.Slot].Velocity;
+                client.PlayerPawn.Value.GravityScale = 1.0f;
+            }
         }
 
         public void ToggleRespawn(bool force = false, bool value = false)
@@ -47,4 +67,10 @@
             }
         }
     }
+}
+
+public class RespawnProtectData
+{
+    public bool Protected { get; set; } = false;
+    public float Velocity { get; set; } = 1.0f;
 }

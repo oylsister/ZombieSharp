@@ -39,6 +39,7 @@ public class GameSettings
     public float RespawnTimer { get; set; } = 5.0f;
     public float FirstInfectionTimer { get; set; } = 15.0f;
     public float MotherZombieRatio { get; set; } = 7.0f;
+    public int MotherZombieMinimum { get; set; } = 0;
     public bool TeleportMotherZombie { get; set; } = true;
     public bool EnableOnWarmup { get; set; } = false;
     public float RepeatKillerThreshold { get; set; } = 3.0f;
@@ -51,7 +52,12 @@ public class GameSettings
     public string Mother_Zombie { get; set; } = "motherzombie";
 
     // Respawn Protection
+    public bool Respawn_Late { get; set; } = true;
     public int Respawn_Team { get; set; } = 0;
     public bool Respawn_ProtectHuman { get; set; } = false;
     public float Respawn_ProtectTime { get; set; } = 5.0f;
+    public float Respawn_Speed { get; set; } = 600.0f;
+
+    // top defender
+    public bool EnableTopDefender { get; set; } = false;
 }

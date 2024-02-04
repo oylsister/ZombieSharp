@@ -105,8 +105,11 @@ namespace ZombieSharp
 
             int maxmz = (int)Math.Ceiling(allplayer / ConfigSettings.MotherZombieRatio);
 
+            if (ConfigSettings.MotherZombieMinimum > 0 && maxmz < ConfigSettings.MotherZombieMinimum)
+                maxmz = ConfigSettings.MotherZombieMinimum;
+
             // if it is less than 1 then you need at least 1 mother zombie.
-            if (maxmz < 1)
+            else if (ConfigSettings.MotherZombieMinimum <= 0 && maxmz <= 0)
                 maxmz = 1;
 
             // Server.PrintToChatAll($"Max Mother Zombie is: {maxmz}");
@@ -180,13 +183,15 @@ namespace ZombieSharp
             }
 
             // Create an event for killfeed
-            if (attacker != null)
+            if (attacker != null && attacker.IsValid)
             {
                 EventPlayerDeath eventDeath = new EventPlayerDeath(false);
                 eventDeath.Userid = client;
                 eventDeath.Attacker = attacker;
                 eventDeath.Weapon = "knife";
                 eventDeath.FireEvent(false);
+
+                TopDefenderOnInfect(attacker);
             }
 
             // Remove all weapon.

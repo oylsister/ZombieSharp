@@ -11,6 +11,7 @@ namespace ZombieSharp
             RegisterEventHandler<EventPlayerDeath>(OnPlayerDeath);
             RegisterEventHandler<EventPlayerSpawn>(OnPlayerSpawn);
             RegisterEventHandler<EventPlayerConnectFull>(OnPlayerConnectFull);
+            RegisterEventHandler<EventPlayerTeam>(OnPlayerTeam);
             RegisterEventHandler<EventPlayerJump>(OnPlayerJump);
             RegisterEventHandler<EventCsPreRestart>(OnPreRestart);
 
@@ -40,7 +41,9 @@ namespace ZombieSharp
 
             WeaponOnClientPutInServer(clientindex);
 
-            ClientProtected.Add(clientindex, false);
+            ClientProtected.Add(clientindex, new());
+
+            TopDefenderOnPutInServer(player);
         }
 
         private HookResult OnPlayerConnectFull(EventPlayerConnectFull @event, GameEventInfo info)
@@ -48,6 +51,23 @@ namespace ZombieSharp
             var client = @event.Userid;
 
             PlayerSettingsAuthorized(client).Wait();
+            return HookResult.Continue;
+        }
+
+        private HookResult OnPlayerTeam(EventPlayerTeam @event, GameEventInfo info)
+        {
+            if (!ConfigSettings.Respawn_Late)
+                return HookResult.Continue;
+
+            var client = @event.Userid;
+            var team = @event.Team;
+
+            if (client.IsBot || !client.IsValid)
+                return HookResult.Continue;
+
+            if (team > (int)CsTeam.Spectator)
+                AddTimer(1.0f, () => { RespawnClient(client); });
+
             return HookResult.Continue;
         }
 
@@ -68,6 +88,8 @@ namespace ZombieSharp
             WeaponOnClientDisconnect(clientindex);
 
             ClientProtected.Remove(clientindex);
+
+            TopDefenderOnDisconnect(player);
         }
 
         private void OnMapStart(string mapname)
@@ -137,6 +159,8 @@ namespace ZombieSharp
         {
             bool warmup = GetGameRules().WarmupPeriod;
 
+            TopDenfederOnRoundEnd();
+
             if (!warmup || ConfigSettings.EnableOnWarmup)
             {
                 // Reset Client Status
@@ -181,7 +205,7 @@ namespace ZombieSharp
                 if (!attacker.IsValid || !client.IsValid)
                     return HookResult.Continue;
 
-                if (IsClientZombie(attacker) && IsClientHuman(client) && string.Equals(weapon, "knife") && !ClientProtected[client.Slot])
+                if (IsClientZombie(attacker) && IsClientHuman(client) && string.Equals(weapon, "knife") && !ClientProtected[client.Slot].Protected)
                 {
                     // Server.PrintToChatAll($"{client.PlayerName} Infected by {attacker.PlayerName}");
                     InfectClient(client, attacker);
@@ -195,6 +219,7 @@ namespace ZombieSharp
                     FindWeaponItemDefinition(attacker.PlayerPawn.Value.WeaponServices.ActiveWeapon, weapon);
 
                     KnockbackClient(client, attacker, dmgHealth, weapon, hitgroup);
+                    TopDefenderOnPlayerHurt(attacker, dmgHealth);
                 }
             }
 
@@ -230,7 +255,7 @@ namespace ZombieSharp
                 AddTimer(ConfigSettings.RespawnTimer, () =>
                 {
                     if (ConfigSettings.Respawn_ProtectHuman && ConfigSettings.Respawn_Team == 1)
-                        ClientProtected[client.Slot] = true;
+                        ClientProtected[client.Slot].Protected = true;
 
                     // Server.PrintToChatAll($"Player {client.PlayerName} should be respawn here.");
                     RespawnClient(client);
@@ -248,7 +273,6 @@ namespace ZombieSharp
             {
                 AddTimer(0.2f, () =>
                 {
-                    AddTimer(ConfigSettings.Respawn_ProtectTime, () => { ResetProtectedClient(client); });
                     WeaponOnPlayerSpawn(client.Slot);
 
                     // if zombie already spawned then they become zombie.
@@ -260,6 +284,12 @@ namespace ZombieSharp
 
                         else if (ConfigSettings.Respawn_Team == 1)
                             HumanizeClient(client);
+
+                        if (ClientProtected[client.Slot].Protected)
+                        {
+                            AddTimer(ConfigSettings.Respawn_ProtectTime, () => { ResetProtectedClient(client); });
+                            RespawnProtectClient(client);
+                        }
                     }
 
                     // else they're human!
@@ -330,7 +360,8 @@ namespace ZombieSharp
             if (!client.IsValid)
                 return;
 
-            ClientProtected[client.Slot] = false;
+            ClientProtected[client.Slot].Protected = false;
+            RespawnProtectClient(client, true);
         }
 
         private void RemoveRoundObjective()

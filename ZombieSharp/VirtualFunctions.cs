@@ -147,7 +147,7 @@ namespace ZombieSharp
                 }
             }
 
-            if (ClientProtected[player(client).Slot])
+            if (ClientProtected[player(client).Slot].Protected && player(client).IsValid)
             {
                 damageInfo.Damage = 0;
             }
