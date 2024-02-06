@@ -147,7 +147,9 @@ namespace ZombieSharp
                 }
             }
 
-            if (ClientProtected[player(client).Slot].Protected && player(client).IsValid)
+            var controller = player(client);
+
+            if (ConfigSettings.Respawn_ProtectHuman && ClientProtected[controller.Slot].Protected && controller.IsValid)
             {
                 damageInfo.Damage = 0;
             }

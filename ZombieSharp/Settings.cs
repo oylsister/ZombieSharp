@@ -60,4 +60,7 @@ public class GameSettings
 
     // top defender
     public bool EnableTopDefender { get; set; } = false;
+
+    // Terminate Round Winner
+    public int TimeoutWinner { get; set; } = 3;
 }

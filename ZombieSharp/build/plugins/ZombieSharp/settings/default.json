@@ -15,5 +15,6 @@
 	"Respawn_ProtectHuman": false,
 	"Respawn_ProtectTimer": 5.0,
 	"Respawn_Speed": 600.0,
-	"EnableTopDefender": true
+	"EnableTopDefender": true,
+	"TimeoutWinner": 3
 }

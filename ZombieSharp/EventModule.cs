@@ -1,7 +1,12 @@
+using CounterStrikeSharp.API.Modules.Cvars;
+using CounterStrikeSharp.API.Modules.Entities.Constants;
+
 namespace ZombieSharp
 {
     public partial class ZombieSharp
     {
+        public CounterStrikeSharp.API.Modules.Timers.Timer RoundTimer = null;
+
         public void EventInitialize()
         {
             RegisterEventHandler<EventRoundStart>(OnRoundStart);
@@ -106,6 +111,8 @@ namespace ZombieSharp
 
             hitgroupLoad = HitGroupIntialize();
             RepeatKillerOnMapStart();
+
+            Server.ExecuteCommand("mp_ignore_round_win_conditions 1");
         }
 
         private HookResult OnRoundStart(EventRoundStart @event, GameEventInfo info)
@@ -126,7 +133,11 @@ namespace ZombieSharp
                 Server.PrintToChatAll($" {ChatColors.Green}[Z:Sharp]{ChatColors.Default} The current server has disabled infection in warmup round.");
 
             if (!warmup || ConfigSettings.EnableOnWarmup)
+            {
+                var roundtimeCvar = ConVar.Find("mp_roundtime");
+                RoundTimer = AddTimer(roundtimeCvar.GetPrimitiveValue<int>() * 60f, TerminateRoundTimeOut);
                 InfectOnRoundFreezeEnd();
+            }
 
             return HookResult.Continue;
         }
@@ -158,6 +169,9 @@ namespace ZombieSharp
         private HookResult OnRoundEnd(EventRoundEnd @event, GameEventInfo info)
         {
             bool warmup = GetGameRules().WarmupPeriod;
+
+            if (RoundTimer != null)
+                RoundTimer.Kill();
 
             TopDenfederOnRoundEnd();
 
@@ -362,6 +376,28 @@ namespace ZombieSharp
 
             ClientProtected[client.Slot].Protected = false;
             RespawnProtectClient(client, true);
+        }
+
+        private void TerminateRoundTimeOut()
+        {
+            int team = ConfigSettings.TimeoutWinner;
+
+            CCSGameRules gameRules = GetGameRules();
+
+            if (team == 2)
+            {
+                gameRules.TerminateRound(5f, RoundEndReason.TerroristsWin);
+            }
+
+            else if (team == 3)
+            {
+                gameRules.TerminateRound(5f, RoundEndReason.CTsWin);
+            }
+
+            else
+            {
+                gameRules.TerminateRound(5f, RoundEndReason.RoundDraw);
+            }
         }
 
         private void RemoveRoundObjective()
