@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using System.Text.Json;
 
 namespace ZombieSharp
 {
@@ -9,27 +8,62 @@ namespace ZombieSharp
 
         public bool SettingsIntialize(string mapname)
         {
-            string configPath = Path.Combine(ModuleDirectory, $"settings/{mapname}.json");
-            string defaultconfig = Path.Combine(ModuleDirectory, $"settings/default.json");
+            ConVarInitial();
 
-            if (File.Exists(configPath))
+            ConfigSettings = new GameSettings();
+
+            var cfgPath = Path.Combine(ModuleDirectory, @"../../../../cfg");
+            if (!Directory.Exists(cfgPath))
             {
-                ConfigSettings = JsonSerializer.Deserialize<GameSettings>(File.ReadAllText(configPath));
-                Logger.LogInformation($"[Z:Sharp] Found config file for {mapname}.json.");
-                Logger.LogInformation($"Respawn Timer = {ConfigSettings.RespawnTimer}, Infect Timer = {ConfigSettings.FirstInfectionTimer}, MTZ Ratio = {ConfigSettings.MotherZombieRatio}");
-                return true;
+                Logger.LogError($"Couldn't find {cfgPath} directory.");
+                return false;
             }
 
-            if (File.Exists(defaultconfig))
+            var zsharpDir = Path.Combine(cfgPath, "zombiesharp");
+            Directory.CreateDirectory(zsharpDir);
+
+            var zsharpCfg = Path.Combine(zsharpDir, "zombiesharp.cfg");
+
+            if (!File.Exists(zsharpCfg))
             {
-                ConfigSettings = JsonSerializer.Deserialize<GameSettings>(File.ReadAllText(defaultconfig));
-                Logger.LogInformation($"[Z:Sharp] There is no config file for {mapname}.json, Default file is used.");
-                Logger.LogInformation($"Respawn Timer = {ConfigSettings.RespawnTimer}, Infect Timer = {ConfigSettings.FirstInfectionTimer}, MTZ Ratio = {ConfigSettings.MotherZombieRatio}");
-                return true;
+                CreateExecConfigFile(zsharpCfg);
+                Server.ExecuteCommand("exec \"zombiesharp/zombiesharp.cfg\"");
             }
 
-            Logger.LogError("[Z:Sharp] There is no any configs seetings existed in the folder!");
-            return false;
+            return true;
+        }
+
+        void ConVarInitial()
+        {
+
+        }
+
+        void CreateExecConfigFile(string path)
+        {
+            StreamWriter execCfg = File.CreateText(path);
+
+            execCfg.WriteLine("zs_infect_spawntime \"15.0\"");
+            execCfg.WriteLine("zs_infect_mzombie_ratio \"7.0\"");
+            execCfg.WriteLine("zs_infect_mzombie_min \"1\"");
+            execCfg.WriteLine("zs_infect_mzombie_respawn \"1\"");
+            execCfg.WriteLine("zs_infect_enable_warmup \"0\"");
+            execCfg.WriteLine("zs_infect_drop_mode \"0\"");
+            execCfg.WriteLine("zs_infect_cash_damage \"1\"");
+
+            execCfg.WriteLine("zs_respawn_timer \"5.0\"");
+            execCfg.WriteLine("zs_respawn_join_late \"1\"");
+            execCfg.WriteLine("zs_respawn_team \"0\"");
+            execCfg.WriteLine("zs_respawn_protect \"0\"");
+            execCfg.WriteLine("zs_respawn_protect_time \"5.0\"");
+            execCfg.WriteLine("zs_respawn_protect_speed \"600.0\"");
+
+            execCfg.WriteLine("zs_classes_human_default \"human_default\"");
+            execCfg.WriteLine("zs_classes_zombie_default \"zombie_default\"");
+            execCfg.WriteLine("zs_classes_mother_default \"motherzombie\"");
+
+            execCfg.WriteLine("zs_repeatkiller_threshold \"0.0\"");
+            execCfg.WriteLine("zs_topdefender_enable \"1\"");
+            execCfg.WriteLine("zs_timeout_winner \"3\"");
         }
     }
 }
