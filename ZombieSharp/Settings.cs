@@ -221,36 +221,79 @@ namespace ZombieSharp
             execCfg.WriteLine("zs_topdefender_enable \"1\"");
             execCfg.WriteLine("zs_timeout_winner \"3\"");
         }
+
+        public class ConVar
+        {
+            public ConVar(string buffer, string value, string description)
+            {
+                ConVarCommand = buffer;
+                Value = value;
+
+                AddCommand(ConVarCommand, Description, OnConVarChanged);
+            }
+
+            public string ConVarCommand { get; set; }
+            public string Value { get; set; }
+            public string Description { get; set; }
+            public bool HasMin { get; set; } = false;
+            public float MinValue { get; set; }
+            public bool HasMax { get; set; } = false;
+            public float MaxValue { get; set; }
+
+            public int GetConVarInt()
+            {
+                return int.Parse(Value);
+            }
+
+            public float GetConVarFloat()
+            {
+                return float.Parse(Value);
+            }
+
+            public bool GetConVarBool()
+            {
+                return Convert.ToBoolean(int.Parse(Value));
+            }
+
+            public string GetConVarString()
+            {
+                return Value;
+            }
+
+            private void OnConVarChanged(CCSPlayerController client, CommandInfo info)
+            {
+
+            }
+        }
     }
-}
 
-public class GameSettings
-{
-    public float RespawnTimer { get; set; } = 5.0f;
-    public float FirstInfectionTimer { get; set; } = 15.0f;
-    public float MotherZombieRatio { get; set; } = 7.0f;
-    public int MotherZombieMinimum { get; set; } = 0;
-    public bool TeleportMotherZombie { get; set; } = true;
-    public bool EnableOnWarmup { get; set; } = false;
-    public float RepeatKillerThreshold { get; set; } = 3.0f;
-    public int ZombieDrop { get; set; } = 0; // 0 = stip , 1 = force drop
-    public bool CashOnDamage { get; set; } = true;
+    public class GameSettings
+    {
+        public float RespawnTimer { get; set; } = 5.0f;
+        public float FirstInfectionTimer { get; set; } = 15.0f;
+        public float MotherZombieRatio { get; set; } = 7.0f;
+        public int MotherZombieMinimum { get; set; } = 0;
+        public bool TeleportMotherZombie { get; set; } = true;
+        public bool EnableOnWarmup { get; set; } = false;
+        public float RepeatKillerThreshold { get; set; } = 3.0f;
+        public int ZombieDrop { get; set; } = 0; // 0 = stip , 1 = force drop
+        public bool CashOnDamage { get; set; } = true;
 
-    // Default Class
-    public string Human_Default { get; set; } = "human_default";
-    public string Zombie_Default { get; set; } = "zombie_default";
-    public string Mother_Zombie { get; set; } = "motherzombie";
+        // Default Class
+        public string Human_Default { get; set; } = "human_default";
+        public string Zombie_Default { get; set; } = "zombie_default";
+        public string Mother_Zombie { get; set; } = "motherzombie";
 
-    // Respawn Protection
-    public bool Respawn_Late { get; set; } = true;
-    public int Respawn_Team { get; set; } = 0;
-    public bool Respawn_ProtectHuman { get; set; } = false;
-    public float Respawn_ProtectTime { get; set; } = 5.0f;
-    public float Respawn_Speed { get; set; } = 600.0f;
+        // Respawn Protection
+        public bool Respawn_Late { get; set; } = true;
+        public int Respawn_Team { get; set; } = 0;
+        public bool Respawn_ProtectHuman { get; set; } = false;
+        public float Respawn_ProtectTime { get; set; } = 5.0f;
+        public float Respawn_Speed { get; set; } = 600.0f;
 
-    // top defender
-    public bool EnableTopDefender { get; set; } = false;
+        // top defender
+        public bool EnableTopDefender { get; set; } = false;
 
-    // Terminate Round Winner
-    public int TimeoutWinner { get; set; } = 3;
-}
+        // Terminate Round Winner
+        public int TimeoutWinner { get; set; } = 3;
+    }
