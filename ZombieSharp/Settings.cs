@@ -8,9 +8,11 @@ namespace ZombieSharp
 
         public bool SettingsIntialize(string mapname)
         {
-            ConVarInitial();
-
+            // initial value first
             ConfigSettings = new GameSettings();
+
+            // then convar command.
+            ConVarInitial();
 
             var cfgPath = Path.Combine(ModuleDirectory, @"../../../../cfg");
             if (!Directory.Exists(cfgPath))
@@ -35,7 +37,161 @@ namespace ZombieSharp
 
         void ConVarInitial()
         {
+            // Infection section.
+            AddCommand("zs_infect_spawntime", "First Infection Countdown", CVAR_InfectSpawnTime);
+            AddCommand("zs_infect_mzombie_ratio", "MotherZombie Ratio", CVAR_InfectMotherZombieRatio);
+            AddCommand("zs_infect_mzombie_min", "MotherZombie Minimum", CVAR_InfectMotherZombieMinimum);
+            AddCommand("zs_infect_mzombie_respawn", "Teleport Mother Zombie Back", CVAR_InfectMotherZombieRespawn);
+            AddCommand("zs_infect_enable_warmup", "Enable Gamemode in warmup", CVAR_InfectEnableWarmup);
+            AddCommand("zs_infect_drop_mode", "Teleport Mother Zombie Back", CVAR_InfectWeaponDropMode);
+            AddCommand("zs_infect_cash_damage", "Cash on damage", CVAR_InfectCashDamage);
+        }
 
+        private void CVAR_InfectSpawnTime(CCSPlayerController client, CommandInfo info)
+        {
+            if (info.ArgCount < 1)
+            {
+                info.ReplyToCommand($"[Z:Sharp] zs_infect_spawntime Current Value: {ConfigSettings.FirstInfectionTimer}");
+                return;
+            }
+
+            var value = float.Parse(info.GetArg(1));
+
+            if (value < 0.0)
+            {
+                info.ReplyToCommand($"[Z:Sharp] Usage: zs_infect_spawntime <float>");
+                return;
+            }
+
+            Server.PrintToChatAll($"[Z:Sharp] ConVar zs_infect_spawntime changed value from \"{ConfigSettings.FirstInfectionTimer}\" to \"{value}\".");
+            Logger.LogInformation($"[Z:Sharp] ConVar zs_infect_spawntime changed value from \"{ConfigSettings.FirstInfectionTimer}\" to \"{value}\".");
+            ConfigSettings.FirstInfectionTimer = value;
+        }
+
+        private void CVAR_InfectMotherZombieRatio(CCSPlayerController client, CommandInfo info)
+        {
+            if (info.ArgCount < 1)
+            {
+                info.ReplyToCommand($"[Z:Sharp] zs_infect_mzombie_ratio Current Value: {ConfigSettings.MotherZombieRatio}");
+                return;
+            }
+
+            var value = float.Parse(info.GetArg(1));
+
+            if (value < 0.0)
+            {
+                info.ReplyToCommand($"[Z:Sharp] Usage: zs_infect_mzombie_ratio <int>");
+                return;
+            }
+
+            Server.PrintToChatAll($"[Z:Sharp] ConVar zs_infect_mzombie_ratio changed value from \"{ConfigSettings.MotherZombieRatio}\" to \"{value}\".");
+            Logger.LogInformation($"[Z:Sharp] ConVar zs_infect_mzombie_ratio changed value from \"{ConfigSettings.MotherZombieRatio}\" to \"{value}\".");
+            ConfigSettings.MotherZombieRatio = value;
+        }
+
+        private void CVAR_InfectMotherZombieMinimum(CCSPlayerController client, CommandInfo info)
+        {
+            if (info.ArgCount < 1)
+            {
+                info.ReplyToCommand($"[Z:Sharp] zs_infect_mzombie_min Current Value: {ConfigSettings.MotherZombieMinimum}");
+                return;
+            }
+
+            var value = int.Parse(info.GetArg(1));
+
+            if (value < 0)
+            {
+                info.ReplyToCommand($"[Z:Sharp] Usage: zs_infect_mzombie_min <int>");
+                return;
+            }
+
+            Server.PrintToChatAll($"[Z:Sharp] ConVar zs_infect_mzombie_min changed value from \"{ConfigSettings.MotherZombieMinimum}\" to \"{value}\".");
+            Logger.LogInformation($"[Z:Sharp] ConVar zs_infect_mzombie_min changed value from \"{ConfigSettings.MotherZombieMinimum}\" to \"{value}\".");
+            ConfigSettings.MotherZombieMinimum = value;
+        }
+
+        private void CVAR_InfectMotherZombieRespawn(CCSPlayerController client, CommandInfo info)
+        {
+            if (info.ArgCount < 1)
+            {
+                info.ReplyToCommand($"[Z:Sharp] zs_infect_mzombie_respawn Current Value: {ConfigSettings.TeleportMotherZombie}");
+                return;
+            }
+
+            var value = Convert.ToBoolean(int.Parse(info.GetArg(1)));
+
+            if (typeof(bool) != value.GetType())
+            {
+                info.ReplyToCommand($"[Z:Sharp] Usage: zs_infect_mzombie_respawn <bool>");
+                return;
+            }
+
+            Server.PrintToChatAll($"[Z:Sharp] ConVar zs_infect_mzombie_respawn changed value from \"{ConfigSettings.TeleportMotherZombie}\" to \"{value}\".");
+            Logger.LogInformation($"[Z:Sharp] ConVar zs_infect_mzombie_respawn changed value from \"{ConfigSettings.TeleportMotherZombie}\" to \"{value}\".");
+            ConfigSettings.TeleportMotherZombie = value;
+        }
+
+        private void CVAR_InfectEnableWarmup(CCSPlayerController client, CommandInfo info)
+        {
+            if (info.ArgCount < 1)
+            {
+                info.ReplyToCommand($"[Z:Sharp] zs_infect_enable_warmup Current Value: {ConfigSettings.EnableOnWarmup}");
+                return;
+            }
+
+            var value = Convert.ToBoolean(int.Parse(info.GetArg(1)));
+
+            if (typeof(bool) != value.GetType())
+            {
+                info.ReplyToCommand($"[Z:Sharp] Usage: zs_infect_enable_warmup <0-1>");
+                return;
+            }
+
+            Server.PrintToChatAll($"[Z:Sharp] ConVar zs_infect_enable_warmup changed value from \"{ConfigSettings.EnableOnWarmup}\" to \"{value}\".");
+            Logger.LogInformation($"[Z:Sharp] ConVar zs_infect_enable_warmup changed value from \"{ConfigSettings.EnableOnWarmup}\" to \"{value}\".");
+            ConfigSettings.EnableOnWarmup = value;
+        }
+
+        private void CVAR_InfectWeaponDropMode(CCSPlayerController client, CommandInfo info)
+        {
+            if (info.ArgCount < 1)
+            {
+                info.ReplyToCommand($"[Z:Sharp] zs_infect_drop_mode Current Value: {ConfigSettings.ZombieDrop}");
+                return;
+            }
+
+            var value = int.Parse(info.GetArg(1));
+
+            if (value is < 0 or > 1)
+            {
+                info.ReplyToCommand($"[Z:Sharp] Usage: zs_infect_drop_mode <0-1>");
+                return;
+            }
+
+            Server.PrintToChatAll($"[Z:Sharp] ConVar zs_infect_drop_mode changed value from \"{ConfigSettings.ZombieDrop}\" to \"{value}\".");
+            Logger.LogInformation($"[Z:Sharp] ConVar zs_infect_drop_mode changed value from \"{ConfigSettings.ZombieDrop}\" to \"{value}\".");
+            ConfigSettings.ZombieDrop = value;
+        }
+
+        private void CVAR_InfectCashDamage(CCSPlayerController client, CommandInfo info)
+        {
+            if (info.ArgCount < 1)
+            {
+                info.ReplyToCommand($"[Z:Sharp] zs_infect_cash_damage Current Value: {ConfigSettings.CashOnDamage}");
+                return;
+            }
+
+            var value = Convert.ToBoolean(int.Parse(info.GetArg(1)));
+
+            if (typeof(bool) != value.GetType())
+            {
+                info.ReplyToCommand($"[Z:Sharp] Usage: zs_infect_cash_damage <0-1>");
+                return;
+            }
+
+            Server.PrintToChatAll($"[Z:Sharp] ConVar zs_infect_cash_damage changed value from \"{ConfigSettings.CashOnDamage}\" to \"{value}\".");
+            Logger.LogInformation($"[Z:Sharp] ConVar zs_infect_cash_damage changed value from \"{ConfigSettings.CashOnDamage}\" to \"{value}\".");
+            ConfigSettings.CashOnDamage = value;
         }
 
         void CreateExecConfigFile(string path)
