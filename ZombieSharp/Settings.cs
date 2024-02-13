@@ -45,8 +45,12 @@ namespace ZombieSharp
             AddCommand("zs_infect_enable_warmup", "Enable Gamemode in warmup", CVAR_InfectEnableWarmup);
             AddCommand("zs_infect_drop_mode", "Teleport Mother Zombie Back", CVAR_InfectWeaponDropMode);
             AddCommand("zs_infect_cash_damage", "Cash on damage", CVAR_InfectCashDamage);
+
+            // Respawn Section
         }
 
+        // Infection Section.
+        [RequiresPermissions("@css/cvar")]
         private void CVAR_InfectSpawnTime(CCSPlayerController client, CommandInfo info)
         {
             if (info.ArgCount < 1)
@@ -68,6 +72,7 @@ namespace ZombieSharp
             ConfigSettings.FirstInfectionTimer = value;
         }
 
+        [RequiresPermissions("@css/cvar")]
         private void CVAR_InfectMotherZombieRatio(CCSPlayerController client, CommandInfo info)
         {
             if (info.ArgCount < 1)
@@ -89,6 +94,7 @@ namespace ZombieSharp
             ConfigSettings.MotherZombieRatio = value;
         }
 
+        [RequiresPermissions("@css/cvar")]
         private void CVAR_InfectMotherZombieMinimum(CCSPlayerController client, CommandInfo info)
         {
             if (info.ArgCount < 1)
@@ -110,6 +116,7 @@ namespace ZombieSharp
             ConfigSettings.MotherZombieMinimum = value;
         }
 
+        [RequiresPermissions("@css/cvar")]
         private void CVAR_InfectMotherZombieRespawn(CCSPlayerController client, CommandInfo info)
         {
             if (info.ArgCount < 1)
@@ -131,6 +138,7 @@ namespace ZombieSharp
             ConfigSettings.TeleportMotherZombie = value;
         }
 
+        [RequiresPermissions("@css/cvar")]
         private void CVAR_InfectEnableWarmup(CCSPlayerController client, CommandInfo info)
         {
             if (info.ArgCount < 1)
@@ -152,6 +160,7 @@ namespace ZombieSharp
             ConfigSettings.EnableOnWarmup = value;
         }
 
+        [RequiresPermissions("@css/cvar")]
         private void CVAR_InfectWeaponDropMode(CCSPlayerController client, CommandInfo info)
         {
             if (info.ArgCount < 1)
@@ -173,6 +182,7 @@ namespace ZombieSharp
             ConfigSettings.ZombieDrop = value;
         }
 
+        [RequiresPermissions("@css/cvar")]
         private void CVAR_InfectCashDamage(CCSPlayerController client, CommandInfo info)
         {
             if (info.ArgCount < 1)
@@ -192,6 +202,95 @@ namespace ZombieSharp
             Server.PrintToChatAll($"[Z:Sharp] ConVar zs_infect_cash_damage changed value from \"{ConfigSettings.CashOnDamage}\" to \"{value}\".");
             Logger.LogInformation($"[Z:Sharp] ConVar zs_infect_cash_damage changed value from \"{ConfigSettings.CashOnDamage}\" to \"{value}\".");
             ConfigSettings.CashOnDamage = value;
+        }
+
+        // Respawn Section
+        [RequiresPermissions("@css/cvar")]
+        private void CVAR_RespawnTime(CCSPlayerController client, CommandInfo info)
+        {
+            if (info.ArgCount < 1)
+            {
+                info.ReplyToCommand($"[Z:Sharp] zs_respawn_timer Current Value: {ConfigSettings.RespawnTimer}");
+                return;
+            }
+
+            var value = float.Parse(info.GetArg(1));
+
+            if (value < 0.0)
+            {
+                info.ReplyToCommand($"[Z:Sharp] Usage: zs_respawn_timer <float>");
+                return;
+            }
+
+            Server.PrintToChatAll($"[Z:Sharp] ConVar zs_respawn_timer changed value from \"{ConfigSettings.RespawnTimer}\" to \"{value}\".");
+            Logger.LogInformation($"[Z:Sharp] ConVar zs_respawn_timer changed value from \"{ConfigSettings.RespawnTimer}\" to \"{value}\".");
+            ConfigSettings.RespawnTimer = value;
+        }
+
+        [RequiresPermissions("@css/cvar")]
+        private void CVAR_RespawnAllowJoinLate(CCSPlayerController client, CommandInfo info)
+        {
+            if (info.ArgCount < 1)
+            {
+                info.ReplyToCommand($"[Z:Sharp] zs_respawn_join_late Current Value: {ConfigSettings.Respawn_Late}");
+                return;
+            }
+
+            var value = Convert.ToBoolean(int.Parse(info.GetArg(1)));
+
+            if (typeof(bool) != value.GetType())
+            {
+                info.ReplyToCommand($"[Z:Sharp] Usage: zs_respawn_join_late <0-1>");
+                return;
+            }
+
+            Server.PrintToChatAll($"[Z:Sharp] ConVar zs_respawn_join_late changed value from \"{ConfigSettings.Respawn_Late}\" to \"{value}\".");
+            Logger.LogInformation($"[Z:Sharp] ConVar zs_respawn_join_late changed value from \"{ConfigSettings.Respawn_Late}\" to \"{value}\".");
+            ConfigSettings.Respawn_Late = value;
+        }
+
+        [RequiresPermissions("@css/cvar")]
+        private void CVAR_RespawnTeam(CCSPlayerController client, CommandInfo info)
+        {
+            if (info.ArgCount < 1)
+            {
+                info.ReplyToCommand($"[Z:Sharp] zs_respawn_team Current Value: {ConfigSettings.Respawn_Team}");
+                return;
+            }
+
+            var value = int.Parse(info.GetArg(1));
+
+            if (value is < 0 or > 1)
+            {
+                info.ReplyToCommand($"[Z:Sharp] Usage: zs_respawn_team <0-1>");
+                return;
+            }
+
+            Server.PrintToChatAll($"[Z:Sharp] ConVar zs_respawn_team changed value from \"{ConfigSettings.Respawn_Team}\" to \"{value}\".");
+            Logger.LogInformation($"[Z:Sharp] ConVar zs_respawn_team changed value from \"{ConfigSettings.Respawn_Team}\" to \"{value}\".");
+            ConfigSettings.Respawn_Team = value;
+        }
+
+        [RequiresPermissions("@css/cvar")]
+        private void CVAR_RespawnProtect(CCSPlayerController client, CommandInfo info)
+        {
+            if (info.ArgCount < 1)
+            {
+                info.ReplyToCommand($"[Z:Sharp] zs_respawn_protect Current Value: {ConfigSettings.Respawn_ProtectHuman}");
+                return;
+            }
+
+            var value = Convert.ToBoolean(int.Parse(info.GetArg(1)));
+
+            if (typeof(bool) != value.GetType())
+            {
+                info.ReplyToCommand($"[Z:Sharp] Usage: zs_respawn_protect <0-1>");
+                return;
+            }
+
+            Server.PrintToChatAll($"[Z:Sharp] ConVar zs_respawn_protect changed value from \"{ConfigSettings.Respawn_ProtectHuman}\" to \"{value}\".");
+            Logger.LogInformation($"[Z:Sharp] ConVar zs_respawn_protect changed value from \"{ConfigSettings.Respawn_ProtectHuman}\" to \"{value}\".");
+            ConfigSettings.Respawn_ProtectHuman = value;
         }
 
         void CreateExecConfigFile(string path)
@@ -221,79 +320,36 @@ namespace ZombieSharp
             execCfg.WriteLine("zs_topdefender_enable \"1\"");
             execCfg.WriteLine("zs_timeout_winner \"3\"");
         }
-
-        public class ConVar
-        {
-            public ConVar(string buffer, string value, string description)
-            {
-                ConVarCommand = buffer;
-                Value = value;
-
-                AddCommand(ConVarCommand, Description, OnConVarChanged);
-            }
-
-            public string ConVarCommand { get; set; }
-            public string Value { get; set; }
-            public string Description { get; set; }
-            public bool HasMin { get; set; } = false;
-            public float MinValue { get; set; }
-            public bool HasMax { get; set; } = false;
-            public float MaxValue { get; set; }
-
-            public int GetConVarInt()
-            {
-                return int.Parse(Value);
-            }
-
-            public float GetConVarFloat()
-            {
-                return float.Parse(Value);
-            }
-
-            public bool GetConVarBool()
-            {
-                return Convert.ToBoolean(int.Parse(Value));
-            }
-
-            public string GetConVarString()
-            {
-                return Value;
-            }
-
-            private void OnConVarChanged(CCSPlayerController client, CommandInfo info)
-            {
-
-            }
-        }
     }
+}
 
-    public class GameSettings
-    {
-        public float RespawnTimer { get; set; } = 5.0f;
-        public float FirstInfectionTimer { get; set; } = 15.0f;
-        public float MotherZombieRatio { get; set; } = 7.0f;
-        public int MotherZombieMinimum { get; set; } = 0;
-        public bool TeleportMotherZombie { get; set; } = true;
-        public bool EnableOnWarmup { get; set; } = false;
-        public float RepeatKillerThreshold { get; set; } = 3.0f;
-        public int ZombieDrop { get; set; } = 0; // 0 = stip , 1 = force drop
-        public bool CashOnDamage { get; set; } = true;
+public class GameSettings
+{
+    public float RespawnTimer { get; set; } = 5.0f;
+    public float FirstInfectionTimer { get; set; } = 15.0f;
+    public float MotherZombieRatio { get; set; } = 7.0f;
+    public int MotherZombieMinimum { get; set; } = 0;
+    public bool TeleportMotherZombie { get; set; } = true;
+    public bool EnableOnWarmup { get; set; } = false;
+    public float RepeatKillerThreshold { get; set; } = 3.0f;
+    public int ZombieDrop { get; set; } = 0; // 0 = stip , 1 = force drop
+    public bool CashOnDamage { get; set; } = true;
 
-        // Default Class
-        public string Human_Default { get; set; } = "human_default";
-        public string Zombie_Default { get; set; } = "zombie_default";
-        public string Mother_Zombie { get; set; } = "motherzombie";
+    // Default Class
+    public string Human_Default { get; set; } = "human_default";
+    public string Zombie_Default { get; set; } = "zombie_default";
+    public string Mother_Zombie { get; set; } = "motherzombie";
 
-        // Respawn Protection
-        public bool Respawn_Late { get; set; } = true;
-        public int Respawn_Team { get; set; } = 0;
-        public bool Respawn_ProtectHuman { get; set; } = false;
-        public float Respawn_ProtectTime { get; set; } = 5.0f;
-        public float Respawn_Speed { get; set; } = 600.0f;
+    // Respawn Protection
+    public bool Respawn_Late { get; set; } = true;
+    public int Respawn_Team { get; set; } = 0;
+    public bool Respawn_ProtectHuman { get; set; } = false;
+    public float Respawn_ProtectTime { get; set; } = 5.0f;
+    public float Respawn_Speed { get; set; } = 600.0f;
 
-        // top defender
-        public bool EnableTopDefender { get; set; } = false;
+    // top defender
+    public bool EnableTopDefender { get; set; } = false;
 
-        // Terminate Round Winner
-        public int TimeoutWinner { get; set; } = 3;
-    }
+    // Terminate Round Winner
+    public int TimeoutWinner { get; set; } = 3;
+}
