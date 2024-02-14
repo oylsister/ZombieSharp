@@ -26,8 +26,9 @@ namespace ZombieSharp
             if (!File.Exists(zsharpCfg))
             {
                 CreateExecConfigFile(zsharpCfg);
-                Server.ExecuteCommand("exec \"zombiesharp/zombiesharp.cfg\"");
             }
+
+            Server.ExecuteCommand("exec \"zombiesharp/zombiesharp.cfg\"");
 
             return true;
         }
