@@ -11,9 +11,6 @@ namespace ZombieSharp
             // initial value first
             ConfigSettings = new GameSettings();
 
-            // then convar command.
-            ConVarInitial();
-
             var cfgPath = Path.Combine(ModuleDirectory, @"../../../../cfg");
             if (!Directory.Exists(cfgPath))
             {

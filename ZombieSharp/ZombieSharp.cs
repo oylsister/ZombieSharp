@@ -42,6 +42,7 @@ namespace ZombieSharp
             CommandInitialize();
             VirtualFunctionsInitialize();
             PlayerSettingsOnLoad().Wait();
+            ConVarInitial();
         }
 
         public void InfectOnRoundFreezeEnd()
