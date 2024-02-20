@@ -239,7 +239,6 @@ namespace ZombieSharp
 
             ForceDropAllWeapon(client);
             client.GiveNamedItem("weapon_knife");
-            client!.PlayerPawn.Value!.WeaponServices.AllowSwitchToNoWeapon = false;
         }
 
         private void MyWeaponCommand(CCSPlayerController client, CommandInfo info)

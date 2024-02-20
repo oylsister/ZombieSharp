@@ -199,7 +199,6 @@ namespace ZombieSharp
                 ForceDropAllWeapon(client);
 
             client.GiveNamedItem("weapon_knife");
-            client!.PlayerPawn.Value!.WeaponServices!.AllowSwitchToNoWeapon = false;
 
             // swith to terrorist side.
             client.SwitchTeam(CsTeam.Terrorist);
@@ -380,8 +379,6 @@ namespace ZombieSharp
                 }
             }
 
-            client!.PlayerPawn.Value!.WeaponServices!.AllowSwitchToNoWeapon = true;
-
             client.RemoveWeapons();
         }
 
@@ -404,7 +401,6 @@ namespace ZombieSharp
                 }
             }
 
-            client!.PlayerPawn.Value!.WeaponServices.AllowSwitchToNoWeapon = true;
             client.ExecuteClientCommand("slot3");
             CBasePlayerWeapon activeweapon = new CBasePlayerWeapon(client!.PlayerPawn.Value!.WeaponServices!.ActiveWeapon.Value.Handle);
             activeweapon.AcceptInput("Kill");
