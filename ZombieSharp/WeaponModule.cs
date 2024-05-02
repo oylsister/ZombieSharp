@@ -155,22 +155,21 @@ namespace ZombieSharp
                 client.PrintToChat($" {ChatColors.Green}[Z:Sharp]{ChatColors.Default} You have purchase {ChatColors.Lime}{weaponConfig.WeaponName}{ChatColors.Default}.");
             }
 
-            var weaponlist = new List<int>();
+            var weaponlist = new Dictionary<int, string>();
             var weapons = client.PlayerPawn.Value.WeaponServices.MyWeapons;
 
             for (int i = 0; i < weapons.Count; i++)
             {
                 var slot = (int)weapons[i].Value.As<CCSWeaponBase>().VData.GearSlot;
-                weaponlist.Add(slot);
+                weaponlist.Add(slot, weapons[i].Value.DesignerName);
             }
 
             if (weaponConfig.WeaponSlot < 2)
             {
-                client.ExecuteClientCommand("slot3");
-                client.ExecuteClientCommand($"slot{weaponConfig.WeaponSlot + 1}");
-
-                if (weaponlist.Contains(weaponConfig.WeaponSlot))
-                    client.DropActiveWeapon();
+                if (weaponlist.ContainsKey(weaponConfig.WeaponSlot))
+                {
+                    DropWeaponByDesignerName(client, weaponlist[weaponConfig.WeaponSlot]);
+                }
             }
 
             Server.NextFrame(() =>

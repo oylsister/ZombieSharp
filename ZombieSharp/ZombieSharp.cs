@@ -395,9 +395,7 @@ namespace ZombieSharp
 
                 if (!string.IsNullOrEmpty(weapon.Value.UniqueHammerID) && vdata.GearSlot != gear_slot_t.GEAR_SLOT_KNIFE)
                 {
-                    client.ExecuteClientCommand("slot3");
-                    client.ExecuteClientCommand($"slot{weaponslot + 1}");
-                    client.DropActiveWeapon();
+                    DropWeaponByDesignerName(client, weapon.Value.DesignerName);
                 }
             }
 
@@ -417,19 +415,21 @@ namespace ZombieSharp
 
                 if (vdata!.GearSlot != gear_slot_t.GEAR_SLOT_KNIFE)
                 {
-                    /*
-                    client.ExecuteClientCommand("slot3");
-                    client.ExecuteClientCommand($"slot{(int)vdata!.GearSlot + 1}");
-                    */
-
-                    Schema.SetSchemaValue(client.PlayerPawn.Value.WeaponServices.Handle, "CPlayer_WeaponServices", "m_hActiveWeapon", weapons[i]);
-                    client.DropActiveWeapon();
+                    DropWeaponByDesignerName(client, weapons[i].Value.DesignerName);
                 }
             }
+        }
 
-            client.ExecuteClientCommand("slot3");
-            CBasePlayerWeapon activeweapon = new CBasePlayerWeapon(client!.PlayerPawn.Value!.WeaponServices!.ActiveWeapon.Value.Handle);
-            activeweapon.AcceptInput("Kill");
+        public void DropWeaponByDesignerName(CCSPlayerController player, string weaponName)
+        {
+            var matchedWeapon = player.PlayerPawn.Value.WeaponServices.MyWeapons
+                .Where(x => x.Value.DesignerName == weaponName).FirstOrDefault();
+
+            if (matchedWeapon != null && matchedWeapon.IsValid)
+            {
+                player.PlayerPawn.Value.WeaponServices.ActiveWeapon.Raw = matchedWeapon.Raw;
+                player.DropActiveWeapon();
+            }
         }
 
         public CCSGameRules GetGameRules()
