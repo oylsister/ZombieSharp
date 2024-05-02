@@ -27,13 +27,11 @@ namespace ZombieSharp
             Buy,
         };
 
-        MemoryFunctionVoid<CCSPlayerController, CCSPlayerPawn, bool, bool> CBasePlayerController_SetPawnFunc;
         MemoryFunctionVoid<CEntityIdentity, string> CEntityIdentity_SetEntityNameFunc;
         MemoryFunctionWithReturn<int, string, CCSWeaponBaseVData> GetCSWeaponDataFromKeyFunc;
 
         public void VirtualFunctionsInitialize()
         {
-            CBasePlayerController_SetPawnFunc = new(GameData.GetSignature("CBasePlayerController_SetPawn"));
             CEntityIdentity_SetEntityNameFunc = new(GameData.GetSignature("CEntityIdentity_SetEntityName"));
 
             VirtualFunctions.CCSPlayer_WeaponServices_CanUseFunc.Hook(OnWeaponCanUse, HookMode.Pre);
@@ -145,9 +143,16 @@ namespace ZombieSharp
                 }
             }
 
+            var controller = player(client);
+
+            if (CVAR_RespawnProtect.Value && ClientProtected[controller.Slot].Protected && controller.IsValid)
+            {
+                damageInfo.Damage = 0;
+            }
+
             bool warmup = GetGameRules().WarmupPeriod;
 
-            if (warmup && !ConfigSettings.EnableOnWarmup)
+            if (warmup && !CVAR_EnableOnWarmup.Value)
             {
                 if (client.DesignerName == "player" && attackInfo.Value.DesignerName == "player")
                 {
@@ -197,10 +202,7 @@ namespace ZombieSharp
             if (!client.IsValid || client.PawnIsAlive || client.TeamNum < 2)
                 return;
 
-            var clientPawn = client.PlayerPawn.Value;
-
-            CBasePlayerController_SetPawnFunc.Invoke(client, clientPawn, true, false);
-            VirtualFunction.CreateVoid<CCSPlayerController>(client.Handle, GameData.GetOffset("CCSPlayerController_Respawn"))(client);
+            client.Respawn();
         }
 
         public void CEntityIdentity_SetEntityName(CEntityIdentity entity, string name)

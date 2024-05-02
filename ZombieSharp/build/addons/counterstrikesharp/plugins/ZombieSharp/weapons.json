@@ -1,0 +1,351 @@
+{
+    "KnockbackMultiply": 1.0,
+    "EnableBuyModule": true,
+    "WeaponConfigs": {
+        "glock": {
+            "WeaponName": "Glock",
+            "WeaponEntity": "weapon_glock",
+            "Knockback": 1.1,
+            "WeaponSlot": 1,
+            "Price": 200,
+            "MaxPurchase": 0,
+            "Restrict": false,
+            "PurchaseCommand": [ "css_glock" ]
+        },
+        "hkp2000": {
+            "WeaponName": "P2000",
+            "WeaponEntity": "weapon_hkp2000",
+            "Knockback": 1.1,
+            "WeaponSlot": 1,
+            "Price": 300,
+            "MaxPurchase": 0,
+            "Restrict": false,
+            "PurchaseCommand": [ "css_p2000", "css_hkp" ]
+        },
+        "usp_silencer": {
+            "WeaponName": "USP-S",
+            "WeaponEntity": "weapon_usp_silencer",
+            "Knockback": 1.1,
+            "WeaponSlot": 1,
+            "Price": 300,
+            "MaxPurchase": 0,
+            "Restrict": false,
+            "PurchaseCommand": [ "css_usp" ]
+        },
+        "p250": {
+            "WeaponName": "P250",
+            "WeaponEntity": "weapon_p250",
+            "Knockback": 1.1,
+            "WeaponSlot": 1,
+            "Price": 400,
+            "MaxPurchase": 0,
+            "Restrict": false,
+            "PurchaseCommand": [ "css_p250" ]
+        },
+        "deagle": {
+            "WeaponName": "Deagle",
+            "WeaponEntity": "weapon_deagle",
+            "Knockback": 1.3,
+            "WeaponSlot": 1,
+            "Price": 700,
+            "MaxPurchase": 0,
+            "Restrict": false,
+            "PurchaseCommand": [ "css_deagle" ]
+        },
+        "elite": {
+            "WeaponName": "Elite",
+            "WeaponEntity": "weapon_elite",
+            "Knockback": 1.1,
+            "WeaponSlot": 1,
+            "Price": 500,
+            "MaxPurchase": 0,
+            "Restrict": false,
+            "PurchaseCommand": [ "css_elite" ]
+        },
+        "fiveseven": {
+            "WeaponName": "Five-Seven",
+            "WeaponEntity": "weapon_fiveseven",
+            "Knockback": 1.1,
+            "WeaponSlot": 1,
+            "Price": 800,
+            "MaxPurchase": 0,
+            "Restrict": false,
+            "PurchaseCommand": [ "css_fiveseven", "css_57", "css_fs" ]
+        },
+        "revolver": {
+            "WeaponName": "R8-Revolver",
+            "WeaponEntity": "weapon_revolver",
+            "Knockback": 1.2,
+            "WeaponSlot": 1,
+            "Price": 850,
+            "MaxPurchase": 0,
+            "Restrict": false,
+            "PurchaseCommand": [ "css_r8", "css_revolver" ]
+        },
+        "cz75a": {
+            "WeaponName": "CZ-75",
+            "WeaponEntity": "weapon_cz75a",
+            "Knockback": 1.0,
+            "WeaponSlot": 1,
+            "Price": 600,
+            "MaxPurchase": 0,
+            "Restrict": false,
+            "PurchaseCommand": [ "css_cz", "css_cs75" ]
+        },
+        "tec9": {
+            "WeaponName": "Tec9",
+            "WeaponEntity": "weapon_tec9",
+            "Knockback": 1.0,
+            "WeaponSlot": 1,
+            "Price": 500,
+            "MaxPurchase": 0,
+            "Restrict": false,
+            "PurchaseCommand": [ "css_tec9" ]
+        },
+        "nova": {
+            "WeaponName": "Nova",
+            "WeaponEntity": "weapon_nova",
+            "Knockback": 0.8,
+            "WeaponSlot": 0,
+            "Price": 1200,
+            "MaxPurchase": 0,
+            "Restrict": false,
+            "PurchaseCommand": [ "css_nova" ]
+        },
+        "xm1014": {
+            "WeaponName": "XM1014",
+            "WeaponEntity": "weapon_xm1014",
+            "Knockback": 0.8,
+            "WeaponSlot": 0,
+            "Price": 2000,
+            "MaxPurchase": 0,
+            "Restrict": false,
+            "PurchaseCommand": [ "css_xm", "css_xm1014" ]
+        },
+        "sawedoff": {
+            "WeaponName": "Sawedoff",
+            "WeaponEntity": "weapon_sawedoff",
+            "Knockback": 0.9,
+            "WeaponSlot": 0,
+            "Price": 1500,
+            "MaxPurchase": 0,
+            "Restrict": false,
+            "PurchaseCommand": [ "css_sawedoff" ]
+        },
+        "mag7": {
+            "WeaponName": "MAG-7",
+            "WeaponEntity": "weapon_mag7",
+            "Knockback": 0.9,
+            "WeaponSlot": 0,
+            "Price": 1500,
+            "MaxPurchase": 0,
+            "Restrict": false,
+            "PurchaseCommand": [ "css_mag7" ]
+        },
+        "mac10": {
+            "WeaponName": "Mac-10",
+            "WeaponEntity": "weapon_mac10",
+            "Knockback": 1.0,
+            "WeaponSlot": 0,
+            "Price": 1100,
+            "MaxPurchase": 0,
+            "Restrict": false,
+            "PurchaseCommand": [ "css_mac10", "css_mac" ]
+        },
+        "mp9": {
+            "WeaponName": "MP9",
+            "WeaponEntity": "weapon_mp9",
+            "Knockback": 1.1,
+            "WeaponSlot": 0,
+            "Price": 1300,
+            "MaxPurchase": 0,
+            "Restrict": false,
+            "PurchaseCommand": [ "css_mp9" ]
+        },
+        "mp5sd": {
+            "WeaponName": "MP5-SD",
+            "WeaponEntity": "weapon_mp5sd",
+            "Knockback": 1.2,
+            "WeaponSlot": 0,
+            "Price": 1250,
+            "MaxPurchase": 0,
+            "Restrict": false,
+            "PurchaseCommand": [ "css_mp5", "css_mp5sd" ]
+        },
+        "mp7": {
+            "WeaponName": "MP7",
+            "WeaponEntity": "weapon_mp7",
+            "Knockback": 1.1,
+            "WeaponSlot": 0,
+            "Price": 1400,
+            "MaxPurchase": 0,
+            "Restrict": false,
+            "PurchaseCommand": [ "css_mp7" ]
+        },
+        "ump45": {
+            "WeaponName": "UMP-45",
+            "WeaponEntity": "weapon_ump45",
+            "Knockback": 1.3,
+            "WeaponSlot": 0,
+            "Price": 1900,
+            "MaxPurchase": 0,
+            "Restrict": false,
+            "PurchaseCommand": [ "css_ump", "css_ump45" ]
+        },
+        "bizon": {
+            "WeaponName": "PP-Bizon",
+            "WeaponEntity": "weapon_bizon",
+            "Knockback": 1.1,
+            "WeaponSlot": 0,
+            "Price": 1600,
+            "MaxPurchase": 0,
+            "Restrict": false,
+            "PurchaseCommand": [ "css_bizon", "css_pp" ]
+        },
+        "p90": {
+            "WeaponName": "P90",
+            "WeaponEntity": "weapon_p90",
+            "Knockback": 1.0,
+            "WeaponSlot": 0,
+            "Price": 2350,
+            "MaxPurchase": 0,
+            "Restrict": false,
+            "PurchaseCommand": [ "css_p90" ]
+        },
+        "galilar": {
+            "WeaponName": "Galil AR",
+            "WeaponEntity": "weapon_galilar",
+            "Knockback": 1.2,
+            "WeaponSlot": 0,
+            "Price": 2300,
+            "MaxPurchase": 0,
+            "Restrict": false,
+            "PurchaseCommand": [ "css_galil" ]
+        },
+        "famas": {
+            "WeaponName": "Famas",
+            "WeaponEntity": "weapon_famas",
+            "Knockback": 1.1,
+            "WeaponSlot": 0,
+            "Price": 2250,
+            "MaxPurchase": 0,
+            "Restrict": false,
+            "PurchaseCommand": [ "css_famas" ]
+        },
+        "ak47": {
+            "WeaponName": "AK47",
+            "WeaponEntity": "weapon_ak47",
+            "Knockback": 1.1,
+            "WeaponSlot": 0,
+            "Price": 2700,
+            "MaxPurchase": 0,
+            "Restrict": false,
+            "PurchaseCommand": [ "css_ak", "css_ak47" ]
+        },
+        "m4a1": {
+            "WeaponName": "M4A4",
+            "WeaponEntity": "weapon_m4a1",
+            "Knockback": 1.1,
+            "WeaponSlot": 0,
+            "Price": 3300,
+            "MaxPurchase": 0,
+            "Restrict": false,
+            "PurchaseCommand": [ "css_m4a4", "css_m4" ]
+        },
+        "m4a1_silencer": {
+            "WeaponName": "M4A1-S",
+            "WeaponEntity": "weapon_m4a1_silencer",
+            "Knockback": 1.1,
+            "WeaponSlot": 0,
+            "Price": 3100,
+            "MaxPurchase": 0,
+            "Restrict": false,
+            "PurchaseCommand": [ "css_m4a1", "css_m4s", "css_m4a1s" ]
+        },
+        "sg556": {
+            "WeaponName": "SG556",
+            "WeaponEntity": "weapon_sg556",
+            "Knockback": 1.1,
+            "WeaponSlot": 0,
+            "Price": 3300,
+            "MaxPurchase": 0,
+            "Restrict": false,
+            "PurchaseCommand": [ "css_sg556" ]
+        },
+        "aug": {
+            "WeaponName": "AUG",
+            "WeaponEntity": "weapon_aug",
+            "Knockback": 1.1,
+            "WeaponSlot": 0,
+            "Price": 3300,
+            "MaxPurchase": 0,
+            "Restrict": false,
+            "PurchaseCommand": [ "css_aug" ]
+        },
+        "ssg08": {
+            "WeaponName": "SSG08",
+            "WeaponEntity": "weapon_ssg08",
+            "Knockback": 1.1,
+            "WeaponSlot": 0,
+            "Price": 1700,
+            "MaxPurchase": 0,
+            "Restrict": false,
+            "PurchaseCommand": [ "css_scout", "css_ssg08" ]
+        },
+        "awp": {
+            "WeaponName": "AWP",
+            "WeaponEntity": "weapon_awp",
+            "Knockback": 1.1,
+            "WeaponSlot": 0,
+            "Price": 4750,
+            "MaxPurchase": 0,
+            "Restrict": false,
+            "PurchaseCommand": [ "css_awp" ]
+        },
+        "scar20": {
+            "WeaponName": "Scar-20",
+            "WeaponEntity": "weapon_scar20",
+            "Knockback": 1.1,
+            "WeaponSlot": 0,
+            "Price": 5000,
+            "MaxPurchase": 0,
+            "Restrict": false,
+            "PurchaseCommand": [ "css_scar", "css_scar20" ]
+        },
+        "g3sg1": {
+            "WeaponName": "G3SG1",
+            "WeaponEntity": "weapon_g3sg1",
+            "Knockback": 1.1,
+            "WeaponSlot": 0,
+            "Price": 5000,
+            "MaxPurchase": 0,
+            "Restrict": false,
+            "PurchaseCommand": [ "css_g3sg1" ]
+        },
+        "m249": {
+            "WeaponName": "M249",
+            "WeaponEntity": "weapon_m249",
+            "Knockback": 1.1,
+            "WeaponSlot": 0,
+            "Price": 5000,
+            "MaxPurchase": 0,
+            "Restrict": false,
+            "PurchaseCommand": [ "css_m249" ]
+        },
+        "negev": {
+            "WeaponName": "Negev",
+            "WeaponEntity": "weapon_negev",
+            "Knockback": 1.1,
+            "WeaponSlot": 0,
+            "Price": 1500,
+            "MaxPurchase": 0,
+            "Restrict": false,
+            "PurchaseCommand": [ "css_negev" ]
+        },
+        "knife": {
+            "WeaponName": "Knife",
+            "WeaponEntity": "weapon_knife",
+            "Knockback": 1.1
+        }
+    }
+}

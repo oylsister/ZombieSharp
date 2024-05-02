@@ -1,0 +1,40 @@
+{
+    "HitGroupConfigs": {
+        "Generic": {
+            "HitgroupIndex": 0,
+            "HitgroupKnockback": 1.0
+        },
+        "Head": {
+            "HitgroupIndex": 1,
+            "HitgroupKnockback": 1.2
+        },
+        "Chest": {
+            "HitgroupIndex": 2,
+            "HitgroupKnockback": 1.0
+        },
+        "Stomach": {
+            "HitgroupIndex": 3,
+            "HitgroupKnockback": 1.0
+        },
+        "LeftArm": {
+            "HitgroupIndex": 4,
+            "HitgroupKnockback": 0.9
+        },
+        "RightArm": {
+            "HitgroupIndex": 5,
+            "HitgroupKnockback": 0.9
+        },
+        "LeftLeg": {
+            "HitgroupIndex": 6,
+            "HitgroupKnockback": 0.9
+        },
+        "RightLeg": {
+            "HitgroupIndex": 7,
+            "HitgroupKnockback": 0.9
+        },
+        "Gear": {
+            "HitgroupIndex": 8,
+            "HitgroupKnockback": 1.0
+        }
+    }
+}

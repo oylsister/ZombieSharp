@@ -1,3 +1,4 @@
+.vs/
 ZombieSharp/bin/*
 ZombieSharp/obj/*
 ZombieSharp/obj/ZombieSharp.csproj.nuget.g.props

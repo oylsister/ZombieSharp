@@ -17,6 +17,8 @@ namespace ZombieSharp
             AddCommand("css_zclass", "Player Class Command", PlayerClassCommand);
             AddCommand("css_dropme", "Test Force All Drop Weapon Command", ForceDropCommand);
             AddCommand("css_myweapon", "Get Client Weapon VData List", MyWeaponCommand);
+            AddCommand("css_zspawn", "ZSpawn Command", ZSpawnCommand);
+            AddCommand("css_rr", "Restart Round Command", RestartRoundCommand);
         }
 
         [RequiresPermissions(@"css/slay")]
@@ -220,6 +222,16 @@ namespace ZombieSharp
             }
         }
 
+        [RequiresPermissions("@css/slay")]
+        private void RestartRoundCommand(CCSPlayerController client, CommandInfo info)
+        {
+            var entity = Utilities.FindAllEntitiesByDesignerName<CCSGameRulesProxy>("cs_gamerules").First().GameRules!;
+
+            info.ReplyToCommand("Termianted Round");
+
+            entity.TerminateRound(3f, RoundEndReason.RoundDraw);
+        }
+
         private void PlayerClassCommand(CCSPlayerController client, CommandInfo info)
         {
             // if you're not actual player you can't
@@ -254,6 +266,27 @@ namespace ZombieSharp
                 var vdata = new CCSWeaponBaseVData(weapon.Value.VData.Handle);
                 info.ReplyToCommand($"Slot: {vdata.Slot} GearSlot {(int)vdata.GearSlot}: {weapon.Value.DesignerName}");
             }
+        }
+
+        [CommandHelper(0, "", CommandUsage.CLIENT_ONLY)]
+        private void ZSpawnCommand(CCSPlayerController client, CommandInfo info)
+        {
+            if (!client.IsValid)
+                return;
+
+            if (CVAR_RespawnTimer.Value <= 0.0)
+            {
+                info.ReplyToCommand($" {ChatColors.Green}[Z:Sharp]{ChatColors.Default} Current round has disabled respawning!");
+                return;
+            }
+
+            if (client.PawnIsAlive)
+            {
+                info.ReplyToCommand($" {ChatColors.Green}[Z:Sharp]{ChatColors.Default} This feature required you to be dead first!");
+                return;
+            }
+
+            RespawnClient(client);
         }
     }
 }

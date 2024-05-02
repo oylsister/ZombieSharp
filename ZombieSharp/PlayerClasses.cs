@@ -27,11 +27,11 @@ namespace ZombieSharp
             return true;
         }
 
-        public void PrecachePlayerModel()
+        public void PrecachePlayerModel(ResourceManifest mainfest)
         {
             foreach (PlayerClassData data in PlayerClassDatas.PlayerClasses.Values)
             {
-                Server.PrecacheModel(data.Model);
+                mainfest.AddResource(data.Model);
             }
         }
 

@@ -8,7 +8,7 @@
 
         public void RepeatKillerOnMapStart()
         {
-            if (ConfigSettings.RepeatKillerThreshold > 0.0)
+            if (CVAR_RepeatKillerThreshold.Value > 0.0)
                 RepeatKillerEnable = true;
         }
 
@@ -24,7 +24,7 @@
             {
                 float GameTime = Server.CurrentTime;
 
-                if ((GameTime - PlayerDeathTime[client.Slot] - ConfigSettings.RespawnTimer) < ConfigSettings.RepeatKillerThreshold)
+                if ((GameTime - PlayerDeathTime[client.Slot] - CVAR_RespawnTimer.Value) < CVAR_RepeatKillerThreshold.Value)
                 {
                     Server.PrintToChatAll($" {ChatColors.Green}[Z:Sharp]{ChatColors.Default} Repeat Killer detected. Disabling respawn for this round");
                     ToggleRespawn(true, false);
