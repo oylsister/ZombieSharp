@@ -1,4 +1,3 @@
-using CounterStrikeSharp.API.Modules.Entities.Constants;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
@@ -156,21 +155,30 @@ namespace ZombieSharp
                 client.PrintToChat($" {ChatColors.Green}[Z:Sharp]{ChatColors.Default} You have purchase {ChatColors.Lime}{weaponConfig.WeaponName}{ChatColors.Default}.");
             }
 
-            client.ExecuteClientCommand("slot3");
-            client.ExecuteClientCommand($"slot{weaponConfig.WeaponSlot + 1}");
+            var weaponlist = new List<int>();
+            var weapons = client.PlayerPawn.Value.WeaponServices.MyWeapons;
 
-            var activeweapon = client.PlayerPawn.Value!.WeaponServices!.ActiveWeapon;
-
-            if (activeweapon != null && activeweapon.Value!.DesignerName != "weapon_knife")
-                client.DropActiveWeapon();
-
-            client.GiveNamedItem(weaponConfig.WeaponEntity!);
-
-            client.InGameMoneyServices.Account = clientMoney - weaponConfig.Price;
-            Utilities.SetStateChanged(client, "CCSPlayerController", "m_pInGameMoneyServices");
-
-            AddTimer(0.2f, () =>
+            for (int i = 0; i < weapons.Count; i++)
             {
+                var slot = (int)weapons[i].Value.As<CCSWeaponBase>().VData.GearSlot;
+                weaponlist.Add(slot);
+            }
+
+            if (weaponConfig.WeaponSlot < 2)
+            {
+                client.ExecuteClientCommand("slot3");
+                client.ExecuteClientCommand($"slot{weaponConfig.WeaponSlot + 1}");
+
+                if (weaponlist.Contains(weaponConfig.WeaponSlot))
+                    client.DropActiveWeapon();
+            }
+
+            Server.NextFrame(() =>
+            {
+                client.InGameMoneyServices.Account = clientMoney - weaponConfig.Price;
+                Utilities.SetStateChanged(client, "CCSPlayerController", "m_pInGameMoneyServices");
+
+                client.GiveNamedItem(weaponConfig.WeaponEntity!);
                 client.ExecuteClientCommand($"slot{weaponConfig.WeaponSlot + 1}");
             });
         }

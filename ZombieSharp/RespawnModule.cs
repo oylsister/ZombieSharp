@@ -30,8 +30,8 @@
             if (!reset)
             {
                 ClientProtected[client.Slot].Velocity = client.PlayerPawn.Value.VelocityModifier;
-                client.PlayerPawn.Value.VelocityModifier = ConfigSettings.Respawn_Speed / 250.0f;
-                client.PlayerPawn.Value.GravityScale = ConfigSettings.Respawn_Speed / 250.0f;
+                client.PlayerPawn.Value.VelocityModifier = CVAR_RespawnProtectSpeed.Value / 250.0f;
+                client.PlayerPawn.Value.GravityScale = CVAR_RespawnProtectSpeed.Value / 250.0f;
             }
 
             else

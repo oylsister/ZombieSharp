@@ -13,7 +13,7 @@
           "Microsoft.Extensions.DependencyInjection": "7.0.0",
           "Microsoft.Extensions.Hosting": "7.0.0",
           "Newtonsoft.Json": "13.0.3",
-          "CounterStrikeSharp.API": "1.0.159.0"
+          "CounterStrikeSharp.API": "1.0.175.0"
         },
         "runtime": {
           "ZombieSharp.dll": {}
@@ -551,11 +551,11 @@
           "System.Text.Encodings.Web": "7.0.0"
         }
       },
-      "CounterStrikeSharp.API/1.0.159.0": {
+      "CounterStrikeSharp.API/1.0.175.0": {
         "runtime": {
           "CounterStrikeSharp.API.dll": {
-            "assemblyVersion": "1.0.159.0",
-            "fileVersion": "1.0.159.0"
+            "assemblyVersion": "1.0.175.0",
+            "fileVersion": "1.0.175.0"
           }
         }
       }
@@ -826,7 +826,7 @@
       "path": "system.text.json/7.0.0",
       "hashPath": "system.text.json.7.0.0.nupkg.sha512"
     },
-    "CounterStrikeSharp.API/1.0.159.0": {
+    "CounterStrikeSharp.API/1.0.175.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""

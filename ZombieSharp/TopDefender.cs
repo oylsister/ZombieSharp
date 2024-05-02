@@ -16,7 +16,7 @@
 
         public void TopDefenderOnPlayerHurt(CCSPlayerController client, int damage)
         {
-            if (!ConfigSettings.EnableTopDefender)
+            if (!CVAR_TopDefenderEnable.Value)
                 return;
 
             if (client.IsValid && ClientsDamage.ContainsKey(client))
@@ -25,7 +25,7 @@
 
         public void TopDefenderOnInfect(CCSPlayerController client)
         {
-            if (!ConfigSettings.EnableTopDefender)
+            if (!CVAR_TopDefenderEnable.Value)
                 return;
 
             if (client.IsValid && ClientsDamage.ContainsKey(client))
@@ -34,7 +34,7 @@
 
         public void TopDenfederOnRoundEnd()
         {
-            if (!ConfigSettings.EnableTopDefender)
+            if (!CVAR_TopDefenderEnable.Value)
                 return;
 
             int item;
@@ -81,7 +81,7 @@
 
         private void ResetTopDefender()
         {
-            if (!ConfigSettings.EnableTopDefender)
+            if (!CVAR_TopDefenderEnable.Value)
                 return;
 
             foreach (var client in Utilities.GetPlayers())

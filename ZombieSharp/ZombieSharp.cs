@@ -1,15 +1,14 @@
 ﻿using CounterStrikeSharp.API.Core.Attributes;
-using CounterStrikeSharp.API.Modules.Entities.Constants;
 using ZombieSharp.Helpers;
 
 namespace ZombieSharp
 {
-    [MinimumApiVersion(159)]
+    [MinimumApiVersion(179)]
     public partial class ZombieSharp : BasePlugin
     {
         public override string ModuleName => "Zombie Sharp";
         public override string ModuleAuthor => "Oylsister, Kurumi, Sparky";
-        public override string ModuleVersion => "1.1.0";
+        public override string ModuleVersion => "1.1.3";
         public override string ModuleDescription => "Infection/survival style gameplay for CS2 in C#";
 
         public bool ZombieSpawned;
@@ -42,14 +41,13 @@ namespace ZombieSharp
             CommandInitialize();
             VirtualFunctionsInitialize();
             PlayerSettingsOnLoad().Wait();
-            ConVarInitial();
         }
 
         public void InfectOnRoundFreezeEnd()
         {
-            Countdown = (int)ConfigSettings.FirstInfectionTimer;
+            Countdown = (int)CVAR_FirstInfectionTimer.Value;
             g_hCountdown = AddTimer(1.0f, Timer_Countdown, TimerFlags.REPEAT);
-            g_hInfectMZ = AddTimer(ConfigSettings.FirstInfectionTimer + 1.0f, MotherZombieInfect);
+            g_hInfectMZ = AddTimer(CVAR_FirstInfectionTimer.Value + 1.0f, MotherZombieInfect);
         }
 
         public void Timer_Countdown()
@@ -104,13 +102,16 @@ namespace ZombieSharp
 
             int alreadymade = 0;
 
-            int maxmz = (int)Math.Ceiling(allplayer / ConfigSettings.MotherZombieRatio);
+            int maxmz = (int)Math.Ceiling(allplayer / CVAR_MotherZombieRatio.Value);
 
-            if (ConfigSettings.MotherZombieMinimum > 0 && maxmz < ConfigSettings.MotherZombieMinimum)
-                maxmz = ConfigSettings.MotherZombieMinimum;
+            if (CVAR_MinimumMotherZombie.Value > 0 && maxmz < CVAR_MinimumMotherZombie.Value)
+                maxmz = CVAR_MinimumMotherZombie.Value;
+
+            else if (CVAR_MinimumMotherZombie.Value <= 0 && maxmz <= 0)
+                maxmz = 1;
 
             // if it is less than 1 then you need at least 1 mother zombie.
-            else if (ConfigSettings.MotherZombieMinimum <= 0 && maxmz <= 0)
+            if (maxmz < 1)
                 maxmz = 1;
 
             // Server.PrintToChatAll($"Max Mother Zombie is: {maxmz}");
@@ -173,9 +174,9 @@ namespace ZombieSharp
             {
                 ZombiePlayers[client.Slot].MotherZombieStatus = MotherZombieFlags.CHOSEN;
 
-                ApplyClass = ConfigSettings.Mother_Zombie;
+                ApplyClass = CVAR_Mother_Zombie.Value;
 
-                if (ConfigSettings.TeleportMotherZombie)
+                if (CVAR_TeleportMotherZombie.Value)
                     ZTele_TeleportClientToSpawn(client);
             }
             else
@@ -192,11 +193,14 @@ namespace ZombieSharp
                 eventDeath.Weapon = "knife";
                 eventDeath.FireEvent(false);
 
+                attacker.ActionTrackingServices.MatchStats.Kills += 1;
+                client.ActionTrackingServices.MatchStats.Deaths += 1;
+
                 TopDefenderOnInfect(attacker);
             }
 
             // Remove all weapon.
-            var dropmode = ConfigSettings.ZombieDrop;
+            var dropmode = CVAR_ZombieDrop.Value;
 
             if (dropmode == 0)
                 StripAllWeapon(client);
@@ -229,8 +233,10 @@ namespace ZombieSharp
             }
 
             // if all human died then let's end the round.
+            /*
             if (ZombieSpawned)
                 CheckGameStatus();
+            */
 
             // if zombie hasn't spawned yet, then make it true.
             if (!ZombieSpawned)
@@ -312,7 +318,7 @@ namespace ZombieSharp
 
         public void CheckGameStatus()
         {
-            if (!ZombieSpawned) return;
+            //Server.PrintToChatAll("Terminate is activated here.");
 
             var teams = Utilities.FindAllEntitiesByDesignerName<CTeam>("cs_team_manager");
 
@@ -337,28 +343,38 @@ namespace ZombieSharp
                 if (!ZombiePlayers.ContainsKey(client.Slot))
                     continue;
 
-                if (IsClientZombie(client) && IsPlayerAlive(client))
+                //Server.PrintToChatAll($"{client.PlayerName} Life state is {client.LifeState} and Pawn is {client.PawnIsAlive}");
+
+                if (IsClientZombie(client) && client.PawnIsAlive)
                     zombie++;
 
-                else if (IsClientHuman(client) && IsPlayerAlive(client))
+                else if (IsClientHuman(client) && client.PawnIsAlive)
                     human++;
             }
 
-            if (human <= 0)
+            //Server.PrintToChatAll($"Human = {human}, Zombie = {zombie}");
+
+            if (human <= 0 && zombie > 0)
             {
                 TTeam.Score += 1;
 
                 // round end.
                 CCSGameRules gameRules = GetGameRules();
-                gameRules.TerminateRound(5.0f, RoundEndReason.TerroristsWin);
+                gameRules.TerminateRound(5f, RoundEndReason.TerroristsWin);
             }
-            else if (zombie <= 0)
+            else if (zombie <= 0 && human > 0)
             {
                 CTTeam.Score += 1;
 
                 // round end.
                 CCSGameRules gameRules = GetGameRules();
-                gameRules.TerminateRound(5.0f, RoundEndReason.CTsWin);
+                gameRules.TerminateRound(5f, RoundEndReason.CTsWin);
+            }
+
+            else if (zombie <= 0 && human <= 0)
+            {
+                CCSGameRules gameRules = GetGameRules();
+                gameRules.TerminateRound(5f, RoundEndReason.TerroristsWin);
             }
         }
 
@@ -401,8 +417,12 @@ namespace ZombieSharp
 
                 if (vdata!.GearSlot != gear_slot_t.GEAR_SLOT_KNIFE)
                 {
+                    /*
                     client.ExecuteClientCommand("slot3");
                     client.ExecuteClientCommand($"slot{(int)vdata!.GearSlot + 1}");
+                    */
+
+                    Schema.SetSchemaValue(client.PlayerPawn.Value.WeaponServices.Handle, "CPlayer_WeaponServices", "m_hActiveWeapon", weapons[i]);
                     client.DropActiveWeapon();
                 }
             }
