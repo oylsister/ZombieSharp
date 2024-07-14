@@ -99,7 +99,8 @@ namespace ZombieSharp
             var weaponservices = hook.GetParam<CCSPlayer_WeaponServices>(0);
             var clientweapon = hook.GetParam<CBasePlayerWeapon>(1);
 
-            var client = new CCSPlayerController(weaponservices!.Pawn.Value.Controller.Value!.Handle);
+            //var client = new CCSPlayerController(weaponservices!.Pawn.Value.Controller.Value!.Handle);
+            var client = new CCSPlayerController(weaponservices!.Pawn.Value.Controller.Value.Handle);
 
             //Server.PrintToChatAll($"{client.PlayerName}: {CCSPlayer_WeaponServices_CanUseFunc.Invoke(weaponservices, clientweapon)}");
 
@@ -111,7 +112,7 @@ namespace ZombieSharp
 
             if (ZombieSpawned)
             {
-                if (IsClientZombie(client))
+                if (ZombiePlayerClass.IsClientZombie(client))
                 {
                     if (clientweapon.DesignerName != "weapon_knife")
                     {

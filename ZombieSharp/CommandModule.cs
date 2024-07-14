@@ -9,6 +9,7 @@ namespace ZombieSharp
             AddCommand("css_zs_ztele", "Teleport Client to spawn Command", ZTeleClientCommand);
             AddCommand("css_playerlist", "Player List Command", PlayerListCommand);
             AddCommand("css_classlist", "Class List Command", CommandClassList);
+            AddCommand("css_findclass", "Find Class", CommandClassFinder);
             AddCommand("css_weaponlist", "Weapon List Command", WeaponListCommand);
             AddCommand("css_hitgrouplist", "Hitgroup List Command", HiggroupsListCommand);
             AddCommand("css_togglerespawn", "Toggle Respawn Command", ToggleRespawnCommand);
@@ -51,7 +52,7 @@ namespace ZombieSharp
                     continue;
                 }
 
-                if (IsClientZombie(target))
+                if (ZombiePlayerClass.IsClientZombie(target))
                 {
                     if (targets.Players.Count < 2)
                         info.ReplyToCommand($" {ChatColors.Green}[Z:Sharp]{ChatColors.Default} target {target.PlayerName} is already zombie.");
@@ -98,7 +99,7 @@ namespace ZombieSharp
                     continue;
                 }
 
-                if (IsClientHuman(target))
+                if (ZombiePlayerClass.IsClientHuman(target))
                 {
                     if (targets.Players.Count < 2)
                         info.ReplyToCommand($" {ChatColors.Green}[Z:Sharp]{ChatColors.Default} target {target.PlayerName} is already human.");
@@ -140,7 +141,7 @@ namespace ZombieSharp
         {
             foreach (var player in Utilities.GetPlayers())
             {
-                info.ReplyToCommand($"{player.UserId}: {player.PlayerName}| Zombie: {ZombiePlayers[player.Slot].IsZombie}| MotherZombie: {ZombiePlayers[player.Slot].MotherZombieStatus} | Player Slot: {player.Slot}");
+                info.ReplyToCommand($"{player.UserId}: {player.PlayerName}| Zombie: {ZombiePlayerClass.ZombiePlayers[player.Slot].IsZombie}| MotherZombie: {ZombiePlayerClass.ZombiePlayers[player.Slot].MotherZombieStatus} | Player Slot: {player.Slot}");
             }
         }
 
@@ -150,7 +151,21 @@ namespace ZombieSharp
             foreach (var classData in PlayerClassDatas.PlayerClasses)
             {
                 info.ReplyToCommand($"Class Name: {classData.Value.Name}");
+                info.ReplyToCommand($"Class Name: {classData.Key}");
             }
+        }
+
+        private void CommandClassFinder(CCSPlayerController client, CommandInfo info)
+        {
+            var playerclass = info.GetArg(1);
+
+            if (!PlayerClassDatas.PlayerClasses.ContainsKey(playerclass))
+            {
+                info.ReplyToCommand($"Can't find {playerclass}");
+                return;
+            }
+
+            info.ReplyToCommand($"Found {playerclass}");
         }
 
         [RequiresPermissions(@"css/slay")]
@@ -208,7 +223,7 @@ namespace ZombieSharp
         {
             info.ReplyToCommand($"Human Class: {ClientPlayerClass[client.Slot].HumanClass}");
             info.ReplyToCommand($"Zombie Class: {ClientPlayerClass[client.Slot].ZombieClass}");
-            info.ReplyToCommand($"Active Class: {ClientPlayerClass[client.Slot].HumanClass}");
+            info.ReplyToCommand($"Active Class: {ClientPlayerClass[client.Slot].ActiveClass}");
         }
 
         [RequiresPermissions("@css/slay")]

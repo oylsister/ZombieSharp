@@ -1,4 +1,5 @@
 ﻿using CounterStrikeSharp.API.Core.Attributes;
+using CounterStrikeSharp.API.Core.Capabilities;
 using ZombieSharp.Helpers;
 
 namespace ZombieSharp
@@ -22,21 +23,19 @@ namespace ZombieSharp
             LAST = (1 << 2)
         }
 
-        public class ZombiePlayer
-        {
-            public bool IsZombie { get; set; } = false;
-            public MotherZombieFlags MotherZombieStatus { get; set; } = MotherZombieFlags.NONE;
-        }
-
-        public Dictionary<int, ZombiePlayer> ZombiePlayers { get; set; } = new Dictionary<int, ZombiePlayer>();
-
         private CounterStrikeSharp.API.Modules.Timers.Timer g_hCountdown = null;
         private CounterStrikeSharp.API.Modules.Timers.Timer g_hInfectMZ = null;
 
         public bool hitgroupLoad = false;
 
+        public ZombiePlayer ZombiePlayerClass { get; set; }
+
+        public static PlayerCapability<IZombiePlayer> ZombieCapability { get; set; } = new("zombiesharp:zombieplayer");
+
         public override void Load(bool HotReload)
         {
+            ZombiePlayerClass = new();
+
             EventInitialize();
             CommandInitialize();
             VirtualFunctionsInitialize();
@@ -90,7 +89,7 @@ namespace ZombieSharp
             {
                 if (client.PawnIsAlive && client.IsValid!)
                 {
-                    if (ZombiePlayers[client.Slot].MotherZombieStatus == MotherZombieFlags.NONE)
+                    if (ZombiePlayerClass.ZombiePlayers[client.Slot].MotherZombieStatus == MotherZombieFlags.NONE)
                     {
                         // Server.PrintToChatAll($"Add {client.PlayerName} to mother zombie candidate.");
                         candidate.Add(client);
@@ -125,9 +124,9 @@ namespace ZombieSharp
                     if (!client.IsValid || !client.PawnIsAlive)
                         continue;
 
-                    if (ZombiePlayers[client.Slot].MotherZombieStatus == MotherZombieFlags.LAST)
+                    if (ZombiePlayerClass.ZombiePlayers[client.Slot].MotherZombieStatus == MotherZombieFlags.LAST)
                     {
-                        ZombiePlayers[client.Slot].MotherZombieStatus = MotherZombieFlags.NONE;
+                        ZombiePlayerClass.ZombiePlayers[client.Slot].MotherZombieStatus = MotherZombieFlags.NONE;
                         candidate.Add(client);
                     }
                 }
@@ -165,14 +164,14 @@ namespace ZombieSharp
         public void InfectClient(CCSPlayerController client, CCSPlayerController attacker = null, bool motherzombie = false, bool force = false, bool respawn = false)
         {
             // make zombie status be true.
-            ZombiePlayers[client.Slot].IsZombie = true;
+            ZombiePlayerClass.ZombiePlayers[client.Slot].IsZombie = true;
 
             string ApplyClass;
 
             // if they from the motherzombie infection put status here to prevent being chosen for it again.
             if (motherzombie)
             {
-                ZombiePlayers[client.Slot].MotherZombieStatus = MotherZombieFlags.CHOSEN;
+                ZombiePlayerClass.ZombiePlayers[client.Slot].MotherZombieStatus = MotherZombieFlags.CHOSEN;
 
                 ApplyClass = CVAR_Mother_Zombie.Value;
 
@@ -254,7 +253,7 @@ namespace ZombieSharp
         public void HumanizeClient(CCSPlayerController client, bool force = false)
         {
             // zombie status to false
-            ZombiePlayers[client.Slot].IsZombie = false;
+            ZombiePlayerClass.ZombiePlayers[client.Slot].IsZombie = false;
 
             // switch client to CT
             client.SwitchTeam(CsTeam.CounterTerrorist);
@@ -285,7 +284,7 @@ namespace ZombieSharp
 
         public void KnockbackClient(CCSPlayerController client, CCSPlayerController attacker, float damage, string weapon, int hitgroup)
         {
-            if (!IsClientHuman(attacker) || !IsClientZombie(client))
+            if (!ZombiePlayerClass.IsClientHuman(attacker) || !ZombiePlayerClass.IsClientZombie(client))
                 return;
 
             var clientPawn = client.PlayerPawn.Value;
@@ -340,15 +339,15 @@ namespace ZombieSharp
             List<CCSPlayerController> clientlist = Utilities.GetPlayers();
             foreach (var client in clientlist)
             {
-                if (!ZombiePlayers.ContainsKey(client.Slot))
+                if (!ZombiePlayerClass.ZombiePlayers.ContainsKey(client.Slot))
                     continue;
 
                 //Server.PrintToChatAll($"{client.PlayerName} Life state is {client.LifeState} and Pawn is {client.PawnIsAlive}");
 
-                if (IsClientZombie(client) && client.PawnIsAlive)
+                if (ZombiePlayerClass.IsClientZombie(client) && client.PawnIsAlive)
                     zombie++;
 
-                else if (IsClientHuman(client) && client.PawnIsAlive)
+                else if (ZombiePlayerClass.IsClientHuman(client) && client.PawnIsAlive)
                     human++;
             }
 
@@ -435,22 +434,6 @@ namespace ZombieSharp
         public CCSGameRules GetGameRules()
         {
             return Utilities.FindAllEntitiesByDesignerName<CCSGameRulesProxy>("cs_gamerules").First().GameRules!;
-        }
-
-        public bool IsClientZombie(CCSPlayerController controller)
-        {
-            if (controller.Slot == 32766)
-                return false;
-
-            return ZombiePlayers[controller.Slot].IsZombie;
-        }
-
-        public bool IsClientHuman(CCSPlayerController controller)
-        {
-            if (controller.Slot == 32766)
-                return false;
-
-            return !ZombiePlayers[controller.Slot].IsZombie;
         }
 
         public bool IsPlayerAlive(CCSPlayerController controller)

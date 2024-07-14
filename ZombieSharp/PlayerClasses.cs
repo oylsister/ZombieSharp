@@ -1,6 +1,7 @@
 ﻿using CounterStrikeSharp.API.Modules.Menu;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace ZombieSharp
 {
@@ -40,12 +41,16 @@ namespace ZombieSharp
             // stop regen timer first.
             RegenTimerStop(client);
 
+            //Server.PrintToChatAll($"{client.PlayerName} Result = {PlayerClassDatas.PlayerClasses.ContainsKey(class_string)}");
+
             // if cannot find the class, then false so they can use the default value.
+            /*
             if (!PlayerClassDatas.PlayerClasses.ContainsKey(class_string))
             {
-                //Server.PrintToChatAll($"Couldn't find {class_string} for {client.PlayerName}");
+                Server.PrintToChatAll($"Couldn't find {class_string} for {client.PlayerName}");
                 return false;
             }
+            */
 
             var classData = PlayerClassDatas.PlayerClasses[class_string];
 
@@ -206,12 +211,14 @@ public class PlayerClassConfig
 
     public PlayerClassConfig()
     {
+        /*
         PlayerClasses = new Dictionary<string, PlayerClassData>(StringComparer.OrdinalIgnoreCase)
         {
             { "human_default", new PlayerClassData("Human Config Default", "Default Class for human", true, 1, "", false, 100, 0.0f, 0, 250.0f, 0.0f, 3.0f, 1.0f) },
             { "zombie_default", new PlayerClassData("Zombie Config Default", "Default Class for zombie", true, 0, "", false, 8000, 10.0f, 100, 255.0f, 3.0f, 1.0f, 1.0f) },
             { "motherzombie", new PlayerClassData("Mother Zombie Config", "Mother Zombie Class", true, 0, "", false, 15000, 10.0f, 100, 255.0f, 3.0f, 1.0f, 1.0f) },
         };
+        */
     }
 }
 
