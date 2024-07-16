@@ -41,8 +41,8 @@ namespace ZombieSharp
 
             ClientPlayerClass.Add(clientindex, new PlayerClientClass());
 
-            ClientPlayerClass[clientindex].HumanClass = CVAR_Human_Default.Value;
-            ClientPlayerClass[clientindex].ZombieClass = CVAR_Zombie_Default.Value;
+            ClientPlayerClass[clientindex].HumanClass = Default_Human;
+            ClientPlayerClass[clientindex].ZombieClass = Default_Zombie;
             ClientPlayerClass[clientindex].ActiveClass = null;
         }
 

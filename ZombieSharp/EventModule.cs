@@ -262,6 +262,7 @@ namespace ZombieSharp
 
                     FindWeaponItemDefinition(attacker.PlayerPawn.Value.WeaponServices.ActiveWeapon, weapon);
 
+                    //Server.PrintToChatAll($"{client.PlayerName} get hit at {hitgroup}");
                     KnockbackClient(client, attacker, dmgHealth, weapon, hitgroup);
                     TopDefenderOnPlayerHurt(attacker, dmgHealth);
                 }
@@ -381,10 +382,10 @@ namespace ZombieSharp
                     if (activeclass == null)
                     {
                         if (ZombiePlayerClass.IsClientHuman(client))
-                            activeclass = CVAR_Human_Default.Value;
+                            activeclass = Default_Human;
 
                         else
-                            activeclass = CVAR_Zombie_Default.Value;
+                            activeclass = Default_Zombie;
                     }
 
                     if (classData.ContainsKey(activeclass))

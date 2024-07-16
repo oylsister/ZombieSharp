@@ -173,7 +173,7 @@ namespace ZombieSharp
             {
                 ZombiePlayerClass.ZombiePlayers[client.Slot].MotherZombieStatus = MotherZombieFlags.CHOSEN;
 
-                ApplyClass = CVAR_Mother_Zombie.Value;
+                ApplyClass = Default_MotherZombie;
 
                 if (CVAR_TeleportMotherZombie.Value)
                     ZTele_TeleportClientToSpawn(client);

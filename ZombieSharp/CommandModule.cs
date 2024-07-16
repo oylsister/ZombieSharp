@@ -166,6 +166,7 @@ namespace ZombieSharp
             }
 
             info.ReplyToCommand($"Found {playerclass}");
+            info.ReplyToCommand($"Class Name: {PlayerClassDatas.PlayerClasses[playerclass].Name}");
         }
 
         [RequiresPermissions(@"css/slay")]

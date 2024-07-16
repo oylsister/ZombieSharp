@@ -29,7 +29,10 @@ namespace ZombieSharp
             foreach (var data in HitGroupDatas.HitGroupConfigs)
             {
                 if (data.Value.HitgroupIndex == hitgroup)
+                {
+                    //Server.PrintToChatAll($"Found it as {data.Value.HitgroupKnockback}.");
                     return data.Value.HitgroupKnockback;
+                }
             }
 
             return 1.0f;
