@@ -44,10 +44,10 @@ namespace ZombieSharp
 
             ClientSpawnDatas.Add(clientindex, new ClientSpawnData());
 
-            ZombiePlayers.Add(clientindex, new ZombiePlayer());
+            ZombiePlayerClass.ZombiePlayers.Add(clientindex, new ZombiePlayer());
 
-            ZombiePlayers[clientindex].IsZombie = false;
-            ZombiePlayers[clientindex].MotherZombieStatus = MotherZombieFlags.NONE;
+            ZombiePlayerClass.ZombiePlayers[clientindex].IsZombie = false;
+            ZombiePlayerClass.ZombiePlayers[clientindex].MotherZombieStatus = MotherZombieFlags.NONE;
 
             PlayerDeathTime.Add(clientindex, 0.0f);
 
@@ -98,7 +98,7 @@ namespace ZombieSharp
             int clientindex = player.Slot;
 
             ClientSpawnDatas.Remove(clientindex);
-            ZombiePlayers.Remove(clientindex);
+            ZombiePlayerClass.ZombiePlayers.Remove(clientindex);
             ClientPlayerClass.Remove(clientindex);
             PlayerDeathTime.Remove(clientindex);
 
@@ -220,11 +220,11 @@ namespace ZombieSharp
                             continue;
 
                         // Reset Client Status.
-                        ZombiePlayers[client.Slot].IsZombie = false;
+                        ZombiePlayerClass.ZombiePlayers[client.Slot].IsZombie = false;
 
                         // if they were chosen as motherzombie then let's make them not to get chosen again.
-                        if (ZombiePlayers[client.Slot].MotherZombieStatus == MotherZombieFlags.CHOSEN)
-                            ZombiePlayers[client.Slot].MotherZombieStatus = MotherZombieFlags.LAST;
+                        if (ZombiePlayerClass.ZombiePlayers[client.Slot].MotherZombieStatus == MotherZombieFlags.CHOSEN)
+                            ZombiePlayerClass.ZombiePlayers[client.Slot].MotherZombieStatus = MotherZombieFlags.LAST;
                     }
                 });
             }
@@ -249,19 +249,20 @@ namespace ZombieSharp
                 if (!attacker.IsValid || !client.IsValid)
                     return HookResult.Continue;
 
-                if (IsClientZombie(attacker) && IsClientHuman(client) && string.Equals(weapon, "knife") && !ClientProtected[client.Slot].Protected)
+                if (ZombiePlayerClass.IsClientZombie(attacker) && ZombiePlayerClass.IsClientHuman(client) && string.Equals(weapon, "knife") && !ClientProtected[client.Slot].Protected)
                 {
                     // Server.PrintToChatAll($"{client.PlayerName} Infected by {attacker.PlayerName}");
                     InfectClient(client, attacker);
                 }
 
-                if (IsClientZombie(client))
+                if (ZombiePlayerClass.IsClientZombie(client))
                 {
                     if (CVAR_CashOnDamage.Value)
                         DamageCash(attacker, dmgHealth);
 
                     FindWeaponItemDefinition(attacker.PlayerPawn.Value.WeaponServices.ActiveWeapon, weapon);
 
+                    //Server.PrintToChatAll($"{client.PlayerName} get hit at {hitgroup}");
                     KnockbackClient(client, attacker, dmgHealth, weapon, hitgroup);
                     TopDefenderOnPlayerHurt(attacker, dmgHealth);
                 }
@@ -380,11 +381,11 @@ namespace ZombieSharp
                 {
                     if (activeclass == null)
                     {
-                        if (IsClientHuman(client))
-                            activeclass = CVAR_Human_Default.Value;
+                        if (ZombiePlayerClass.IsClientHuman(client))
+                            activeclass = Default_Human;
 
                         else
-                            activeclass = CVAR_Zombie_Default.Value;
+                            activeclass = Default_Zombie;
                     }
 
                     if (classData.ContainsKey(activeclass))

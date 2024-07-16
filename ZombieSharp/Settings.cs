@@ -21,10 +21,6 @@ namespace ZombieSharp
         public FakeConVar<float> CVAR_RespawnProtectTime = new("zs_respawn_protect_time", "Duration of human protection after they respawned.", 5.0f, ConVarFlags.FCVAR_NONE, new RangeValidator<float>(1.0f, 50.0f));
         public FakeConVar<float> CVAR_RespawnProtectSpeed = new("zs_respawn_protect_speed", "Human Speed during protection active.", 600.0f, ConVarFlags.FCVAR_NONE, new RangeValidator<float>(300.0f, 1200.0f));
 
-        public FakeConVar<string> CVAR_Human_Default = new("zs_classes_human_default", "Default Human Class", "human_default");
-        public FakeConVar<string> CVAR_Zombie_Default = new("zs_classes_zombie_default", "Default Zombie Class", "zombie_default");
-        public FakeConVar<string> CVAR_Mother_Zombie = new("zs_classes_motherzombie_default", "Default Mother Zombie Class", "motherzombie");
-
         public FakeConVar<float> CVAR_RepeatKillerThreshold = new("zs_repeatkiller_threshold", "Death Ratio before disable spawning entirely in that round.", 0.0f, ConVarFlags.FCVAR_NONE, new RangeValidator<float>(0, 64));
         public FakeConVar<bool> CVAR_TopDefenderEnable = new("zs_topdefender_enable", "Enable Top defender or not", true);
         public FakeConVar<int> CVAR_TimeoutWinner = new("zs_timeout_winner", "Specify Which team should win if the round time is out.", 2, ConVarFlags.FCVAR_NONE, new RangeValidator<int>(2, 3));
@@ -82,10 +78,6 @@ namespace ZombieSharp
             execCfg.WriteLine("zs_respawn_protect \"0\"");
             execCfg.WriteLine("zs_respawn_protect_time \"5.0\"");
             execCfg.WriteLine("zs_respawn_protect_speed \"600.0\"");
-
-            execCfg.WriteLine("zs_classes_human_default \"human_default\"");
-            execCfg.WriteLine("zs_classes_zombie_default \"zombie_default\"");
-            execCfg.WriteLine("zs_classes_mother_default \"motherzombie\"");
 
             execCfg.WriteLine("zs_repeatkiller_threshold \"0.0\"");
             execCfg.WriteLine("zs_topdefender_enable \"1\"");

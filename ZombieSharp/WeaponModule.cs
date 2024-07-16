@@ -104,7 +104,7 @@ namespace ZombieSharp
                 return;
             }
 
-            if (IsClientZombie(client))
+            if (ZombiePlayerClass.IsClientZombie(client))
             {
                 client.PrintToChat($" {ChatColors.Green}[Z:Sharp]{ChatColors.Default} this feature is for human only!");
                 return;
