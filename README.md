@@ -55,7 +55,7 @@ mp_disconnect_kills_players 1 // set in gamemode_casual.cfg
 Here is a list of all the config files available and what they do.
 
 weapons.json - Configure specific weapon settings. And purchase settings
-```json
+```jsonc
 {
     "KnockbackMultiply": 1.0, // Knockback Multiply for all weapon
     "WeaponDatas":{
@@ -76,13 +76,14 @@ playerclasses.json - Player Classes configuration.
 <b>Placing Custom model at</b> ``game/csgo`` <b>for both server and client (player)</b>
 
 Example: ``game/csgo/characters/models/nozb1/2b_nier_automata_player_model/2b_nier_player_model.vmdl_c``
-```json
+```jsonc
 {
     "PlayerClasses":{
         "human_default": { // Class unique name
             "Name": "Human Default", // class name
             "Description": "Default Class for human", // description
             "Enable": true, // enable it or not
+            "Default_Class": true, // If true then player will automatically be assigned with this class when join server for the first time.
             "Team": 1, // Team 0 = zombie, Team 1 = human
             "Model": "characters\\models\\nozb1\\2b_nier_automata_player_model\\2b_nier_player_model.vmdl", // Model path for this class change .vmdl_c to .vmdl in this config
             "MotherZombie": false, // Specify if this class is for mother zombie.
@@ -99,7 +100,7 @@ Example: ``game/csgo/characters/models/nozb1/2b_nier_automata_player_model/2b_ni
 }
 ```
 hitgroups.json - Hitgroup configuration for knockback.
-```json
+```jsonc
 {
     "HitGroupDatas": {
         "Generic": { // name of the part, doesn't affect anything
