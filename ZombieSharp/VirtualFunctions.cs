@@ -29,6 +29,7 @@ namespace ZombieSharp
 
         MemoryFunctionVoid<CEntityIdentity, string> CEntityIdentity_SetEntityNameFunc;
         MemoryFunctionWithReturn<int, string, CCSWeaponBaseVData> GetCSWeaponDataFromKeyFunc;
+        MemoryFunctionVoid<CBaseEntity, string, int, float, float> CBaseEntity_EmitSoundParamsFunc;
 
         public void VirtualFunctionsInitialize()
         {
@@ -39,6 +40,8 @@ namespace ZombieSharp
             VirtualFunctions.CBaseEntity_TakeDamageOldFunc.Hook(OnTakeDamage, HookMode.Pre);
 
             GetCSWeaponDataFromKeyFunc = new(GameData.GetSignature("GetCSWeaponDataFromKey"));
+
+            CBaseEntity_EmitSoundParamsFunc = new(GameData.GetSignature("CBaseEntity_EmitSoundParams"));
 
             // MemoryFunctionWithReturn<CCSPlayer_ItemServices, CEconItemView, AcquireMethod, NativeObject, AcquireResult> CCSPlayer_CanAcquireFunc = new(GameData.GetSignature("CCSPlayer_CanAcquire"));
             // CCSPlayer_CanAcquireFunc.Hook(OnWeaponAcquire, HookMode.Pre);
@@ -212,6 +215,14 @@ namespace ZombieSharp
                 return;
 
             CEntityIdentity_SetEntityNameFunc.Invoke(entity, name);
+        }
+
+        public void EmitSound(CBaseEntity entity, string sound, int pitch = 1, float volume = 1f, float delay = 1f)
+        {
+            if (entity == null || string.IsNullOrEmpty(sound))
+                return;
+
+            CBaseEntity_EmitSoundParamsFunc.Invoke(entity, sound, pitch, volume, delay);
         }
 
         public static CCSPlayerController player(CEntityInstance instance)
