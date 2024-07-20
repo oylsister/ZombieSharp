@@ -14,3 +14,5 @@ ZombieSharp/obj/Debug/net7.0/ZombieSharp.assets.cache
 /ZombieTest/obj
 /ZombieTest/ZombieSharpAPI/obj
 /ZombieTest/ZombieSharpAPI/bin
+/ZombieSharpAPI/obj
+/ZombieSharpAPI/bin

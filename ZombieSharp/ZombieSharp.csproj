@@ -22,6 +22,9 @@
     <Reference Include="CounterStrikeSharp.API">
        <HintPath>API/CounterStrikeSharp.API.dll</HintPath>
     </Reference>
+    <Reference Include="IZombieSharpAPI">
+      <HintPath>..\ZombieSharpAPI\IZombieSharpAPI.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

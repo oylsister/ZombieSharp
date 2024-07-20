@@ -115,7 +115,7 @@ namespace ZombieSharp
 
             if (ZombieSpawned)
             {
-                if (ZombiePlayerClass.IsClientZombie(client))
+                if (IsClientZombie(client))
                 {
                     if (clientweapon.DesignerName != "weapon_knife")
                     {
