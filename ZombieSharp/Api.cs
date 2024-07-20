@@ -19,5 +19,15 @@ namespace ZombieSharp
         {
             return _plugin.IsClientZombie(controller);
         }
+
+        public void ZS_InfectClient(CCSPlayerController controller)
+        {
+            _plugin.InfectClient(controller, null, false, true);
+        }
+
+        public void ZS_HumanizeClient(CCSPlayerController controller)
+        {
+            _plugin.HumanizeClient(controller, true);
+        }
     }
 }

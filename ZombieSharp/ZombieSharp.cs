@@ -31,8 +31,11 @@ namespace ZombieSharp
 
         public Dictionary<int, ZombiePlayer> ZombiePlayers { get; set; } = new Dictionary<int, ZombiePlayer>();
 
+        public static PluginCapability<IZombieSharpAPI> APICapability = new("zombiesharp");
+
         public override void Load(bool HotReload)
         {
+            Capabilities.RegisterPluginCapability(APICapability, () => new ZombieSharpAPI(this));
 
             EventInitialize();
             CommandInitialize();
@@ -164,6 +167,13 @@ namespace ZombieSharp
             // make zombie status be true.
             ZombiePlayers[client.Slot].IsZombie = true;
 
+            // if zombie hasn't spawned yet, then make it true.
+            if (!ZombieSpawned)
+            { 
+                ZombieSpawned = true;
+                motherzombie = true;
+            }
+
             string ApplyClass;
 
             // if they from the motherzombie infection put status here to prevent being chosen for it again.
@@ -234,10 +244,6 @@ namespace ZombieSharp
             if (ZombieSpawned)
                 CheckGameStatus();
             */
-
-            // if zombie hasn't spawned yet, then make it true.
-            if (!ZombieSpawned)
-                ZombieSpawned = true;
 
             // if force then tell them that they has been punnished.
             if (force)
