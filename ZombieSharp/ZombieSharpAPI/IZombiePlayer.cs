@@ -1,8 +1,9 @@
-﻿namespace ZombieSharp.Helpers
+﻿using CounterStrikeSharp.API.Core;
+
+namespace ZombieSharp.ZombieSharpAPI
 {
     public interface IZombiePlayer
     {
-        public Dictionary<int, ZombiePlayer> ZombiePlayers { get; }
         public bool IsClientHuman(CCSPlayerController controller);
         public bool IsClientZombie(CCSPlayerController controller);
     }

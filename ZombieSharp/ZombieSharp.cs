@@ -1,6 +1,7 @@
 ﻿using CounterStrikeSharp.API.Core.Attributes;
 using CounterStrikeSharp.API.Core.Capabilities;
 using ZombieSharp.Helpers;
+using ZombieSharp.ZombieSharpAPI;
 
 namespace ZombieSharp
 {
@@ -30,10 +31,12 @@ namespace ZombieSharp
 
         public ZombiePlayer ZombiePlayerClass { get; set; }
 
-        public static PlayerCapability<IZombiePlayer> ZombieCapability { get; set; } = new("zombiesharp:zombieplayer");
+        public static PluginCapability<IZombiePlayer> ZombieCapability { get; set; } = new("zombiesharp:zombieplayer");
 
         public override void Load(bool HotReload)
         {
+            Capabilities.RegisterPluginCapability(ZombieCapability, () => new ZombiePlayer());
+
             ZombiePlayerClass = new();
 
             EventInitialize();
