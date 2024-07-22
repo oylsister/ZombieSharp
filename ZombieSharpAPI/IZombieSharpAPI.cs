@@ -4,9 +4,8 @@ namespace ZombieSharpAPI
 {
     public interface IZombieSharpAPI
     {
-        public delegate void ZS_OnInfectClient(CCSPlayerController controller, CCSPlayerController attacker, bool motherzombie, bool force, bool respawn);
-
-        public void ZS_HookInfectClient(ZS_OnInfectClient hook);
+        public event Action<CCSPlayerController, CCSPlayerController, bool, bool, bool> ZS_OnInfectClient;
+        public event Action<CCSPlayerController, bool> ZS_OnHumanizeClient;
 
         public bool ZS_IsClientHuman(CCSPlayerController controller);
         public bool ZS_IsClientZombie(CCSPlayerController controller);
