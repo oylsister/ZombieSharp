@@ -6,6 +6,7 @@
     <Nullable>disable</Nullable>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+	<GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
 	<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
 
@@ -21,6 +22,7 @@
     <Reference Include="CounterStrikeSharp.API">
        <HintPath>API/CounterStrikeSharp.API.dll</HintPath>
     </Reference>
+	  <ProjectReference Include="..\ZombieSharpAPI\IZombieSharpAPI.csproj"></ProjectReference>
   </ItemGroup>
 
 </Project>

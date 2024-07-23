@@ -52,7 +52,7 @@ namespace ZombieSharp
                     continue;
                 }
 
-                if (ZombiePlayerClass.IsClientZombie(target))
+                if (IsClientZombie(target))
                 {
                     if (targets.Players.Count < 2)
                         info.ReplyToCommand($" {ChatColors.Green}[Z:Sharp]{ChatColors.Default} target {target.PlayerName} is already zombie.");
@@ -99,7 +99,7 @@ namespace ZombieSharp
                     continue;
                 }
 
-                if (ZombiePlayerClass.IsClientHuman(target))
+                if (IsClientHuman(target))
                 {
                     if (targets.Players.Count < 2)
                         info.ReplyToCommand($" {ChatColors.Green}[Z:Sharp]{ChatColors.Default} target {target.PlayerName} is already human.");
@@ -141,7 +141,7 @@ namespace ZombieSharp
         {
             foreach (var player in Utilities.GetPlayers())
             {
-                info.ReplyToCommand($"{player.UserId}: {player.PlayerName}| Zombie: {ZombiePlayerClass.ZombiePlayers[player.Slot].IsZombie}| MotherZombie: {ZombiePlayerClass.ZombiePlayers[player.Slot].MotherZombieStatus} | Player Slot: {player.Slot}");
+                info.ReplyToCommand($"{player.UserId}: {player.PlayerName}| Zombie: {ZombiePlayers[player.Slot].IsZombie}| MotherZombie: {ZombiePlayers[player.Slot].MotherZombieStatus} | Player Slot: {player.Slot}");
             }
         }
 
