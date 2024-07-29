@@ -169,7 +169,7 @@ namespace ZombieSharp
         public void InfectClient(CCSPlayerController client, CCSPlayerController attacker = null, bool motherzombie = false, bool force = false, bool respawn = false)
         { 
             // Action 
-            API.OnInfectClient(client, attacker, motherzombie, force, respawn);
+            API.TriggerInfectPre(ref client, ref attacker, ref motherzombie, ref force, ref respawn);
 
             // make zombie status be true.
             ZombiePlayers[client.Slot].IsZombie = true;
@@ -263,8 +263,6 @@ namespace ZombieSharp
 
         public void HumanizeClient(CCSPlayerController client, bool force = false)
         {
-            API.OnHumanizeClient(client, force);
-
             // zombie status to false
             ZombiePlayers[client.Slot].IsZombie = false;
 
@@ -311,7 +309,6 @@ namespace ZombieSharp
             float weaponKnockback;
             var hitgroupknocback = HitGroupGetKnockback(hitgroup);
 
-
             // try to find the key then the knockback
             if (WeaponDatas.WeaponConfigs.ContainsKey(weapon))
             {
@@ -322,6 +319,11 @@ namespace ZombieSharp
             {
                 weaponKnockback = 1f;
             }
+
+            attacker.PrintToChat($"{weaponKnockback} | {WeaponDatas.KnockbackMultiply} | {damage} | {hitgroupknocback}");
+
+            var totalkb = damage * weaponKnockback * WeaponDatas.KnockbackMultiply * hitgroupknocback;
+            attacker.PrintToChat($"Total {totalkb}");
 
             Vector pushVelocity = direction * damage * weaponKnockback * WeaponDatas.KnockbackMultiply * hitgroupknocback;
 

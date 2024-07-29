@@ -1,4 +1,5 @@
 ﻿using ZombieSharpAPI;
+using static ZombieSharpAPI.IZombieSharpAPI;
 
 namespace ZombieSharp
 {
@@ -10,8 +11,45 @@ namespace ZombieSharp
             _plugin = plugin;
         }
 
-        public event Action<CCSPlayerController, CCSPlayerController, bool, bool, bool> ZS_OnInfectClient;
-        public event Action<CCSPlayerController, bool> ZS_OnHumanizeClient;
+        private List<PreInfectClient> _infectPreHandler = new();
+
+        public void AssignOnInfectClient(PreInfectClient handler)
+        {
+            _infectPreHandler.Add(handler);
+        }
+
+        public void ResignOnInfectClient(PreInfectClient handler)
+        {
+            _infectPreHandler.Remove(handler);
+        }
+
+        public void TriggerInfectPre(ref CCSPlayerController client, ref CCSPlayerController attacker, ref bool motherzombie, ref bool force, ref bool respawn)
+        {
+            foreach(var handler in _infectPreHandler)
+            {
+                var clientCopy = client;
+                var attackerCopy = attacker;
+                var mothercopy = motherzombie;
+                var forcecopy = force;
+                var respawncopy = respawn;
+
+                HookResult hookResult = handler.Invoke(ref client, ref attacker, ref motherzombie, ref force, ref respawn);
+
+                if(hookResult == HookResult.Stop)
+                {
+                    return;
+                }
+
+                else if(hookResult == HookResult.Continue)
+                {
+                    client = clientCopy;
+                    attacker = attackerCopy;
+                    motherzombie = mothercopy;
+                    force = forcecopy;
+                    respawn = respawncopy;
+                }
+            }
+        }
 
         public bool ZS_IsClientHuman(CCSPlayerController controller)
         {
@@ -31,16 +69,6 @@ namespace ZombieSharp
         public void ZS_HumanizeClient(CCSPlayerController controller)
         {
             _plugin.HumanizeClient(controller, true);
-        }
-
-        public void OnInfectClient(CCSPlayerController client, CCSPlayerController attacker, bool motherzombie, bool force, bool respawn)
-        {
-            ZS_OnInfectClient?.Invoke(client, attacker, motherzombie, force, respawn);
-        }
-
-        public void OnHumanizeClient(CCSPlayerController client, bool force)
-        {
-            ZS_OnHumanizeClient?.Invoke(client, force);
         }
     }
 }
