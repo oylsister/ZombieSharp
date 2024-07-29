@@ -5,6 +5,10 @@ VisualStudioVersion = 17.5.002.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZombieSharp", "ZombieSharp\ZombieSharp.csproj", "{C3A97F34-E14B-4E86-A910-1EFE06BF2424}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IZombieSharpAPI", "ZombieSharpAPI\IZombieSharpAPI.csproj", "{02677E65-BA63-46B4-AC41-8A022AF9E58F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZombieTest", "ZombieTest\ZombieTest.csproj", "{A1BD2A23-286D-4380-94A7-DE60ACF8ABA4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{C3A97F34-E14B-4E86-A910-1EFE06BF2424}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C3A97F34-E14B-4E86-A910-1EFE06BF2424}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C3A97F34-E14B-4E86-A910-1EFE06BF2424}.Release|Any CPU.Build.0 = Release|Any CPU
+		{02677E65-BA63-46B4-AC41-8A022AF9E58F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{02677E65-BA63-46B4-AC41-8A022AF9E58F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{02677E65-BA63-46B4-AC41-8A022AF9E58F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{02677E65-BA63-46B4-AC41-8A022AF9E58F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A1BD2A23-286D-4380-94A7-DE60ACF8ABA4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A1BD2A23-286D-4380-94A7-DE60ACF8ABA4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A1BD2A23-286D-4380-94A7-DE60ACF8ABA4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A1BD2A23-286D-4380-94A7-DE60ACF8ABA4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

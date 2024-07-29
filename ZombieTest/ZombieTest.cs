@@ -25,7 +25,7 @@ namespace ZombieTest
         {
             API = ZombieCapability.Get()!;
 
-            API.ZS_OnInfectClient += ZS_OnInfectClient;
+            API.Hook_OnInfectClient(ZS_OnInfectClient);
         }
 
         public void ZS_OnInfectClient(CCSPlayerController client, CCSPlayerController attacker, bool motherzombie, bool force, bool respawn)
@@ -42,12 +42,20 @@ namespace ZombieTest
                 Server.PrintToChatAll($"by forcing.");
         }
 
-        public void ZS_OnInfectClient(CCSPlayerController client, CCSPlayerController attacker, bool motherzombie, bool force, bool respawn)
+        public HookResult ZS_OnInfectClient(ref CCSPlayerController client, ref CCSPlayerController attacker, ref bool motherzombie, ref bool force, ref bool respawn)
         {
-            Server.PrintToChatAll($"{client.PlayerName} is humanize");
+            Server.PrintToChatAll($"{client.PlayerName} is infected");
+
+            if (client.PlayerName == "Oylsister")
+            {
+                Server.PrintToChatAll("Oylsister is immunity");
+                return HookResult.Handled;
+            }
             
             if (force)
                 Server.PrintToChatAll($"by forcing.");
+
+            return HookResult.Continue;
         }
 
         private void Command_CheckHuman(CCSPlayerController? controller, CommandInfo info)
