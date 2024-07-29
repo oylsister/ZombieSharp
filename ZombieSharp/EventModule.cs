@@ -332,7 +332,7 @@ namespace ZombieSharp
                         if (CVAR_RespawnTeam.Value == 0)
                             InfectClient(client, null, false, false, true);
 
-                        else if (CVAR_RespawnTeam.Value == 1)
+                        else
                             HumanizeClient(client);
 
                         if (ClientProtected[client.Slot].Protected)

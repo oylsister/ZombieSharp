@@ -105,6 +105,9 @@ namespace ZombieSharp
             //var client = new CCSPlayerController(weaponservices!.Pawn.Value.Controller.Value!.Handle);
             var client = new CCSPlayerController(weaponservices!.Pawn.Value.Controller.Value.Handle);
 
+            if (client == null)
+                return HookResult.Continue;
+
             //Server.PrintToChatAll($"{client.PlayerName}: {CCSPlayer_WeaponServices_CanUseFunc.Invoke(weaponservices, clientweapon)}");
 
             if (WeaponIsRestricted(clientweapon.DesignerName))
