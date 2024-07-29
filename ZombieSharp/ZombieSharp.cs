@@ -10,7 +10,7 @@ namespace ZombieSharp
     {
         public override string ModuleName => "Zombie Sharp";
         public override string ModuleAuthor => "Oylsister, Kurumi, Sparky";
-        public override string ModuleVersion => "1.2.0";
+        public override string ModuleVersion => "1.2.1";
         public override string ModuleDescription => "Infection/survival style gameplay for CS2 in C#";
 
         public bool ZombieSpawned;
@@ -39,7 +39,7 @@ namespace ZombieSharp
         {
             API = new ZombieSharpAPI(this);
 
-            Capabilities.RegisterPluginCapability(APICapability, () => new ZombieSharpAPI(this));
+            Capabilities.RegisterPluginCapability(APICapability, () => API);
 
             EventInitialize();
             CommandInitialize();
@@ -168,8 +168,11 @@ namespace ZombieSharp
 
         public void InfectClient(CCSPlayerController client, CCSPlayerController attacker = null, bool motherzombie = false, bool force = false, bool respawn = false)
         { 
-            // Action 
-            API.TriggerInfectPre(ref client, ref attacker, ref motherzombie, ref force, ref respawn);
+            // Action prevent infect client API
+            var result = API.APIOnInfectClient(ref client, ref attacker, ref motherzombie, ref force, ref respawn);
+
+            if (result == -1)
+                return;
 
             // make zombie status be true.
             ZombiePlayers[client.Slot].IsZombie = true;
@@ -263,6 +266,12 @@ namespace ZombieSharp
 
         public void HumanizeClient(CCSPlayerController client, bool force = false)
         {
+            // Action prevent humanize client API
+            var result = API.APIOnHumanizeClient(ref client, ref force);
+
+            if (result == -1)
+                return;
+
             // zombie status to false
             ZombiePlayers[client.Slot].IsZombie = false;
 

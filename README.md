@@ -17,11 +17,12 @@ Zombie-Sharp is a Zombie Mode plugin for CS2 referencing the features and functi
 - [x] Repeat Killer Module (Obsolete now)
 - [x] Top Defender
 - [x] Cash on damage zombie
+- [x] API for external plugin (NEW!)
 
 ### Requirements
 - [Metamode:Source](https://www.sourcemm.net/downloads.php/?branch=master) Dev build (2.x).
 - [CounterStrikeSharp](https://github.com/roflmuffin/CounterStrikeSharp) 
-- [MovementUnlocker](https://github.com/Source2ZE/MovementUnlocker) plugin for knockback.
+- [CSSharpFixes](https://github.com/CharlesBarone/CSSharp-Fixes) or [MovementUnlocker](https://github.com/Source2ZE/MovementUnlocker) plugin for knockback.
 - [Newtonsoft.Json](https://github.com/JamesNK/Newtonsoft.Json/releases) (This is already included in Release)
 - [Dual Mounting](https://github.com/Source2ZE/MultiAddonManager) for Custom Content for zombie mod.
 
@@ -29,7 +30,7 @@ Zombie-Sharp is a Zombie Mode plugin for CS2 referencing the features and functi
 - [NoBlock](https://github.com/ManifestManah/NoBlock) for Zombie Escape mode.
 
 ### How to Build
-1. Install [.NET 7.0 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/7.0) and [Git](https://git-scm.com/downloads).
+1. Install [.NET 8.0 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/8.0) and [Git](https://git-scm.com/downloads).
 2. Open up Windows Powershell and follow these command
 ```shell
 git clone https://github.com/Oylneechan/ZombieSharp
@@ -48,7 +49,62 @@ It's recommend to set these Convar before using the plugin to prevent crashed an
 ```
 mp_limitteams 0 // set in server.cfg
 mp_autoteambalance 0 // set in server.cfg
-mp_disconnect_kills_players 1 // set in gamemode_casual.cfg
+mp_disconnect_kills_players 1 // set in gamemode_casual_server.cfg if file is not existed copy gamemode_casual.cfg and rename it.
+```
+
+### API Example 
+Check out [ZombieTest](https://github.com/oylsister/ZombieSharp/blob/main/ZombieTest/ZombieTest.cs) for other API usages example. 
+```cs
+using CounterStrikeSharp.API;
+using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Core.Capabilities;
+using ZombieSharpAPI;
+
+namespace ZombieTest
+{
+    public class ZombieTest : BasePlugin    
+    {
+        public override string ModuleName => "Zombie Test";
+        public override string ModuleVersion => "1.0";
+
+        // Declare Capability First.
+        public static PluginCapability<IZombieSharpAPI> ZombieCapability { get; } = new("zombiesharp");
+
+        // Declare API class
+        IZombieSharpAPI? API;
+
+        public override void OnAllPluginsLoaded(bool hotReload)
+        {
+            // Get Capability.
+            API = ZombieCapability.Get()!;
+
+            // Excute Hook function 
+            API.Hook_OnInfectClient(ZS_OnInfectClient);
+        }
+
+        // Hook function is here.
+        public HookResult ZS_OnInfectClient(ref CCSPlayerController client, ref CCSPlayerController attacker, ref bool motherzombie, ref bool force, ref bool respawn)
+        {
+            // check which client is infect.
+            Server.PrintToChatAll($"{client.PlayerName} is infected");
+
+            // if client name is Oylsister
+            if (client.PlayerName == "Oylsister")
+            {
+                Server.PrintToChatAll("Oylsister is immunity");
+
+                // Blocking infected
+                return HookResult.Handled;
+            }
+            
+            if (force)
+                Server.PrintToChatAll($"by forcing.");
+
+            // Always use HookResult.Continue to allowing other player get infect as usual.
+            return HookResult.Continue;
+        }
+    }
+}
 ```
 
 ### Configuration

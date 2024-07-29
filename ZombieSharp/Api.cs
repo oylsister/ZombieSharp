@@ -11,21 +11,22 @@ namespace ZombieSharp
             _plugin = plugin;
         }
 
-        private List<PreInfectClient> _infectPreHandler = new();
+        private List<OnInfectClient> _infectPreHandler = new();
+        private List<OnHumanizeClient> _humanizePreHandler = new();
 
-        public void AssignOnInfectClient(PreInfectClient handler)
+        public void Hook_OnInfectClient(OnInfectClient handler)
         {
             _infectPreHandler.Add(handler);
         }
 
-        public void ResignOnInfectClient(PreInfectClient handler)
+        public void Unhook_OnInfectClient(OnInfectClient handler)
         {
             _infectPreHandler.Remove(handler);
         }
 
-        public void TriggerInfectPre(ref CCSPlayerController client, ref CCSPlayerController attacker, ref bool motherzombie, ref bool force, ref bool respawn)
+        public int APIOnInfectClient(ref CCSPlayerController client, ref CCSPlayerController attacker, ref bool motherzombie, ref bool force, ref bool respawn)
         {
-            foreach(var handler in _infectPreHandler)
+            foreach (var handler in _infectPreHandler)
             {
                 var clientCopy = client;
                 var attackerCopy = attacker;
@@ -35,20 +36,60 @@ namespace ZombieSharp
 
                 HookResult hookResult = handler.Invoke(ref client, ref attacker, ref motherzombie, ref force, ref respawn);
 
-                if(hookResult == HookResult.Stop)
+                if (hookResult == HookResult.Stop || hookResult == HookResult.Handled)
                 {
-                    return;
+                    return -1;
                 }
 
-                else if(hookResult == HookResult.Continue)
+                else if (hookResult == HookResult.Continue)
                 {
                     client = clientCopy;
                     attacker = attackerCopy;
                     motherzombie = mothercopy;
                     force = forcecopy;
                     respawn = respawncopy;
+
+                    return 1;
                 }
             }
+
+            return 0;
+        }
+
+        public void Hook_OnHumanizeClient(OnHumanizeClient handler)
+        {
+            _humanizePreHandler.Add(handler);
+        }
+
+        public void Unhook_OnHumanizeClient(OnHumanizeClient handler)
+        {
+            _humanizePreHandler.Remove(handler);
+        }
+
+        public int APIOnHumanizeClient(ref CCSPlayerController client, ref bool force)
+        {
+            foreach (var handler in _humanizePreHandler)
+            {
+                var clientCopy = client;
+                var forcecopy = force;
+
+                HookResult hookResult = handler.Invoke(ref client, ref force);
+
+                if (hookResult == HookResult.Stop || hookResult == HookResult.Handled)
+                {
+                    return -1;
+                }
+
+                else if (hookResult == HookResult.Continue)
+                {
+                    client = clientCopy;
+                    force = forcecopy;
+
+                    return 1;
+                }
+            }
+
+            return 0;
         }
 
         public bool ZS_IsClientHuman(CCSPlayerController controller)
