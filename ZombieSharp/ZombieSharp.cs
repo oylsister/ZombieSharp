@@ -32,6 +32,7 @@ namespace ZombieSharp
         public Dictionary<int, ZombiePlayer> ZombiePlayers { get; set; } = new Dictionary<int, ZombiePlayer>();
 
         ZombieSharpAPI API { get; set; }
+        ZombieVoice _sound { get; set; }
 
         public static PluginCapability<IZombieSharpAPI> APICapability = new("zombiesharp");
 
@@ -252,6 +253,9 @@ namespace ZombieSharp
 
                 ClientPlayerClass[client.Slot].ActiveClass = null;
             }
+
+            // play sound here
+            _sound.ZombieScream(client);
 
             // if all human died then let's end the round.
             /*

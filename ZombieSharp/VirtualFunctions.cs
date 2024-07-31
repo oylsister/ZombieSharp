@@ -220,7 +220,7 @@ namespace ZombieSharp
             CEntityIdentity_SetEntityNameFunc.Invoke(entity, name);
         }
 
-        public void EmitSound(CBaseEntity entity, string sound, int pitch = 1, float volume = 1f, float delay = 1f)
+        public void EmitSound(CBaseEntity entity, string sound, int pitch = 100, float volume = 1.0f, float delay = 0.0f)
         {
             if (entity == null || string.IsNullOrEmpty(sound))
                 return;

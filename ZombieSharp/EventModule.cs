@@ -284,6 +284,9 @@ namespace ZombieSharp
 
             if (ZombieSpawned)
             {
+                if(IsClientZombie(client))
+                    _sound.ZombieDie(client);
+
                 CheckGameStatus();
 
                 if (RespawnEnable)
