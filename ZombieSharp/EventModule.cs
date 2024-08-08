@@ -1,4 +1,5 @@
 using CounterStrikeSharp.API.Modules.Cvars;
+using Microsoft.Extensions.Logging;
 
 namespace ZombieSharp
 {
@@ -32,10 +33,9 @@ namespace ZombieSharp
         {
             var player = Utilities.GetPlayerFromSlot(client);
 
-            if (!player.IsBot)
-                return;
-
             InitialClientData(player);
+
+            Logger.LogInformation($"Player: {player.PlayerName} is put in server with {player.Slot}");
         }
 
         private void InitialClientData(CCSPlayerController player)
@@ -60,6 +60,8 @@ namespace ZombieSharp
             ClientProtected.Add(clientindex, new());
 
             TopDefenderOnPutInServer(player);
+
+            Logger.LogInformation($"Player: {player.PlayerName} data is initialized with {player.Slot}");
         }
 
         // Normal player will be hook here.
@@ -67,8 +69,10 @@ namespace ZombieSharp
         {
             var client = @event.Userid;
 
-            if (!client.IsBot)
-                InitialClientData(client);
+            if (client.IsBot)
+                return HookResult.Continue;
+
+            Logger.LogInformation($"Player: {client.PlayerName} is fully connected with {client.Slot}");
 
             PlayerSettingsAuthorized(client).Wait();
             return HookResult.Continue;
@@ -110,6 +114,8 @@ namespace ZombieSharp
             ClientProtected.Remove(clientindex);
 
             TopDefenderOnDisconnect(player);
+
+            Logger.LogInformation($"Player: {player.PlayerName} data is removed with {player.Slot}");
         }
 
         private void OnMapStart(string mapname)
@@ -284,9 +290,6 @@ namespace ZombieSharp
 
             if (ZombieSpawned)
             {
-                if(IsClientZombie(client))
-                    _sound.ZombieDie(client);
-
                 CheckGameStatus();
 
                 if (RespawnEnable)
@@ -324,7 +327,7 @@ namespace ZombieSharp
 
             if (!warmup || CVAR_EnableOnWarmup.Value)
             {
-                AddTimer(0.2f, () =>
+                AddTimer(0.1f, () =>
                 {
                     WeaponOnPlayerSpawn(client.Slot);
 
@@ -449,6 +452,7 @@ namespace ZombieSharp
 
                 foreach (var entity in entityIndex)
                 {
+                    Logger.LogInformation($"[ZSharp]: Removed {entity.DesignerName}");
                     entity.Remove();
                 }
             }

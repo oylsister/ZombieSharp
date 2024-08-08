@@ -1,5 +1,6 @@
 ﻿using CounterStrikeSharp.API.Core.Attributes;
 using CounterStrikeSharp.API.Core.Capabilities;
+using System.Runtime.InteropServices;
 using ZombieSharp.Helpers;
 using ZombieSharpAPI;
 
@@ -32,7 +33,6 @@ namespace ZombieSharp
         public Dictionary<int, ZombiePlayer> ZombiePlayers { get; set; } = new Dictionary<int, ZombiePlayer>();
 
         ZombieSharpAPI API { get; set; }
-        ZombieVoice _sound { get; set; }
 
         public static PluginCapability<IZombieSharpAPI> APICapability = new("zombiesharp");
 
@@ -46,6 +46,18 @@ namespace ZombieSharp
             CommandInitialize();
             VirtualFunctionsInitialize();
             PlayerSettingsOnLoad().Wait();
+
+            if(HotReload)
+            {
+                WeaponInitialize();
+                SettingsIntialize(Server.MapName);
+                ClassIsLoaded = PlayerClassIntialize();
+
+                hitgroupLoad = HitGroupIntialize();
+                RepeatKillerOnMapStart();
+
+                Server.ExecuteCommand("mp_ignore_round_win_conditions 0");
+            }
         }
 
         public void InfectOnRoundFreezeEnd()
@@ -199,7 +211,7 @@ namespace ZombieSharp
                 ApplyClass = Default_MotherZombie;
 
                 if (CVAR_TeleportMotherZombie.Value)
-                    ZTele_TeleportClientToSpawn(client);
+                    AddTimer(0.2f, () => ZTele_TeleportClientToSpawn(client));
             }
             else
             {
@@ -255,7 +267,7 @@ namespace ZombieSharp
             }
 
             // play sound here
-            _sound.ZombieScream(client);
+            AddTimer(0.1f, () => ZombieScream(client));
 
             // if all human died then let's end the round.
             /*
@@ -394,22 +406,19 @@ namespace ZombieSharp
                 TTeam.Score += 1;
 
                 // round end.
-                CCSGameRules gameRules = GetGameRules();
-                gameRules.TerminateRound(5f, RoundEndReason.TerroristsWin);
+                Z_TerminateRound(5f, RoundEndReason.TerroristsWin);
             }
             else if (zombie <= 0 && human > 0)
             {
                 CTTeam.Score += 1;
 
                 // round end.
-                CCSGameRules gameRules = GetGameRules();
-                gameRules.TerminateRound(5f, RoundEndReason.CTsWin);
+                Z_TerminateRound(5f, RoundEndReason.CTsWin);
             }
 
             else if (zombie <= 0 && human <= 0)
             {
-                CCSGameRules gameRules = GetGameRules();
-                gameRules.TerminateRound(5f, RoundEndReason.TerroristsWin);
+                Z_TerminateRound(5f, RoundEndReason.TerroristsWin);
             }
         }
 
@@ -486,6 +495,18 @@ namespace ZombieSharp
         public CCSGameRules GetGameRules()
         {
             return Utilities.FindAllEntitiesByDesignerName<CCSGameRulesProxy>("cs_gamerules").First().GameRules!;
+        }
+
+        public void Z_TerminateRound(float delay, RoundEndReason reason)
+        {
+            CCSGameRules gameRules = GetGameRules();
+            bool IsWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+
+            if (IsWindows)
+                gameRules.TerminateRound(delay, reason);
+
+            else
+                TerminateRoundLinuxFunc.Invoke(gameRules.Handle, reason, 0, 0, delay);
         }
 
         public bool IsPlayerAlive(CCSPlayerController controller)

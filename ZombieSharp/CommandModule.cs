@@ -313,7 +313,7 @@ namespace ZombieSharp
             if (!client.PawnIsAlive)
                 return;
 
-            _sound.ZombieScream(client);
+            ZombieScream(client);
             info.ReplyToCommand($" {ChatColors.Green}[Z:Sharp]{ChatColors.White} You just screamed!");
         }
     }

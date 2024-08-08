@@ -1,14 +1,7 @@
 ﻿namespace ZombieSharp
 {
-    public class ZombieVoice
+    public partial class ZombieSharp
     {
-        ZombieSharp _plugin;
-
-        public ZombieVoice(ZombieSharp plugin)
-        {
-            _plugin = plugin;
-        }
-
         public Dictionary<CCSPlayerController, bool> _ZombiePainList = new Dictionary<CCSPlayerController, bool>();
         public Dictionary<CCSPlayerController, bool> _ZombieMoanList = new Dictionary<CCSPlayerController, bool>();
 
@@ -41,7 +34,7 @@
 
             var pawn = client.PlayerPawn;
 
-            _plugin.EmitSound(pawn.Value, sound);
+            EmitSound(pawn.Value, sound);
         }
     }
 }
