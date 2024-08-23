@@ -181,19 +181,9 @@ namespace ZombieSharp
 
             if (!warmup || CVAR_EnableOnWarmup.Value)
             {
-                ToggleRespawn(true, true);
-
                 AddTimer(0.1f, () =>
                 {
-                    List<CCSPlayerController> clientlist = Utilities.GetPlayers();
-
-                    foreach (var client in clientlist)
-                    {
-                        if (client.IsValid && IsPlayerAlive(client))
-                        {
-                            HumanizeClient(client);
-                        }
-                    }
+                    ToggleRespawn(true, true);
                 });
             }
             return HookResult.Continue;
