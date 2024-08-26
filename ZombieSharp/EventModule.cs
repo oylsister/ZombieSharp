@@ -143,13 +143,6 @@ namespace ZombieSharp
 
             Server.PrintToChatAll($" {ChatColors.Green}[Z:Sharp]{ChatColors.Default} The current game mode is the Human vs. Zombie, the zombie goal is to infect all human before time is running out.");
 
-            bool warmup = GetGameRules().WarmupPeriod;
-
-            if (!warmup)
-                Server.ExecuteCommand("mp_ignore_round_win_conditions 1");
-
-            else
-                Server.ExecuteCommand("mp_ignore_round_win_conditions 0");
 
             return HookResult.Continue;
         }
@@ -169,7 +162,13 @@ namespace ZombieSharp
                     RoundTimer = AddTimer(roundtimeCvar.GetPrimitiveValue<float>() * 60f, TerminateRoundTimeOut);
                 }
 
+                Server.ExecuteCommand("mp_ignore_round_win_conditions 1");
+
                 InfectOnRoundFreezeEnd();
+            }
+            else
+            {
+                Server.ExecuteCommand("mp_ignore_round_win_conditions 0");
             }
 
             return HookResult.Continue;
