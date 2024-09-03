@@ -20,6 +20,7 @@ namespace ZombieSharp
             AddCommand("css_myweapon", "Get Client Weapon VData List", MyWeaponCommand);
             AddCommand("css_zspawn", "ZSpawn Command", ZSpawnCommand);
             AddCommand("css_rr", "Restart Round Command", RestartRoundCommand);
+            AddCommand("css_scream", "Scream Command", ScreamCommand);
         }
 
         [RequiresPermissions(@"css/slay")]
@@ -303,6 +304,17 @@ namespace ZombieSharp
             }
 
             RespawnClient(client);
+        }
+
+        private void ScreamCommand(CCSPlayerController client, CommandInfo info)
+        {
+            if(client == null) return;
+
+            if (!client.PawnIsAlive)
+                return;
+
+            ZombieScream(client);
+            info.ReplyToCommand($" {ChatColors.Green}[Z:Sharp]{ChatColors.White} You just screamed!");
         }
     }
 }

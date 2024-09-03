@@ -1,5 +1,6 @@
 ﻿using CounterStrikeSharp.API.Core.Attributes;
 using CounterStrikeSharp.API.Core.Capabilities;
+using System.Runtime.InteropServices;
 using ZombieSharp.Helpers;
 using ZombieSharpAPI;
 
@@ -10,7 +11,7 @@ namespace ZombieSharp
     {
         public override string ModuleName => "Zombie Sharp";
         public override string ModuleAuthor => "Oylsister, Kurumi, Sparky";
-        public override string ModuleVersion => "1.2.1";
+        public override string ModuleVersion => "1.2.2";
         public override string ModuleDescription => "Infection/survival style gameplay for CS2 in C#";
 
         public bool ZombieSpawned;
@@ -45,6 +46,18 @@ namespace ZombieSharp
             CommandInitialize();
             VirtualFunctionsInitialize();
             PlayerSettingsOnLoad().Wait();
+
+            if(HotReload)
+            {
+                WeaponInitialize();
+                SettingsIntialize(Server.MapName);
+                ClassIsLoaded = PlayerClassIntialize();
+
+                hitgroupLoad = HitGroupIntialize();
+                RepeatKillerOnMapStart();
+
+                Server.ExecuteCommand("mp_ignore_round_win_conditions 0");
+            }
         }
 
         public void InfectOnRoundFreezeEnd()
@@ -253,6 +266,9 @@ namespace ZombieSharp
                 ClientPlayerClass[client.Slot].ActiveClass = null;
             }
 
+            // play sound here
+            AddTimer(0.1f, () => ZombieScream(client));
+
             // if all human died then let's end the round.
             /*
             if (ZombieSpawned)
@@ -292,7 +308,8 @@ namespace ZombieSharp
             {
                 AddTimer(0.1f, () =>
                 {
-                    client.PlayerPawn.Value!.SetModel(@"characters\models\ctm_sas\ctm_sas.vmdl");
+                    if(force)
+                        client.PlayerPawn.Value!.SetModel(@"characters\models\ctm_sas\ctm_sas.vmdl");
                 });
 
                 var clientPawn = client.PlayerPawn.Value;
@@ -390,22 +407,19 @@ namespace ZombieSharp
                 TTeam.Score += 1;
 
                 // round end.
-                CCSGameRules gameRules = GetGameRules();
-                gameRules.TerminateRound(5f, RoundEndReason.TerroristsWin);
+                Z_TerminateRound(5f, RoundEndReason.TerroristsWin);
             }
             else if (zombie <= 0 && human > 0)
             {
                 CTTeam.Score += 1;
 
                 // round end.
-                CCSGameRules gameRules = GetGameRules();
-                gameRules.TerminateRound(5f, RoundEndReason.CTsWin);
+                Z_TerminateRound(5f, RoundEndReason.CTsWin);
             }
 
             else if (zombie <= 0 && human <= 0)
             {
-                CCSGameRules gameRules = GetGameRules();
-                gameRules.TerminateRound(5f, RoundEndReason.TerroristsWin);
+                Z_TerminateRound(5f, RoundEndReason.TerroristsWin);
             }
         }
 
@@ -482,6 +496,12 @@ namespace ZombieSharp
         public CCSGameRules GetGameRules()
         {
             return Utilities.FindAllEntitiesByDesignerName<CCSGameRulesProxy>("cs_gamerules").First().GameRules!;
+        }
+
+        public void Z_TerminateRound(float delay, RoundEndReason reason)
+        {
+            CCSGameRules gameRules = GetGameRules();
+            gameRules.TerminateRound(delay, reason);
         }
 
         public bool IsPlayerAlive(CCSPlayerController controller)

@@ -237,11 +237,11 @@ namespace ZombieSharp
         {
             string result = null;
 
-            foreach (string weapon in WeaponDatas.WeaponConfigs.Keys)
+            foreach (var weapon in WeaponDatas.WeaponConfigs)
             {
-                if (WeaponDatas.WeaponConfigs[weapon].WeaponEntity == weaponentity)
+                if (weapon.Value.WeaponEntity == weaponentity)
                 {
-                    result = weapon;
+                    result = weapon.Key;
                     return result;
                 }
             }

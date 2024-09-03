@@ -69,22 +69,22 @@ namespace ZombieSharp
 
             if (method == AcquireMethod.PickUp)
             {
-                Server.PrintToChatAll($"Try pick up {vdata.Name}");
+                // Server.PrintToChatAll($"Try pick up {vdata.Name}");
                 if (WeaponIsRestricted(vdata.Name))
                 {
                     hook.SetReturn(AcquireResult.NotAllowedByProhibition);
-                    return HookResult.Stop;
+                    return HookResult.Handled;
                 }
             }
             else
             {
                 var weapon = GetKeyByWeaponEntity(vdata.Name);
-                Server.PrintToChatAll($"Try buy {vdata.Name}, Key: {weapon}");
+
                 if (weapon != null && WeaponDatas.WeaponConfigs[weapon].Price > 0)
                 {
                     PurchaseWeapon(client, weapon);
-                    hook.SetReturn(AcquireResult.AlreadyPurchased);
-                    return HookResult.Stop;
+                    hook.SetReturn(AcquireResult.NotAllowedByProhibition);
+                    return HookResult.Handled;
                 }
             }
 
@@ -94,8 +94,8 @@ namespace ZombieSharp
                 {
                     if (vdata.GearSlot != gear_slot_t.GEAR_SLOT_KNIFE)
                     {
-                        hook.SetReturn(AcquireResult.NotAllowedByTeam);
-                        return HookResult.Stop;
+                        hook.SetReturn(AcquireResult.NotAllowedByProhibition);
+                        return HookResult.Handled;
                     }
                 }
             }
@@ -228,7 +228,7 @@ namespace ZombieSharp
             CEntityIdentity_SetEntityNameFunc.Invoke(entity, name);
         }
 
-        public void EmitSound(CBaseEntity entity, string sound, int pitch = 1, float volume = 1f, float delay = 1f)
+        public void EmitSound(CBaseEntity entity, string sound, int pitch = 100, float volume = 1.0f, float delay = 0.0f)
         {
             if (entity == null || string.IsNullOrEmpty(sound))
                 return;

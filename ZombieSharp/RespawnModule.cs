@@ -10,9 +10,6 @@
 
         public void RespawnTogglerSetup()
         {
-            if (RespawnRelay != null)
-                RespawnRelay = null;
-
             CLogicRelay relay = Utilities.CreateEntityByName<CLogicRelay>("logic_relay");
 
             relay.Entity.Name = "zr_toggle_respawn";

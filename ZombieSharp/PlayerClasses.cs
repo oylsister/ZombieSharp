@@ -118,22 +118,12 @@ namespace ZombieSharp
 
             string applymodel;
 
-            if (string.IsNullOrEmpty(classData.Model))
-            {
-                if (team == 0)
-                    applymodel = @"characters\models\tm_phoenix\tm_phoenix.vmdl";
-
-                else
-                    applymodel = @"characters\models\ctm_sas\ctm_sas.vmdl";
-            }
-            else
-            {
-                applymodel = classData.Model;
-            }
+            applymodel = classData.Model;
 
             AddTimer(0.1f, () =>
             {
-                clientPawn.SetModel(applymodel);
+                if(!string.IsNullOrEmpty(applymodel) && !string.IsNullOrWhiteSpace(applymodel))
+                    clientPawn.SetModel(applymodel);
             });
 
             if (team == 0)
