@@ -241,7 +241,7 @@ namespace ZombieSharp
                 var dmgHealth = @event.DmgHealth;
                 var hitgroup = @event.Hitgroup;
 
-                if (!attacker.IsValid || !client.IsValid)
+                if (attacker == null || client == null)
                     return HookResult.Continue;
 
                 if (IsClientZombie(attacker) && IsClientHuman(client) && string.Equals(weapon, "knife") && !ClientProtected[client.Slot].Protected)
@@ -413,21 +413,19 @@ namespace ZombieSharp
         {
             int team = CVAR_TimeoutWinner.Value;
 
-            CCSGameRules gameRules = GetGameRules();
-
             if (team == 2)
             {
-                gameRules.TerminateRound(5f, RoundEndReason.TerroristsWin);
+                Z_TerminateRound(5f, RoundEndReason.TerroristsWin);
             }
 
             else if (team == 3)
             {
-                gameRules.TerminateRound(5f, RoundEndReason.CTsWin);
+                Z_TerminateRound(5f, RoundEndReason.CTsWin);
             }
 
             else
             {
-                gameRules.TerminateRound(5f, RoundEndReason.RoundDraw);
+                Z_TerminateRound(5f, RoundEndReason.RoundDraw);
             }
         }
 

@@ -30,7 +30,6 @@ namespace ZombieSharp
         MemoryFunctionVoid<CEntityIdentity, string> CEntityIdentity_SetEntityNameFunc;
         MemoryFunctionWithReturn<int, string, CCSWeaponBaseVData> GetCSWeaponDataFromKeyFunc;
         MemoryFunctionVoid<CBaseEntity, string, int, float, float> CBaseEntity_EmitSoundParamsFunc;
-        public static MemoryFunctionVoid<nint, RoundEndReason, nint, uint, float> TerminateRoundLinuxFunc = new("55 48 89 E5 41 57 41 56 41 55 41 54 49 89 FC 53 48 81 EC ? ? ? ? 48 8D 05 ? ? ? ? F3 0F 11 85");
 
         public void VirtualFunctionsInitialize()
         {
@@ -70,22 +69,22 @@ namespace ZombieSharp
 
             if (method == AcquireMethod.PickUp)
             {
-                Server.PrintToChatAll($"Try pick up {vdata.Name}");
+                // Server.PrintToChatAll($"Try pick up {vdata.Name}");
                 if (WeaponIsRestricted(vdata.Name))
                 {
                     hook.SetReturn(AcquireResult.NotAllowedByProhibition);
-                    return HookResult.Stop;
+                    return HookResult.Handled;
                 }
             }
             else
             {
                 var weapon = GetKeyByWeaponEntity(vdata.Name);
-                Server.PrintToChatAll($"Try buy {vdata.Name}, Key: {weapon}");
+
                 if (weapon != null && WeaponDatas.WeaponConfigs[weapon].Price > 0)
                 {
                     PurchaseWeapon(client, weapon);
-                    hook.SetReturn(AcquireResult.AlreadyPurchased);
-                    return HookResult.Stop;
+                    hook.SetReturn(AcquireResult.NotAllowedByProhibition);
+                    return HookResult.Handled;
                 }
             }
 
@@ -95,8 +94,8 @@ namespace ZombieSharp
                 {
                     if (vdata.GearSlot != gear_slot_t.GEAR_SLOT_KNIFE)
                     {
-                        hook.SetReturn(AcquireResult.NotAllowedByTeam);
-                        return HookResult.Stop;
+                        hook.SetReturn(AcquireResult.NotAllowedByProhibition);
+                        return HookResult.Handled;
                     }
                 }
             }

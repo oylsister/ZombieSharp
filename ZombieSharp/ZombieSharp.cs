@@ -11,7 +11,7 @@ namespace ZombieSharp
     {
         public override string ModuleName => "Zombie Sharp";
         public override string ModuleAuthor => "Oylsister, Kurumi, Sparky";
-        public override string ModuleVersion => "1.2.1";
+        public override string ModuleVersion => "1.2.2";
         public override string ModuleDescription => "Infection/survival style gameplay for CS2 in C#";
 
         public bool ZombieSpawned;
@@ -211,7 +211,7 @@ namespace ZombieSharp
                 ApplyClass = Default_MotherZombie;
 
                 if (CVAR_TeleportMotherZombie.Value)
-                    AddTimer(0.2f, () => ZTele_TeleportClientToSpawn(client));
+                    ZTele_TeleportClientToSpawn(client);
             }
             else
             {
@@ -308,7 +308,8 @@ namespace ZombieSharp
             {
                 AddTimer(0.1f, () =>
                 {
-                    client.PlayerPawn.Value!.SetModel(@"characters\models\ctm_sas\ctm_sas.vmdl");
+                    if(force)
+                        client.PlayerPawn.Value!.SetModel(@"characters\models\ctm_sas\ctm_sas.vmdl");
                 });
 
                 var clientPawn = client.PlayerPawn.Value;
@@ -500,13 +501,7 @@ namespace ZombieSharp
         public void Z_TerminateRound(float delay, RoundEndReason reason)
         {
             CCSGameRules gameRules = GetGameRules();
-            bool IsWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
-
-            if (IsWindows)
-                gameRules.TerminateRound(delay, reason);
-
-            else
-                TerminateRoundLinuxFunc.Invoke(gameRules.Handle, reason, 0, 0, delay);
+            gameRules.TerminateRound(delay, reason);
         }
 
         public bool IsPlayerAlive(CCSPlayerController controller)
