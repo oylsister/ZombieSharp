@@ -62,6 +62,12 @@ namespace ZombieSharp
 
         public void InfectOnRoundFreezeEnd()
         {
+            if(g_hCountdown != null)
+                g_hCountdown.Kill();
+
+            if(g_hInfectMZ != null)
+                g_hInfectMZ.Kill();
+
             Countdown = (int)CVAR_FirstInfectionTimer.Value;
             g_hCountdown = AddTimer(1.0f, Timer_Countdown, TimerFlags.REPEAT);
             g_hInfectMZ = AddTimer(CVAR_FirstInfectionTimer.Value + 1.0f, MotherZombieInfect);
