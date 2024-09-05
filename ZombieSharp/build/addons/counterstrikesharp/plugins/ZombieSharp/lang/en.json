@@ -22,5 +22,12 @@
     "Zspawn.Decline": "Current round has disabled respawning!",
 
     "Goal": "The current game mode is the Human vs. Zombie, the zombie goal is to infect all human before time is running out.",
-    "Warmup.Disabled": "The current server has disabled infection in warmup round."
+    "Warmup.Disabled": "The current server has disabled infection in warmup round.",
+
+    "Class.MainMenu": "{DarkBlue}[Z:Sharp] Player Class Main Menu",
+    "Class.MainMenu.Zombie": "Zombie Class",
+    "Class.MainMenu.Human": "Human Class",
+    "Class.ClassSelect.Zombie": "Zombie Class Selection (Current: {Green}{0}{Default})",
+    "Class.ClassSelect.Human": "Human Class Selection (Current: {Green}{0}{Default})",
+    "Class.SelectSuccess": "You have selected a new class, the class you have selected will be applied in the next spawn!"
 }
