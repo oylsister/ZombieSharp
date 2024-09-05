@@ -29,5 +29,10 @@
     "Class.MainMenu.Human": "Human Class",
     "Class.ClassSelect.Zombie": "Zombie Class Selection (Current: {Green}{0}{Default})",
     "Class.ClassSelect.Human": "Human Class Selection (Current: {Green}{0}{Default})",
-    "Class.SelectSuccess": "You have selected a new class, the class you have selected will be applied in the next spawn!"
+    "Class.SelectSuccess": "You have selected a new class, the class you have selected will be applied in the next spawn!",
+
+    "RepeatKiller": "Repeat Killer detected. Disabling respawn for this round",
+    "Respawn.EndProtect": "You're no longer protected",
+    "Respawn.Enabled": "Respawn has been enabled",
+    "Respawn.Disabled": "Respawn has been disabled"
 }
