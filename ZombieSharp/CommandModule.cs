@@ -318,6 +318,9 @@ namespace ZombieSharp
             if (!client.PawnIsAlive)
                 return;
 
+            if(!IsClientZombie(client))
+                return;
+
             ZombieScream(client);
         }
     }
