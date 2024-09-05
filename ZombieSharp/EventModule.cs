@@ -61,6 +61,8 @@ namespace ZombieSharp
 
             TopDefenderOnPutInServer(player);
 
+            BurningClient.Add(player, new());
+
             Logger.LogInformation($"Player: {player.PlayerName} data is initialized with {player.Slot}");
         }
 
@@ -114,6 +116,18 @@ namespace ZombieSharp
             ClientProtected.Remove(clientindex);
 
             TopDefenderOnDisconnect(player);
+
+            if (BurningClient[player].Particle != null)
+            {
+                BurningClient[player].Particle.AcceptInput("Stop");
+                BurningClient[player].Particle.AcceptInput("Kill");
+                BurningClient[player].Particle = null;
+            }
+
+            if(BurningClient[player].Timer != null)
+                BurningClient[player].Timer.Kill();
+
+            BurningClient.Remove(player);
 
             Logger.LogInformation($"Player: {player.PlayerName} data is removed with {player.Slot}");
         }

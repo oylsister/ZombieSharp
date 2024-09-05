@@ -1,6 +1,5 @@
 ﻿using CounterStrikeSharp.API.Core.Attributes;
 using CounterStrikeSharp.API.Core.Capabilities;
-using System.Runtime.InteropServices;
 using ZombieSharp.Helpers;
 using ZombieSharpAPI;
 
@@ -31,6 +30,7 @@ namespace ZombieSharp
         public bool hitgroupLoad = false;
 
         public Dictionary<int, ZombiePlayer> ZombiePlayers { get; set; } = new Dictionary<int, ZombiePlayer>();
+        public Dictionary<CCSPlayerController, ClientBurn> BurningClient { get; set; } = new Dictionary<CCSPlayerController, ClientBurn>();
 
         ZombieSharpAPI API { get; set; }
 
@@ -499,6 +499,71 @@ namespace ZombieSharp
             }
         }
 
+        public void IgniteClient(CCSPlayerController client, CTakeDamageInfo info, float duration = 5, int damage = 24)
+        {
+            if (client == null)
+                return;
+
+            if (!client.PawnIsAlive)
+                return;
+
+            var pawn = client.PlayerPawn.Value;
+
+            var particle = BurningClient[client].Particle;
+
+            if(particle != null)
+            {
+                particle.DissolveStartTime = Server.CurrentTime + duration;
+                Utilities.SetStateChanged(particle, "info_particle_system", "m_flDissolveStartTime");
+                return;
+            }
+
+            var pos = pawn.AbsOrigin;
+            particle = Utilities.CreateEntityByName<CParticleSystem>("info_particle_system");
+
+            particle.StartActive = true;
+            particle.EffectName = "particles/burning_fx/burning_character_b.vpcf";
+            particle.ControlPointEnts[0] = new CHandle<CBaseEntity>(pawn.Handle);
+            particle.DissolveStartTime = Server.CurrentTime + duration;
+            particle.Teleport(pos);
+
+            particle.DispatchSpawn();
+            particle.AcceptInput("SetParent", client.PlayerPawn.Value, null, "!activator");
+
+            BurningClient[client].Particle = particle;
+            BurningClient[client].BurnEnd = Server.CurrentTime + duration;
+
+            BurningClient[client].Timer = AddTimer(1.0f, () =>
+            {
+                if (client == null)
+                {
+                    BurningClient[client].Timer.Kill();
+                    return;
+                }
+
+                if (!client.PawnIsAlive)
+                {
+
+                    BurningClient[client].Timer.Kill();
+                    return;
+                }
+
+                if(BurningClient[client].BurnEnd > Server.CurrentTime)
+                {
+                    info.Damage = damage;
+                    VirtualFunctions.CBaseEntity_TakeDamageOldFunc.Invoke(client, info);
+                }
+
+                else
+                {
+                    BurningClient[client].Particle.AcceptInput("Stop");
+                    BurningClient[client].Particle.AcceptInput("Kill");
+                    BurningClient[client].Timer.Kill();
+                    return;
+                }
+            });
+        }
+
         public CCSGameRules GetGameRules()
         {
             return Utilities.FindAllEntitiesByDesignerName<CCSGameRulesProxy>("cs_gamerules").First().GameRules!;
@@ -522,4 +587,11 @@ namespace ZombieSharp
                 return false;
         }
     }
+}
+
+public class ClientBurn
+{
+    public CParticleSystem Particle = null;
+    public float BurnEnd;
+    public CounterStrikeSharp.API.Modules.Timers.Timer Timer = null;
 }
