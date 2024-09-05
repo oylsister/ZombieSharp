@@ -19,5 +19,8 @@
     "ZTele.Success": "You have been teleported back to spawn.",
 
     "Command.RequireDead": "This feature required you to be dead first!",
-    "Zspawn.Decline": "Current round has disabled respawning!"
+    "Zspawn.Decline": "Current round has disabled respawning!",
+
+    "Goal": "The current game mode is the Human vs. Zombie, the zombie goal is to infect all human before time is running out.",
+    "Warmup.Disabled": "The current server has disabled infection in warmup round."
 }
