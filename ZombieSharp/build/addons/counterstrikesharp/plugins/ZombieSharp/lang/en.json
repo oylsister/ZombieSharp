@@ -48,5 +48,11 @@
     "Weapon.Purchase": "You have purchased {Lime}{0}{Default}.",
 
     "Feature.RequireAlive": "This feature requires that you are alive.",
-    "Feature.HumanOnly": "this feature is for human only!"
+    "Feature.HumanOnly": "this feature is for human only!",
+
+    "Core.Countdown": "First Infection in {0} seconds",
+    "Core.MotherZombieReset": "Mother zombie cycle has been reset!",
+    "Core.GetInfect": "You have been infected! Go pass it on to as many other players as you can.",
+    "Core.GetInfect.Force": "You have been punished by the god! (Knowing as Admin.) Now plauge all human!",
+    "Core.GetHumanized": "You have been resurrected by the god! (Knowing as Admin.) Find yourself a cover!"
 }
