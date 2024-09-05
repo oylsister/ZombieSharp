@@ -94,25 +94,25 @@ namespace ZombieSharp
 
             if (weaponConfig == null)
             {
-                client.PrintToChat($" {ChatColors.Green}[Z:Sharp]{ChatColors.Default} Invalid weapon!");
+                client.PrintToChat($" {Localizer["Prefix"]} {Localizer["Weapon.Invalid"]}");
                 return;
             }
 
             if (!IsPlayerAlive(client))
             {
-                client.PrintToChat($" {ChatColors.Green}[Z:Sharp]{ChatColors.Default} this feature need you to be alive!");
+                client.PrintToChat($" {Localizer["Prefix"]} {Localizer["Feature.RequireAlive"]}");
                 return;
             }
 
             if (IsClientZombie(client))
             {
-                client.PrintToChat($" {ChatColors.Green}[Z:Sharp]{ChatColors.Default} this feature is for human only!");
+                client.PrintToChat($" {Localizer["Prefix"]} {Localizer["Feature.HumanOnly"]}");
                 return;
             }
 
             if (weaponConfig.Restrict)
             {
-                client.PrintToChat($" {ChatColors.Green}[Z:Sharp]{ChatColors.Default} Weapon {ChatColors.Lime}{weaponConfig.WeaponName}{ChatColors.Default} is restricted");
+                client.PrintToChat($" {Localizer["Prefix"]} {Localizer["Weapon.WeaponIsRestricted", weaponConfig.WeaponName]}");
                 return;
             }
 
@@ -120,7 +120,7 @@ namespace ZombieSharp
 
             if (clientMoney < weaponConfig.Price)
             {
-                client.PrintToChat($" {ChatColors.Green}[Z:Sharp]{ChatColors.Default} You don't have enough money to purchase this weapon!");
+                client.PrintToChat($" {Localizer["Prefix"]} {Localizer["Weapon.NotEnoughCash"]}");
                 return;
             }
 
@@ -133,7 +133,7 @@ namespace ZombieSharp
                 {
                     if (weaponPurchased >= weaponConfig.MaxPurchase)
                     {
-                        client.PrintToChat($" {ChatColors.Green}[Z:Sharp]{ChatColors.Default} You have reached maximum purchase for {ChatColors.Lime}{weaponConfig.WeaponName}{ChatColors.Default}, you can purchase again in next round");
+                        client.PrintToChat($" {Localizer["Prefix"]} {Localizer["Weapon.MaximumPurchase", weaponConfig.WeaponName]}");
                         return;
                     }
                     else
@@ -147,12 +147,12 @@ namespace ZombieSharp
                     PlayersHistory[client.Slot].PlayerBuyHistory.Add(weapon, 1);
                 }
 
-                client.PrintToChat($" {ChatColors.Green}[Z:Sharp]{ChatColors.Default} You have purchase {ChatColors.Lime}{weaponConfig.WeaponName}{ChatColors.Default}, Purchase Limit: {ChatColors.Green}{weaponConfig.MaxPurchase - weaponPurchased - 1}/{weaponConfig.MaxPurchase}");
+                client.PrintToChat($" {Localizer["Prefix"]} {Localizer["Weapon.LimitPurchase", weaponConfig.WeaponName, weaponConfig.MaxPurchase - weaponPurchased - 1, weaponConfig.MaxPurchase]}");
             }
 
             else
             {
-                client.PrintToChat($" {ChatColors.Green}[Z:Sharp]{ChatColors.Default} You have purchase {ChatColors.Lime}{weaponConfig.WeaponName}{ChatColors.Default}.");
+                client.PrintToChat($" {Localizer["Prefix"]} {Localizer["Weapon.Purchase", weaponConfig.WeaponName]}");
             }
 
             var weaponlist = new Dictionary<int, string>();

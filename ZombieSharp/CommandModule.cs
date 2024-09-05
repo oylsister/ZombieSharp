@@ -126,7 +126,7 @@ namespace ZombieSharp
 
             if (!IsPlayerAlive(client))
             {
-                info.ReplyToCommand($" {Localizer["Prefix"]} {Localizer["Command.RequireAlive"]}");
+                info.ReplyToCommand($" {Localizer["Prefix"]} {Localizer["Feature.RequireAlive"]}");
                 return;
             }
 

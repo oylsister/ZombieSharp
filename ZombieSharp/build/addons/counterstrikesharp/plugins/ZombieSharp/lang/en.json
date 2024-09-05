@@ -13,7 +13,6 @@
     "Command.SuccessHuman": "Successfully humanized {0}",
     "Command.SuccessHumanGroup": "Successfully humanized group.",
 
-    "Command.RequireAlive": "This feature requires that you are alive.",
     "Command.ZTeleSuccess": "Teleported back to spawn.",
     "ZTele.Delay": "You will be teleported back to spawn in 5 seconds.",
     "ZTele.Success": "You have been teleported back to spawn.",
@@ -34,5 +33,20 @@
     "RepeatKiller": "Repeat Killer detected. Disabling respawn for this round",
     "Respawn.EndProtect": "You're no longer protected",
     "Respawn.Enabled": "Respawn has been enabled",
-    "Respawn.Disabled": "Respawn has been disabled"
+    "Respawn.Disabled": "Respawn has been disabled",
+
+    "TopDefender.Title": "{Lime}============== TOP DEFENDER ==============",
+    "TopDefender.Damage": "Damage",
+    "TopInfecter.Title": "{LightRed}============== TOP INFECTER ==============",
+    "TopInfecter.Infected": "Infected",
+
+    "Weapon.Invalid": "Invalid weapon!",
+    "Weapon.WeaponIsRestricted": "Weapon {Lime}{0}{Default} is restricted.",
+    "Weapon.NotEnoughCash": "You don't have enough money to purchase this weapon!",
+    "Weapon.MaximumPurchase": "You have reached maximum purchase for {Lime}{0}{Default}, you can purchase again in next round.",
+    "Weapon.LimitPurchase": "You have purchased {Lime}{0}{Default}, Purchase Limit:{Green}{1}/{2}",
+    "Weapon.Purchase": "You have purchased {Lime}{0}{Default}.",
+
+    "Feature.RequireAlive": "This feature requires that you are alive.",
+    "Feature.HumanOnly": "this feature is for human only!"
 }

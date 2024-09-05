@@ -51,28 +51,28 @@
             var topdamage = ClientsDamage.OrderByDescending(entry => entry.Value.Damage).Take(item).ToDictionary(pair => pair.Key, pair => pair.Value.Damage);
             int rank = 1;
 
-            Server.PrintToChatAll($" {ChatColors.Lime}============== TOP DEFENDER ==============");
+            Server.PrintToChatAll($" {Localizer["TopDefender.Title"]}");
 
             foreach (var entry in topdamage)
             {
                 if (!entry.Key.IsValid)
                     continue;
 
-                Server.PrintToChatAll($" {rank}.{entry.Key.PlayerName} - {ChatColors.Lime}{entry.Value} Damage");
+                Server.PrintToChatAll($" {rank}.{entry.Key.PlayerName} - {ChatColors.Lime}{entry.Value} {Localizer["TopDefender.Damage"]}");
                 rank++;
             }
 
             var topinfect = ClientsDamage.OrderByDescending(entry => entry.Value.Infected).Take(item).ToDictionary(pair => pair.Key, pair => pair.Value.Infected);
             rank = 1;
 
-            Server.PrintToChatAll($" {ChatColors.LightRed}============== TOP INFECTER ==============");
+            Server.PrintToChatAll($" {Localizer["TopInfecter.Title"]}");
 
             foreach (var entry in topinfect)
             {
                 if (!entry.Key.IsValid)
                     continue;
 
-                Server.PrintToChatAll($" {rank}.{entry.Key.PlayerName} - {ChatColors.LightRed}{entry.Value} Infected");
+                Server.PrintToChatAll($" {rank}.{entry.Key.PlayerName} - {ChatColors.LightRed}{entry.Value} {Localizer["TopInfecter.Infected"]}");
                 rank++;
             }
 
