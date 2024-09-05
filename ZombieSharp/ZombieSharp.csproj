@@ -25,4 +25,8 @@
 	  <ProjectReference Include="..\ZombieSharpAPI\IZombieSharpAPI.csproj"></ProjectReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="build\addons\counterstrikesharp\plugins\ZombieSharp\lang\" />
+  </ItemGroup>
+
 </Project>

@@ -26,7 +26,7 @@
 
                 if ((GameTime - PlayerDeathTime[client.Slot] - CVAR_RespawnTimer.Value) < CVAR_RepeatKillerThreshold.Value)
                 {
-                    Server.PrintToChatAll($" {ChatColors.Green}[Z:Sharp]{ChatColors.Default} Repeat Killer detected. Disabling respawn for this round");
+                    Server.PrintToChatAll($" {Localizer["Prefix"]} {Localizer["RepeatKiller"]}");
                     ToggleRespawn(true, false);
                 }
 

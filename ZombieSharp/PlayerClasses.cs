@@ -184,9 +184,9 @@ namespace ZombieSharp
 
         public void PlayerClassMainMenu(CCSPlayerController client)
         {
-            var mainmenu = new ChatMenu($"{ChatColors.DarkBlue}[Z:Sharp] Player Class Main Menu");
-            mainmenu.AddMenuOption("Zombie Class", (client, option) => PlayerClassSelectMenu(client, 0));
-            mainmenu.AddMenuOption("Human Class", (client, option) => PlayerClassSelectMenu(client, 1));
+            var mainmenu = new ChatMenu($" {Localizer["Class.MainMenu"]}");
+            mainmenu.AddMenuOption(Localizer["Class.MainMenu.Zombie"], (client, option) => PlayerClassSelectMenu(client, 0));
+            mainmenu.AddMenuOption(Localizer["Class.MainMenu.Human"], (client, option) => PlayerClassSelectMenu(client, 1));
             MenuManager.OpenChatMenu(client, mainmenu);
         }
 
@@ -195,10 +195,10 @@ namespace ZombieSharp
             string title;
 
             if (team == 0)
-                title = $" {ChatColors.Green}[Z:Sharp]{ChatColors.Default} Zombie Class Selection (Current: {ChatColors.Green}{PlayerClassDatas.PlayerClasses[ClientPlayerClass[client.Slot].ZombieClass].Name}{ChatColors.Default})";
+                title = $" {Localizer["Prefix"]} {Localizer["Class.ClassSelect.Zombie", PlayerClassDatas.PlayerClasses[ClientPlayerClass[client.Slot].ZombieClass].Name]}";
 
             else
-                title = $" {ChatColors.Green}[Z:Sharp]{ChatColors.Default} Human Class Selection (Current: {ChatColors.Green}{PlayerClassDatas.PlayerClasses[ClientPlayerClass[client.Slot].HumanClass].Name}{ChatColors.Default})";
+                title = $" {Localizer["Prefix"]} {Localizer["Class.ClassSelect.Human", PlayerClassDatas.PlayerClasses[ClientPlayerClass[client.Slot].HumanClass].Name]}";
 
             var selectmenu = new ChatMenu(title);
             var menuhandle = (CCSPlayerController client, ChatMenuOption option) =>
@@ -226,7 +226,7 @@ namespace ZombieSharp
 
                 CreatePlayerSettings(updateDB).Wait();
 
-                client.PrintToChat($" {ChatColors.Green}[Z:Sharp]{ChatColors.Default} You have selected a new class, the class you have selected will be applied in the next spawn!");
+                client.PrintToChat($" {Localizer["Prefix"]} {Localizer["Class.SelectSuccess"]}");
             };
 
             foreach (var playerclass in PlayerClassDatas.PlayerClasses)
