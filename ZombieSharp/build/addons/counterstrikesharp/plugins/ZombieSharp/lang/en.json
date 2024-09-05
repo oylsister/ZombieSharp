@@ -1,0 +1,23 @@
+{
+    "Prefix": "{Green}[Z:Sharp]{Default}",
+
+    "Command.InfectUsage": "Usage: css_zs_infect <playername>.",
+    "Command.NoTarget": "Couldn't find any client contain with that name.",
+    "Command.TargetNotAlive": "target {0} is not alive.",
+    "Command.AlreadyZombie": "target {0} is already zombie.",
+    "Command.SuccessInfect": "Successfully infected {0}",
+    "Command.SuccessInfectGroup": "Successfully infected group.",
+
+    "Command.HumanUsage": "Usage: css_zs_human <playername>.",
+    "Command.AlreadyHuman": "target {0} is already human.",
+    "Command.SuccessHuman": "Successfully humanized {0}",
+    "Command.SuccessHumanGroup": "Successfully humanized group.",
+
+    "Command.RequireAlive": "This feature requires that you are alive.",
+    "Command.ZTeleSuccess": "Teleported back to spawn.",
+    "ZTele.Delay": "You will be teleported back to spawn in 5 seconds.",
+    "ZTele.Success": "You have been teleported back to spawn.",
+
+    "Command.RequireDead": "This feature required you to be dead first!",
+    "Zspawn.Decline": "Current round has disabled respawning!"
+}
