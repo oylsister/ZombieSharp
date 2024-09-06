@@ -158,6 +158,17 @@ namespace ZombieSharp
                 }
             }
 
+            if(damageInfo.Inflictor.Value.DesignerName == "hegrenade")
+            {
+                var victim = player(client);
+
+                if(victim == null)
+                    return HookResult.Continue;
+
+                if (IsClientZombie(victim))
+                    KnockbackExplosion(victim, damageInfo.Inflictor.Value, damageInfo.Damage);
+            }
+
             var controller = player(client);
 
             if (CVAR_RespawnProtect.Value && ClientProtected[controller.Slot].Protected && controller.IsValid)

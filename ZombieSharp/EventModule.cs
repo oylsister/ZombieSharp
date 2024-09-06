@@ -61,7 +61,7 @@ namespace ZombieSharp
 
             TopDefenderOnPutInServer(player);
 
-            BurningClient.Add(player, new());
+            GrenadeEffectOnClientPutInServer(player);
 
             Logger.LogInformation($"Player: {player.PlayerName} data is initialized with {player.Slot}");
         }
@@ -117,17 +117,7 @@ namespace ZombieSharp
 
             TopDefenderOnDisconnect(player);
 
-            if (BurningClient[player].Particle != null)
-            {
-                BurningClient[player].Particle.AcceptInput("Stop");
-                BurningClient[player].Particle.AcceptInput("Kill");
-                BurningClient[player].Particle = null;
-            }
-
-            if(BurningClient[player].Timer != null)
-                BurningClient[player].Timer.Kill();
-
-            BurningClient.Remove(player);
+            GrenadeEffectOnClientDisconnect(player);
 
             Logger.LogInformation($"Player: {player.PlayerName} data is removed with {player.Slot}");
         }
@@ -148,6 +138,8 @@ namespace ZombieSharp
         {
             if (ClassIsLoaded)
                 PrecachePlayerModel(manifest);
+
+            manifest.AddResource("particles/burning_fx/env_fire_medium.vpcf");
         }
 
         private HookResult OnRoundStart(EventRoundStart @event, GameEventInfo info)
@@ -269,10 +261,19 @@ namespace ZombieSharp
                     if (CVAR_CashOnDamage.Value)
                         DamageCash(attacker, dmgHealth);
 
-                    FindWeaponItemDefinition(attacker.PlayerPawn.Value.WeaponServices.ActiveWeapon, weapon);
+                    if (weapon == "hegrenade")
+                    {
+                        IgniteClient(client);
+                    }
 
-                    //Server.PrintToChatAll($"{client.PlayerName} get hit at {hitgroup}");
-                    KnockbackClient(client, attacker, dmgHealth, weapon, hitgroup);
+                    else
+                    {
+                        FindWeaponItemDefinition(attacker.PlayerPawn.Value.WeaponServices.ActiveWeapon, weapon);
+
+                        //Server.PrintToChatAll($"{client.PlayerName} get hit at {hitgroup}");
+                        KnockbackClient(client, attacker, dmgHealth, weapon, hitgroup);
+                    }
+
                     TopDefenderOnPlayerHurt(attacker, dmgHealth);
                 }
             }
