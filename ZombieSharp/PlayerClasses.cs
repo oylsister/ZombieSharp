@@ -256,9 +256,9 @@ public class PlayerClassConfig
     {
         PlayerClasses = new Dictionary<string, PlayerClassData>(StringComparer.OrdinalIgnoreCase)
         {
-            { "human_default", new PlayerClassData("Human Config Default", "Default Class for human", true, true, 1, "", false, 100, 0.0f, 0, 250.0f, 0.0f, 3.0f, 1.0f) },
-            { "zombie_default", new PlayerClassData("Zombie Config Default", "Default Class for zombie", true, true, 0, "", false, 8000, 10.0f, 100, 255.0f, 3.0f, 1.0f, 1.0f) },
-            { "motherzombie", new PlayerClassData("Mother Zombie Config", "Mother Zombie Class", true, false, 0, "", true, 15000, 10.0f, 100, 255.0f, 3.0f, 1.0f, 1.0f) },
+            { "human_default", new PlayerClassData("Human Config Default", "Default Class for human", true, true, 1, "", false, 100, 0.0f, 0, 0f, 250.0f, 0.0f, 3.0f, 1.0f) },
+            { "zombie_default", new PlayerClassData("Zombie Config Default", "Default Class for zombie", true, true, 0, "", false, 8000, 10.0f, 100, 5f, 255.0f, 3.0f, 1.0f, 1.0f) },
+            { "motherzombie", new PlayerClassData("Mother Zombie Config", "Mother Zombie Class", true, false, 0, "", true, 15000, 10.0f, 100, 5f, 255.0f, 3.0f, 1.0f, 1.0f) },
         };
     }
 }
@@ -272,7 +272,7 @@ public class PlayerClientClass
 
 public class PlayerClassData
 {
-    public PlayerClassData(string name, string desc, bool enable, bool default_class, int team, string model, bool motherzombie, int hp, float regen_interval, int regen_amount, float speed, float knockback, float jump_height, float jump_distance)
+    public PlayerClassData(string name, string desc, bool enable, bool default_class, int team, string model, bool motherzombie, int hp, float regen_interval, int regen_amount, float napalm_time, float speed, float knockback, float jump_height, float jump_distance)
     {
         Name = name;
         Description = desc;
@@ -284,6 +284,7 @@ public class PlayerClassData
         Health = hp;
         Regen_Interval = regen_interval;
         Regen_Amount = regen_amount;
+        Napalm_Time = napalm_time;
         Speed = speed;
         Knockback = knockback;
         Jump_Height = jump_height;
@@ -302,6 +303,7 @@ public class PlayerClassData
     public int Health { get; set; }
     public float Regen_Interval { get; set; }
     public int Regen_Amount { get; set; }
+    public float Napalm_Time { get; set; } = 0f;
 
     public float Speed { get; set; }
     public float Knockback { get; set; }

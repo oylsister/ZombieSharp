@@ -263,7 +263,16 @@ namespace ZombieSharp
 
                     if (weapon == "hegrenade")
                     {
-                        IgniteClient(client);
+                        var client_class = ClientPlayerClass[client.Slot].ActiveClass;
+
+                        float time = 5;
+
+                        if(client_class != null)
+                        {
+                            time = PlayerClassDatas.PlayerClasses[client_class].Napalm_Time;
+                        }
+
+                        IgniteClient(client, time);
                     }
 
                     else

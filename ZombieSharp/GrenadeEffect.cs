@@ -118,6 +118,9 @@ namespace ZombieSharp
             if (!client.PawnIsAlive)
                 return;
 
+            if (duration <= 0)
+                return;
+
             var pawn = client.PlayerPawn.Value;
 
             var particle = NapalmClient[client].Particle;
