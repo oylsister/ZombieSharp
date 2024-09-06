@@ -8,6 +8,7 @@
     ".NETCoreApp,Version=v8.0": {
       "ZombieSharp/1.0.0": {
         "dependencies": {
+          "CounterStrikeSharp.API": "1.0.264",
           "Dapper": "2.1.28",
           "IZombieSharpAPI": "1.0.0",
           "Microsoft.Data.Sqlite": "8.0.4",
@@ -19,7 +20,7 @@
           "ZombieSharp.dll": {}
         }
       },
-      "CounterStrikeSharp.API/1.0.247": {
+      "CounterStrikeSharp.API/1.0.264": {
         "dependencies": {
           "McMaster.NETCore.Plugins": "1.4.0",
           "Microsoft.CSharp": "4.7.0",
@@ -33,6 +34,12 @@
           "Serilog.Sinks.Console": "5.0.0",
           "Serilog.Sinks.File": "5.0.0",
           "System.Data.DataSetExtensions": "4.5.0"
+        },
+        "runtime": {
+          "lib/net8.0/CounterStrikeSharp.API.dll": {
+            "assemblyVersion": "1.0.264.0",
+            "fileVersion": "1.0.264.0"
+          }
         }
       },
       "Dapper/2.1.28": {
@@ -47,6 +54,12 @@
         "dependencies": {
           "Microsoft.DotNet.PlatformAbstractions": "3.1.6",
           "Microsoft.Extensions.DependencyModel": "6.0.0"
+        },
+        "runtime": {
+          "lib/netcoreapp3.1/McMaster.NETCore.Plugins.dll": {
+            "assemblyVersion": "1.4.0.0",
+            "fileVersion": "1.4.0.0"
+          }
         }
       },
       "Microsoft.CSharp/4.7.0": {},
@@ -68,7 +81,14 @@
         }
       },
       "Microsoft.DotNet.ApiCompat.Task/8.0.203": {},
-      "Microsoft.DotNet.PlatformAbstractions/3.1.6": {},
+      "Microsoft.DotNet.PlatformAbstractions/3.1.6": {
+        "runtime": {
+          "lib/netstandard2.0/Microsoft.DotNet.PlatformAbstractions.dll": {
+            "assemblyVersion": "3.1.6.0",
+            "fileVersion": "3.100.620.31604"
+          }
+        }
+      },
       "Microsoft.Extensions.Configuration/8.0.0": {
         "dependencies": {
           "Microsoft.Extensions.Configuration.Abstractions": "8.0.0",
@@ -197,6 +217,12 @@
           "System.Runtime.CompilerServices.Unsafe": "6.0.0",
           "System.Text.Encodings.Web": "8.0.0",
           "System.Text.Json": "8.0.0"
+        },
+        "runtime": {
+          "lib/netstandard2.0/Microsoft.Extensions.DependencyModel.dll": {
+            "assemblyVersion": "6.0.0.0",
+            "fileVersion": "6.0.21.52210"
+          }
         }
       },
       "Microsoft.Extensions.Diagnostics/8.0.0": {
@@ -304,7 +330,14 @@
           }
         }
       },
-      "Microsoft.Extensions.Localization.Abstractions/8.0.3": {},
+      "Microsoft.Extensions.Localization.Abstractions/8.0.3": {
+        "runtime": {
+          "lib/net8.0/Microsoft.Extensions.Localization.Abstractions.dll": {
+            "assemblyVersion": "8.0.0.0",
+            "fileVersion": "8.0.324.11615"
+          }
+        }
+      },
       "Microsoft.Extensions.Logging/8.0.0": {
         "dependencies": {
           "Microsoft.Extensions.DependencyInjection": "8.0.0",
@@ -454,23 +487,54 @@
         "dependencies": {
           "Microsoft.Extensions.DependencyInjection.Abstractions": "8.0.0",
           "Microsoft.Extensions.DependencyModel": "6.0.0"
+        },
+        "runtime": {
+          "lib/net6.0/Scrutor.dll": {
+            "assemblyVersion": "4.0.0.0",
+            "fileVersion": "4.0.0.0"
+          }
         }
       },
-      "Serilog/3.1.1": {},
+      "Serilog/3.1.1": {
+        "runtime": {
+          "lib/net7.0/Serilog.dll": {
+            "assemblyVersion": "2.0.0.0",
+            "fileVersion": "3.1.1.0"
+          }
+        }
+      },
       "Serilog.Extensions.Logging/8.0.0": {
         "dependencies": {
           "Microsoft.Extensions.Logging": "8.0.0",
           "Serilog": "3.1.1"
+        },
+        "runtime": {
+          "lib/net8.0/Serilog.Extensions.Logging.dll": {
+            "assemblyVersion": "7.0.0.0",
+            "fileVersion": "8.0.0.0"
+          }
         }
       },
       "Serilog.Sinks.Console/5.0.0": {
         "dependencies": {
           "Serilog": "3.1.1"
+        },
+        "runtime": {
+          "lib/net7.0/Serilog.Sinks.Console.dll": {
+            "assemblyVersion": "5.0.0.0",
+            "fileVersion": "5.0.0.0"
+          }
         }
       },
       "Serilog.Sinks.File/5.0.0": {
         "dependencies": {
           "Serilog": "3.1.1"
+        },
+        "runtime": {
+          "lib/net5.0/Serilog.Sinks.File.dll": {
+            "assemblyVersion": "5.0.0.0",
+            "fileVersion": "5.0.0.0"
+          }
         }
       },
       "SQLitePCLRaw.bundle_e_sqlite3/2.1.6": {
@@ -646,7 +710,7 @@
       },
       "IZombieSharpAPI/1.0.0": {
         "dependencies": {
-          "CounterStrikeSharp.API": "1.0.247"
+          "CounterStrikeSharp.API": "1.0.264"
         },
         "runtime": {
           "IZombieSharpAPI.dll": {}
@@ -660,12 +724,12 @@
       "serviceable": false,
       "sha512": ""
     },
-    "CounterStrikeSharp.API/1.0.247": {
+    "CounterStrikeSharp.API/1.0.264": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-NkXGs26tIVG02MUgBzUyK4tnrzg10njA7ebP/mRODBVLJHElYtLIRIYO00r+kKk5qj4EsELmz/RihOT0nr9F0A==",
-      "path": "counterstrikesharp.api/1.0.247",
-      "hashPath": "counterstrikesharp.api.1.0.247.nupkg.sha512"
+      "sha512": "sha512-9bH5CRsaGGl+QDa0dGbGoYAABAvdDfh3m4cSC0JZbbt5IYQCszxPfaJgMIMVuB7+oM/sE2VWsrTjSYTSYsW/Ow==",
+      "path": "counterstrikesharp.api/1.0.264",
+      "hashPath": "counterstrikesharp.api.1.0.264.nupkg.sha512"
     },
     "Dapper/2.1.28": {
       "type": "package",

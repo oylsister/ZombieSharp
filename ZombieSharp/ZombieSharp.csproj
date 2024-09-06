@@ -11,6 +11,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="CounterStrikeSharp.API" Version="1.0.264" />
     <PackageReference Include="Dapper" Version="2.1.28" />
     <PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.4" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
@@ -19,10 +20,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="CounterStrikeSharp.API">
-       <HintPath>API/CounterStrikeSharp.API.dll</HintPath>
-    </Reference>
 	  <ProjectReference Include="..\ZombieSharpAPI\IZombieSharpAPI.csproj"></ProjectReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="build\addons\counterstrikesharp\plugins\ZombieSharp\lang\" />
   </ItemGroup>
 
 </Project>

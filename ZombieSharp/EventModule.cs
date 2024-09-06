@@ -61,6 +61,8 @@ namespace ZombieSharp
 
             TopDefenderOnPutInServer(player);
 
+            GrenadeEffectOnClientPutInServer(player);
+
             Logger.LogInformation($"Player: {player.PlayerName} data is initialized with {player.Slot}");
         }
 
@@ -115,6 +117,8 @@ namespace ZombieSharp
 
             TopDefenderOnDisconnect(player);
 
+            GrenadeEffectOnClientDisconnect(player);
+
             Logger.LogInformation($"Player: {player.PlayerName} data is removed with {player.Slot}");
         }
 
@@ -134,6 +138,8 @@ namespace ZombieSharp
         {
             if (ClassIsLoaded)
                 PrecachePlayerModel(manifest);
+
+            manifest.AddResource("particles/burning_fx/env_fire_medium.vpcf");
         }
 
         private HookResult OnRoundStart(EventRoundStart @event, GameEventInfo info)
@@ -141,7 +147,7 @@ namespace ZombieSharp
             RemoveRoundObjective();
             RespawnTogglerSetup();
 
-            Server.PrintToChatAll($" {ChatColors.Green}[Z:Sharp]{ChatColors.Default} The current game mode is the Human vs. Zombie, the zombie goal is to infect all human before time is running out.");
+            Server.PrintToChatAll($" {Localizer["Prefix"]} {Localizer["Goal"]}");
 
 
             return HookResult.Continue;
@@ -152,7 +158,7 @@ namespace ZombieSharp
             bool warmup = GetGameRules().WarmupPeriod;
 
             if (warmup && !CVAR_EnableOnWarmup.Value)
-                Server.PrintToChatAll($" {ChatColors.Green}[Z:Sharp]{ChatColors.Default} The current server has disabled infection in warmup round.");
+                Server.PrintToChatAll($" {Localizer["Prefix"]} {Localizer["Warmup.Disabled"]}");
 
             if (!warmup || CVAR_EnableOnWarmup.Value)
             {
@@ -255,10 +261,28 @@ namespace ZombieSharp
                     if (CVAR_CashOnDamage.Value)
                         DamageCash(attacker, dmgHealth);
 
-                    FindWeaponItemDefinition(attacker.PlayerPawn.Value.WeaponServices.ActiveWeapon, weapon);
+                    if (weapon == "hegrenade")
+                    {
+                        var client_class = ClientPlayerClass[client.Slot].ActiveClass;
 
-                    //Server.PrintToChatAll($"{client.PlayerName} get hit at {hitgroup}");
-                    KnockbackClient(client, attacker, dmgHealth, weapon, hitgroup);
+                        float time = 5;
+
+                        if(client_class != null)
+                        {
+                            time = PlayerClassDatas.PlayerClasses[client_class].Napalm_Time;
+                        }
+
+                        IgniteClient(client, time);
+                    }
+
+                    else
+                    {
+                        FindWeaponItemDefinition(attacker.PlayerPawn.Value.WeaponServices.ActiveWeapon, weapon);
+
+                        //Server.PrintToChatAll($"{client.PlayerName} get hit at {hitgroup}");
+                        KnockbackClient(client, attacker, dmgHealth, weapon, hitgroup);
+                    }
+
                     TopDefenderOnPlayerHurt(attacker, dmgHealth);
                 }
             }

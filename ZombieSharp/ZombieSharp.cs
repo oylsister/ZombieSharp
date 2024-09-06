@@ -1,6 +1,5 @@
 ﻿using CounterStrikeSharp.API.Core.Attributes;
 using CounterStrikeSharp.API.Core.Capabilities;
-using System.Runtime.InteropServices;
 using ZombieSharp.Helpers;
 using ZombieSharpAPI;
 
@@ -11,7 +10,7 @@ namespace ZombieSharp
     {
         public override string ModuleName => "Zombie Sharp";
         public override string ModuleAuthor => "Oylsister, Kurumi, Sparky";
-        public override string ModuleVersion => "1.2.2";
+        public override string ModuleVersion => "1.2.3";
         public override string ModuleDescription => "Infection/survival style gameplay for CS2 in C#";
 
         public bool ZombieSpawned;
@@ -62,6 +61,12 @@ namespace ZombieSharp
 
         public void InfectOnRoundFreezeEnd()
         {
+            if(g_hCountdown != null)
+                g_hCountdown.Kill();
+
+            if(g_hInfectMZ != null)
+                g_hInfectMZ.Kill();
+
             Countdown = (int)CVAR_FirstInfectionTimer.Value;
             g_hCountdown = AddTimer(1.0f, Timer_Countdown, TimerFlags.REPEAT);
             g_hInfectMZ = AddTimer(CVAR_FirstInfectionTimer.Value + 1.0f, MotherZombieInfect);
@@ -86,7 +91,7 @@ namespace ZombieSharp
             foreach (var client in targetlist)
             {
                 if (client.IsValid)
-                    client.PrintToCenter($" First Infection in {Countdown} seconds");
+                    client.PrintToCenter($" {Localizer["Core.Countdown", Countdown]}");
             }
 
             Countdown--;
@@ -135,7 +140,7 @@ namespace ZombieSharp
 
             if (candidate.Count < maxmz)
             {
-                Server.PrintToChatAll($" {ChatColors.Green}[Z:Sharp]{ChatColors.Default} Mother zombie cycle has been reset!");
+                Server.PrintToChatAll($" {Localizer["Prefix"]} {Localizer["Core.MotherZombieReset"]}");
 
                 foreach (var client in Utilities.GetPlayers())
                 {
@@ -278,10 +283,10 @@ namespace ZombieSharp
             // if force then tell them that they has been punnished.
             if (force)
             {
-                client.PrintToChat($" {ChatColors.Green}[Z:Sharp]{ChatColors.Default} You have been punished by the god! (Knowing as Admin.) Now plauge all human!");
+                client.PrintToChat($" {Localizer["Prefix"]} {Localizer["Core.GetInfect.Force"]}");
             }
 
-            client.PrintToChat($" {ChatColors.Green}[Z:Sharp]{ChatColors.Default} You have been infected! Go pass it on to as many other players as you can.");
+            client.PrintToChat($" {Localizer["Prefix"]} {Localizer["Core.GetInfect"]}");
         }
 
         public void HumanizeClient(CCSPlayerController client, bool force = false)
@@ -323,7 +328,7 @@ namespace ZombieSharp
             // if force tell them that they has been resurrected.
             if (force)
             {
-                client.PrintToChat($" {ChatColors.Green}[Z:Sharp]{ChatColors.Default} You have been resurrected by the god! (Knowing as Admin.) Find yourself a cover!");
+                client.PrintToChat($" {Localizer["Prefix"]} {Localizer["Core.GetHumanized"]}");
             }
         }
 

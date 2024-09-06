@@ -346,6 +346,36 @@
             "WeaponName": "Knife",
             "WeaponEntity": "weapon_knife",
             "Knockback": 1.1
+        },
+        "hegrenade": {
+            "WeaponName": "HeGrenade",
+            "WeaponEntity": "weapon_hegrenade",
+            "Knockback": 1.0,
+            "WeaponSlot": 3,
+            "Price": 1500,
+            "MaxPurchase": 2,
+            "Restrict": false,
+            "PurchaseCommand": [ "css_he" ]
+        },
+        "flashbang": {
+            "WeaponName": "Flashbang",
+            "WeaponEntity": "weapon_flashbang",
+            "Knockback": 0.0,
+            "WeaponSlot": 3,
+            "Price": 1500,
+            "MaxPurchase": 0,
+            "Restrict": true,
+            "PurchaseCommand": [ "css_flash" ]
+        },
+        "smokegrenade": {
+            "WeaponName": "SmokeGrenade",
+            "WeaponEntity": "weapon_smokegrenade",
+            "Knockback": 0.0,
+            "WeaponSlot": 3,
+            "Price": 1500,
+            "MaxPurchase": 0,
+            "Restrict": true,
+            "PurchaseCommand": [ "css_smoke" ]
         }
     }
 }
