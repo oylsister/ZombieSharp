@@ -17,7 +17,8 @@ Zombie-Sharp is a Zombie Mode plugin for CS2 referencing the features and functi
 - [x] Repeat Killer Module (Obsolete now)
 - [x] Top Defender
 - [x] Cash on damage zombie
-- [x] API for external plugin (NEW!)
+- [x] API for external plugin
+- [x] Grenade Napalm Effect (NEW! More coming soon.) 
 
 ### Requirements
 - [Metamode:Source](https://www.sourcemm.net/downloads.php/?branch=master) Dev build (2.x).
@@ -146,6 +147,7 @@ Example: ``game/csgo/characters/models/nozb1/2b_nier_automata_player_model/2b_ni
             "Health": 150, // class health
             "Regen_Interval": 0.0, // Specify how much second to regen health
             "Regen_Amount": 0, // Regen Health amount
+            "Napalm_Time": 0, // Duration of Napalm grenade, set to 0 meaning no burn.
             "Speed": 250.0, // class speed (not work yet)
             "Knockback": 0.0, // class knockback
             "Jump_Height": 3.0, // Jump height
