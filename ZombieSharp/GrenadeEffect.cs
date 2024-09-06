@@ -131,17 +131,7 @@ namespace ZombieSharp
                 return;
             }
 
-            if (particle == null)
-            {
-                Server.PrintToChatAll("Particle is null!");
-                return;
-            }
-
-            if (!particle.IsValid)
-            {
-                Server.PrintToChatAll("Particle is not valid!");
-                return;
-            }
+            particle = Utilities.CreateEntityByName<CParticleSystem>("info_particle_system");
 
             particle.EffectName = "particles/burning_fx/env_fire_medium.vpcf";
             particle.StartActive = true;
@@ -155,7 +145,7 @@ namespace ZombieSharp
 
             var clientSpeed = pawn.MovementServices!.Maxspeed;
 
-            NapalmClient[client].Timer = AddTimer(1.0f, () =>
+            NapalmClient[client].Timer = AddTimer(0.3f, () =>
             {
                 if (client == null)
                 {
@@ -199,9 +189,10 @@ namespace ZombieSharp
                     NapalmClient[client].Particle.AcceptInput("Stop");
                     NapalmClient[client].Particle.AcceptInput("Kill");
                     NapalmClient[client].Timer.Kill();
+                    NapalmClient[client].Particle = null;
                     return;
                 }
-            });
+            }, TimerFlags.REPEAT);
         }
     }
 }
