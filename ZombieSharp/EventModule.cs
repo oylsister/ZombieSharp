@@ -155,80 +155,97 @@ namespace ZombieSharp
 
         private HookResult OnRoundFreezeEnd(EventRoundFreezeEnd @event, GameEventInfo info)
         {
-            bool warmup = GetGameRules().WarmupPeriod;
-
-            if (warmup && !CVAR_EnableOnWarmup.Value)
-                Server.PrintToChatAll($" {Localizer["Prefix"]} {Localizer["Warmup.Disabled"]}");
-
-            if (!warmup || CVAR_EnableOnWarmup.Value)
+            if (enableWarmupOnline)
             {
-                if (!warmup)
+                bool warmup = GetGameRules().WarmupPeriod;
+
+                if (warmup && !CVAR_EnableOnWarmup.Value)
+                    Server.PrintToChatAll($" {Localizer["Prefix"]} {Localizer["Warmup.Disabled"]}");
+
+                if (!warmup || CVAR_EnableOnWarmup.Value)
                 {
-                    var roundtimeCvar = ConVar.Find("mp_roundtime");
-                    RoundTimer = AddTimer(roundtimeCvar.GetPrimitiveValue<float>() * 60f, TerminateRoundTimeOut);
+                    if (!warmup)
+                    {
+                        var roundtimeCvar = ConVar.Find("mp_roundtime");
+                        RoundTimer = AddTimer(roundtimeCvar.GetPrimitiveValue<float>() * 60f, TerminateRoundTimeOut);
+                    }
+
+                    Server.ExecuteCommand("mp_ignore_round_win_conditions 1");
+
+                    InfectOnRoundFreezeEnd();
                 }
-
-                Server.ExecuteCommand("mp_ignore_round_win_conditions 1");
-
-                InfectOnRoundFreezeEnd();
+                else
+                {
+                    Server.ExecuteCommand("mp_ignore_round_win_conditions 0");
+                }
             }
             else
             {
-                Server.ExecuteCommand("mp_ignore_round_win_conditions 0");
+                var roundtimeCvar = ConVar.Find("mp_roundtime");
+                RoundTimer = AddTimer(roundtimeCvar.GetPrimitiveValue<float>() * 60f, TerminateRoundTimeOut);
+                Server.ExecuteCommand("mp_ignore_round_win_conditions 1");
+                InfectOnRoundFreezeEnd();
             }
+
 
             return HookResult.Continue;
         }
 
         private HookResult OnPreRestart(EventCsPreRestart @event, GameEventInfo info)
         {
-            bool warmup = GetGameRules().WarmupPeriod;
-
-            if (!warmup || CVAR_EnableOnWarmup.Value)
+            if (enableWarmupOnline)
             {
-                AddTimer(0.1f, () =>
-                {
-                    ToggleRespawn(true, true);
-                });
+                bool warmup = GetGameRules().WarmupPeriod;
+
+                if (warmup && !CVAR_EnableOnWarmup.Value)
+                    return HookResult.Continue;
             }
+
+            AddTimer(0.1f, () =>
+            {
+                ToggleRespawn(true, true);
+            });
+
             return HookResult.Continue;
         }
 
         private HookResult OnRoundEnd(EventRoundEnd @event, GameEventInfo info)
         {
-            bool warmup = GetGameRules().WarmupPeriod;
-
             if (RoundTimer != null)
                 RoundTimer.Kill();
 
             TopDenfederOnRoundEnd();
-
-            if (!warmup || CVAR_EnableOnWarmup.Value)
+            if (enableWarmupOnline)
             {
-                // Reset Client Status
-                AddTimer(0.2f, () =>
-                {
-                    // Reset Zombie Spawned here.
-                    ZombieSpawned = false;
+                bool warmup = GetGameRules().WarmupPeriod;
 
-                    // avoiding zombie status glitch on human class like in zombie:reloaded
-                    List<CCSPlayerController> clientlist = Utilities.GetPlayers();
-
-                    // Reset Client Status
-                    foreach (var client in clientlist)
-                    {
-                        if (!client.IsValid)
-                            continue;
-
-                        // Reset Client Status.
-                        ZombiePlayers[client.Slot].IsZombie = false;
-
-                        // if they were chosen as motherzombie then let's make them not to get chosen again.
-                        if (ZombiePlayers[client.Slot].MotherZombieStatus == MotherZombieFlags.CHOSEN)
-                            ZombiePlayers[client.Slot].MotherZombieStatus = MotherZombieFlags.LAST;
-                    }
-                });
+                if (warmup && !CVAR_EnableOnWarmup.Value)
+                    return HookResult.Continue;
             }
+
+            // Reset Client Status
+            AddTimer(0.2f, () =>
+            {
+                // Reset Zombie Spawned here.
+                ZombieSpawned = false;
+
+                // avoiding zombie status glitch on human class like in zombie:reloaded
+                List<CCSPlayerController> clientlist = Utilities.GetPlayers();
+
+                // Reset Client Status
+                foreach (var client in clientlist)
+                {
+                    if (!client.IsValid)
+                        continue;
+
+                    // Reset Client Status.
+                    ZombiePlayers[client.Slot].IsZombie = false;
+
+                    // if they were chosen as motherzombie then let's make them not to get chosen again.
+                    if (ZombiePlayers[client.Slot].MotherZombieStatus == MotherZombieFlags.CHOSEN)
+                        ZombiePlayers[client.Slot].MotherZombieStatus = MotherZombieFlags.LAST;
+                }
+            });
 
             return HookResult.Continue;
         }
@@ -336,42 +353,45 @@ namespace ZombieSharp
         {
             var client = @event.Userid;
 
-            bool warmup = GetGameRules().WarmupPeriod;
-
-            if (!warmup || CVAR_EnableOnWarmup.Value)
+            if (enableWarmupOnline)
             {
-                AddTimer(0.1f, () =>
+                bool warmup = GetGameRules().WarmupPeriod;
+
+                if (warmup && !CVAR_EnableOnWarmup.Value)
+                    return HookResult.Continue;
+            }
+
+            AddTimer(0.1f, () =>
+            {
+                WeaponOnPlayerSpawn(client.Slot);
+
+                // if zombie already spawned then they become zombie.
+                if (ZombieSpawned)
                 {
-                    WeaponOnPlayerSpawn(client.Slot);
+                    // Server.PrintToChatAll($"Infect {client.PlayerName} on Spawn.");
+                    if (CVAR_RespawnTeam.Value == 0)
+                        InfectClient(client, null, false, false, true);
 
-                    // if zombie already spawned then they become zombie.
-                    if (ZombieSpawned)
-                    {
-                        // Server.PrintToChatAll($"Infect {client.PlayerName} on Spawn.");
-                        if (CVAR_RespawnTeam.Value == 0)
-                            InfectClient(client, null, false, false, true);
-
-                        else
-                            HumanizeClient(client);
-
-                        if (ClientProtected[client.Slot].Protected)
-                        {
-                            AddTimer(CVAR_RespawnProtectTime.Value, () => { ResetProtectedClient(client); });
-                            RespawnProtectClient(client);
-                        }
-                    }
-
-                    // else they're human!
                     else
                         HumanizeClient(client);
 
-                    var clientPawn = client.PlayerPawn.Value;
-                    var spawnPos = clientPawn.AbsOrigin!;
-                    var spawnAngle = clientPawn.AbsRotation!;
+                    if (ClientProtected[client.Slot].Protected)
+                    {
+                        AddTimer(CVAR_RespawnProtectTime.Value, () => { ResetProtectedClient(client); });
+                        RespawnProtectClient(client);
+                    }
+                }
 
-                    ZTele_GetClientSpawnPoint(client, spawnPos, spawnAngle);
-                });
-            }
+                // else they're human!
+                else
+                    HumanizeClient(client);
+
+                var clientPawn = client.PlayerPawn.Value;
+                var spawnPos = clientPawn.AbsOrigin!;
+                var spawnAngle = clientPawn.AbsRotation!;
+
+                ZTele_GetClientSpawnPoint(client, spawnPos, spawnAngle);
+            });
 
             return HookResult.Continue;
         }
@@ -380,10 +400,15 @@ namespace ZombieSharp
         {
             var client = @event.Userid;
 
-            var warmup = GetGameRules().WarmupPeriod;
+            if (enableWarmupOnline)
+            {
+                var warmup = GetGameRules().WarmupPeriod;
 
-            if (!warmup || CVAR_EnableOnWarmup.Value)
-                JumpBoost(client);
+                if (warmup && !CVAR_EnableOnWarmup.Value)
+                    return HookResult.Continue;
+            }
+
+            JumpBoost(client);
 
             return HookResult.Continue;
         }
@@ -393,28 +418,32 @@ namespace ZombieSharp
             var classData = PlayerClassDatas.PlayerClasses;
             var activeclass = ClientPlayerClass[client.Slot].ActiveClass;
 
-            if (!GetGameRules().WarmupPeriod || CVAR_EnableOnWarmup.Value)
+            if (enableWarmupOnline)
             {
-                // if jump boost can apply after client is already jump.
-                AddTimer(0.0f, () =>
-                {
-                    if (activeclass == null)
-                    {
-                        if (IsClientHuman(client))
-                            activeclass = Default_Human;
+                bool warmup = GetGameRules().WarmupPeriod;
 
-                        else
-                            activeclass = Default_Zombie;
-                    }
-
-                    if (classData.ContainsKey(activeclass))
-                    {
-                        client.PlayerPawn.Value.AbsVelocity.X *= classData[activeclass].Jump_Distance;
-                        client.PlayerPawn.Value.AbsVelocity.Y *= classData[activeclass].Jump_Distance;
-                        client.PlayerPawn.Value.AbsVelocity.Z *= classData[activeclass].Jump_Height;
-                    }
-                });
+                if (warmup && !CVAR_EnableOnWarmup.Value)
+                    return;
             }
+
+            AddTimer(0.0f, () =>
+            {
+                if (activeclass == null)
+                {
+                    if (IsClientHuman(client))
+                        activeclass = Default_Human;
+
+                    else
+                        activeclass = Default_Zombie;
+                }
+
+                if (classData.ContainsKey(activeclass))
+                {
+                    client.PlayerPawn.Value.AbsVelocity.X *= classData[activeclass].Jump_Distance;
+                    client.PlayerPawn.Value.AbsVelocity.Y *= classData[activeclass].Jump_Distance;
+                    client.PlayerPawn.Value.AbsVelocity.Z *= classData[activeclass].Jump_Height;
+                }
+            });
         }
 
         private void DamageCash(CCSPlayerController client, int dmgHealth)

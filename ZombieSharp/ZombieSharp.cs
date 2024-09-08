@@ -1,5 +1,6 @@
 ﻿using CounterStrikeSharp.API.Core.Attributes;
 using CounterStrikeSharp.API.Core.Capabilities;
+using CounterStrikeSharp.API.Modules.Cvars;
 using ZombieSharp.Helpers;
 using ZombieSharpAPI;
 
@@ -35,6 +36,8 @@ namespace ZombieSharp
 
         public static PluginCapability<IZombieSharpAPI> APICapability = new("zombiesharp");
 
+        bool enableWarmupOnline = true;
+
         public override void Load(bool HotReload)
         {
             API = new ZombieSharpAPI(this);
@@ -51,6 +54,8 @@ namespace ZombieSharp
                 WeaponInitialize();
                 SettingsIntialize(Server.MapName);
                 ClassIsLoaded = PlayerClassIntialize();
+
+                enableWarmupOnline = ConVar.Find("mp_warmup_online_enabled").GetPrimitiveValue<bool>(); 
 
                 hitgroupLoad = HitGroupIntialize();
                 RepeatKillerOnMapStart();
@@ -453,7 +458,7 @@ namespace ZombieSharp
 
             foreach (var weapon in weapons)
             {
-                if (!weapon.IsValid)
+                if (weapon == null || !weapon.IsValid)
                     continue;
 
                 var vdata = new CCSWeaponBaseVData(weapon.Value!.VData.Handle);
