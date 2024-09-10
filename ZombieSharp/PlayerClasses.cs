@@ -1,8 +1,7 @@
-﻿using System.Collections.Concurrent;
-using CounterStrikeSharp.API.Modules.Menu;
+﻿using CounterStrikeSharp.API.Modules.Menu;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using static ZombieSharpAPI.IZombieSharpAPI;
 
 namespace ZombieSharp
 {
@@ -268,45 +267,4 @@ public class PlayerClientClass
     public string HumanClass { get; set; } = null;
     public string ZombieClass { get; set; } = null;
     public string ActiveClass { get; set; } = null;
-}
-
-public class PlayerClassData
-{
-    public PlayerClassData(string name, string desc, bool enable, bool default_class, int team, string model, bool motherzombie, int hp, float regen_interval, int regen_amount, float napalm_time, float speed, float knockback, float jump_height, float jump_distance)
-    {
-        Name = name;
-        Description = desc;
-        Enable = enable;
-        Default_Class = default_class;
-        Team = team;
-        Model = model;
-        MotherZombie = motherzombie;
-        Health = hp;
-        Regen_Interval = regen_interval;
-        Regen_Amount = regen_amount;
-        Napalm_Time = napalm_time;
-        Speed = speed;
-        Knockback = knockback;
-        Jump_Height = jump_height;
-        Jump_Distance = jump_distance;
-    }
-
-    public string Name { get; set; }
-    public string Description { get; set; }
-    public bool Enable { get; set; }
-    public bool Default_Class { get; set; }
-    public int Team { get; set; }
-    public string Model { get; set; }
-
-    public bool MotherZombie { get; set; }
-
-    public int Health { get; set; }
-    public float Regen_Interval { get; set; }
-    public int Regen_Amount { get; set; }
-    public float Napalm_Time { get; set; } = 0f;
-
-    public float Speed { get; set; }
-    public float Knockback { get; set; }
-    public float Jump_Height { get; set; }
-    public float Jump_Distance { get; set; }
 }
