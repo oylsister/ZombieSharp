@@ -447,7 +447,7 @@ namespace ZombieSharp
                 {
                     client.PlayerPawn.Value.AbsVelocity.X *= classData[activeclass].Jump_Distance;
                     client.PlayerPawn.Value.AbsVelocity.Y *= classData[activeclass].Jump_Distance;
-                    client.PlayerPawn.Value.AbsVelocity.Z *= classData[activeclass].Jump_Height;
+                    client.PlayerPawn.Value.AbsVelocity.Z *= classData[activeclass].Jump_Height * (classData[activeclass].Speed / 250f);
                 }
             });
         }

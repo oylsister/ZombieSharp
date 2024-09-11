@@ -250,6 +250,9 @@ namespace ZombieSharp
             if (client == null)
                 return;
 
+            if (!client.IsValid)
+                return;
+
             if (!client.PawnIsAlive)
                 return;
 
