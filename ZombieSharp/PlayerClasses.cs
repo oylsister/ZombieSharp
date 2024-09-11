@@ -135,8 +135,8 @@ namespace ZombieSharp
             clientPawn.Health = classData.Health;
 
             // This currently doesn't work properly need to find an altenative method that similar to m_flLaggedMovementValue
-            // clientPawn.VelocityModifier = classData.Speed / 250.0f;
-            // clientPawn.GravityScale = classData.Speed / 250.0f;
+            clientPawn.VelocityModifier = classData.Speed / 250.0f;
+            clientPawn.GravityScale = classData.Speed / 250.0f;
 
             if (classData.Regen_Interval > 0.0f && classData.Regen_Amount > 0)
             {
@@ -244,6 +244,27 @@ namespace ZombieSharp
             selectmenu.AddMenuOption("Back", menuhandle);
 
             MenuManager.OpenChatMenu(client, selectmenu);
+        }
+
+        private void PlayerClassesApplySpeedOnHurt(CCSPlayerController client)
+        {
+            if (client == null)
+                return;
+
+            if (!client.PawnIsAlive)
+                return;
+
+            if (!ClientPlayerClass.ContainsKey(client.Slot))
+                return;
+
+            var clientClass = ClientPlayerClass[client.Slot].ActiveClass;
+
+            if (!PlayerClassDatas.PlayerClasses.ContainsKey(clientClass))
+                return;
+
+            var speed = PlayerClassDatas.PlayerClasses[ClientPlayerClass[client.Slot].ActiveClass].Speed;
+
+            client.PlayerPawn.Value.VelocityModifier = speed / 250f;
         }
     }
 }

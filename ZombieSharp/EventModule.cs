@@ -267,6 +267,12 @@ namespace ZombieSharp
                 if (attacker == null || client == null)
                     return HookResult.Continue;
 
+                // reset speed for class.
+                AddTimer(0.3f, () =>
+                {
+                    PlayerClassesApplySpeedOnHurt(client);
+                });
+
                 if (IsClientZombie(attacker) && IsClientHuman(client) && string.Equals(weapon, "knife") && !ClientProtected[client.Slot].Protected)
                 {
                     // Server.PrintToChatAll($"{client.PlayerName} Infected by {attacker.PlayerName}");
