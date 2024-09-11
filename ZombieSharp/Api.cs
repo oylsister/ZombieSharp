@@ -111,5 +111,60 @@ namespace ZombieSharp
         {
             _plugin.HumanizeClient(controller, true);
         }
+
+        public string ZS_GetClientActiveClass(CCSPlayerController controller)
+        {
+            if(controller == null)
+                return null;
+
+            return _plugin.ClientPlayerClass[controller.Slot].ActiveClass;
+        }
+
+        public string ZS_GetClientZombieClass(CCSPlayerController controller)
+        {
+            if (controller == null)
+                return null;
+
+            return _plugin.ClientPlayerClass[controller.Slot].ZombieClass;
+        }
+
+        public string ZS_GetClientHumanClass(CCSPlayerController controller)
+        {
+            if (controller == null)
+                return null;
+
+            return _plugin.ClientPlayerClass[controller.Slot].HumanClass;
+        }
+
+        public PlayerClassData ZS_GetClassByString(string str)
+        {
+            if(str == null)
+                return null;
+
+            return _plugin.PlayerClassDatas.PlayerClasses[str];
+        }
+
+        public Dictionary<string, PlayerClassData> ZS_GetClassData()
+        {
+            if (_plugin.PlayerClassDatas.PlayerClasses == null)
+                return null;
+
+            return _plugin.PlayerClassDatas.PlayerClasses;
+        }
+
+        public void ZS_SetClientClass(CCSPlayerController controller, string playerClassData)
+        {
+            if (playerClassData == null)
+                return;
+
+            if (!_plugin.PlayerClassDatas.PlayerClasses.ContainsKey(playerClassData))
+                return;
+
+            if (_plugin.PlayerClassDatas.PlayerClasses[playerClassData].Team == 0)
+                _plugin.ClientPlayerClass[controller.Slot].ZombieClass = playerClassData;
+
+            else if (_plugin.PlayerClassDatas.PlayerClasses[playerClassData].Team == 1)
+                _plugin.ClientPlayerClass[controller.Slot].HumanClass = playerClassData;
+        }
     }
 }
