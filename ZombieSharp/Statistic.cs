@@ -1,6 +1,6 @@
 ﻿using Dapper;
+using Microsoft.Extensions.Logging;
 using MySql.Data.MySqlClient;
-using MySqlX.XDevAPI;
 using Newtonsoft.Json;
 
 namespace ZombieSharp
@@ -8,56 +8,70 @@ namespace ZombieSharp
     public partial class ZombieSharp
     {
         private StatsDatabase statsConfig;
+        MySqlConnection connection = null;
 
         private void StatsOnLoad()
         {
             var statsConfigPath = Path.Combine(ModuleDirectory, $"../../configs/zombiesharp/database.json");
             statsConfig = JsonConvert.DeserializeObject<StatsDatabase>(File.ReadAllText(statsConfigPath));
+            connection = StatsConnect();
         }
 
-        private async Task<MySqlConnection> StatsConnect()
+        private MySqlConnection StatsConnect()
         {
             var query = $"Server={statsConfig.hostname}; database={statsConfig.database}; UID={statsConfig.username}; password={statsConfig.password}";
-            MySqlConnection connection = new MySqlConnection(query);
-            await connection.OpenAsync();
-            return connection;
+            var conn = new MySqlConnection(query);
+
+            if(conn == null)
+            {
+                Logger.LogError("[Stats] Connection is null.");
+                return null;
+            }
+
+            conn.Open();
+
+            return conn;
         }
 
         private async Task StatsSetData(CCSPlayerController client, int damage = 0, int kill = 0, int infect = 0)
         {
             if (client == null)
+            {
+                Logger.LogError("[Stats] client is null.");
                 return;
-
-            var connection = await StatsConnect();
+            }
 
             if (connection == null)
+            {
                 return;
+            }
 
-            var clientData = await GetClientStatsData(client);
+            var clientData = GetClientStatsData(client);
 
             var query = $"INSERT INTO `zsharp_stats` (player_name, steam_auth, total_dmg, total_kill, total_infect, last_join) " +
-                    $"VALUES ({client.PlayerName}, {client.AuthorizedSteamID.SteamId3}, {damage}, {kill}, {infect}, {DateTime.Now.ToString("yyyy'-'MM'-'dd")})";
+                    $"VALUES (\"{client.PlayerName}\", \"{client.AuthorizedSteamID.SteamId3}\", {damage}, {kill}, {infect}, \"{DateTime.Now.ToString("yyyy'-'MM'-'dd")}\") ";
 
             if(clientData != null)
             {
-                query += $"ON DUPLICATE KEY UPDATE player_name = {client.PlayerName}, total_dmg = {damage + clientData.TotalDamage}, total_kill = {kill + clientData.TotalKill}, total_infect = {infect + clientData.TotalKill}, last_join = {DateTime.Now.ToString("yyyy'-'MM'-'dd")}";
+                query += $"ON DUPLICATE KEY UPDATE player_name = \"{client.PlayerName}\", total_dmg = {damage + clientData.TotalDamage}, total_kill = {kill + clientData.TotalKill}, total_infect = {infect + clientData.TotalKill}, last_join = \"{DateTime.Now.ToString("yyyy'-'MM'-'dd")}\"";
             }
 
+            // Logger.LogInformation($"[Stats] Query: {query};");
 
-            await connection.ExecuteAsync(query + ";");
+            await connection.ExecuteAsync($"{query};");
         }
 
-        private async Task<ClientStatsData> GetClientStatsData(CCSPlayerController client)
+        private ClientStatsData GetClientStatsData(CCSPlayerController client)
         {
             if (client == null)
                 return null;
 
-            var connection = await StatsConnect();
+            var conn = StatsConnect();
 
             if (connection == null)
                 return null;
 
-            var data = new MySqlCommand($"SELECT * FROM `zsharp_stas` WHERE steam_auth = {client.AuthorizedSteamID.SteamId3}");
+            var data = new MySqlCommand($"SELECT * FROM `zsharp_stats` WHERE steam_auth = \"{client.AuthorizedSteamID.SteamId3}\";", conn);
             var reader = data.ExecuteReader();
 
             var clientData = new ClientStatsData();
@@ -71,10 +85,15 @@ namespace ZombieSharp
                 clientData.TotalKill = reader.GetInt32(3);
                 clientData.TotalInfect = reader.GetInt32(4);
                 clientData.LastJoin = reader.GetDateTime(5);
+                Logger.LogInformation($"[Stats] Found the data of {client.PlayerName}.");
+
+                conn.Close();
 
                 return clientData;
             }
 
+            Logger.LogInformation($"[Stats] {client.PlayerName} Data is not in table.");
+            conn.Close();
             return null;
         }
     }

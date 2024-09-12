@@ -76,7 +76,11 @@ namespace ZombieSharp
 
             Logger.LogInformation($"Player: {client.PlayerName} is fully connected with {client.Slot}");
 
-            PlayerSettingsAuthorized(client).Wait();
+            var AuthTask = PlayerSettingsAuthorized(client);
+            var StatTask = StatsSetData(client);
+
+            Task.WhenAll(AuthTask, StatTask).Wait();
+
             return HookResult.Continue;
         }
 
