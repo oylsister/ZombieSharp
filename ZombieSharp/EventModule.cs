@@ -328,6 +328,12 @@ namespace ZombieSharp
             {
                 CheckGameStatus();
 
+                if (CVAR_EnableStats.Value)
+                {
+                    if (!attacker.IsBot && !attacker.IsHLTV && IsClientHuman(attacker) && IsClientZombie(client))
+                        StatsSetData(attacker, 0, 1, 0).Wait();
+                }
+
                 if (RespawnEnable)
                 {
                     RespawnPlayer(client);

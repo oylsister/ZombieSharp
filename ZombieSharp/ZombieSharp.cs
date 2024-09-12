@@ -48,8 +48,9 @@ namespace ZombieSharp
             CommandInitialize();
             VirtualFunctionsInitialize();
             PlayerSettingsOnLoad().Wait();
+            StatsOnLoad();
 
-            if(HotReload)
+            if (HotReload)
             {
                 WeaponInitialize();
                 SettingsIntialize(Server.MapName);

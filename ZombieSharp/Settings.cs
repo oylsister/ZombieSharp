@@ -24,6 +24,7 @@ namespace ZombieSharp
         public FakeConVar<float> CVAR_RepeatKillerThreshold = new("zs_repeatkiller_threshold", "Death Ratio before disable spawning entirely in that round.", 0.0f, ConVarFlags.FCVAR_NONE, new RangeValidator<float>(0, 64));
         public FakeConVar<bool> CVAR_TopDefenderEnable = new("zs_topdefender_enable", "Enable Top defender or not", true);
         public FakeConVar<int> CVAR_TimeoutWinner = new("zs_timeout_winner", "Specify Which team should win if the round time is out.", 2, ConVarFlags.FCVAR_NONE, new RangeValidator<int>(2, 3));
+        public FakeConVar<bool> CVAR_EnableStats = new("zs_stats_enable", "Enable Stats for ZombieSharp plugin or not", false);
 
         public void SettingsOnLoad()
         {
