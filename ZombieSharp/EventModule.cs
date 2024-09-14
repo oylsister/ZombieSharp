@@ -76,7 +76,11 @@ namespace ZombieSharp
 
             Logger.LogInformation($"Player: {client.PlayerName} is fully connected with {client.Slot}");
 
-            PlayerSettingsAuthorized(client).Wait();
+            var AuthTask = PlayerSettingsAuthorized(client);
+            var StatTask = StatsSetData(client);
+
+            Task.WhenAll(AuthTask, StatTask).Wait();
+
             return HookResult.Continue;
         }
 
@@ -327,6 +331,12 @@ namespace ZombieSharp
             if (ZombieSpawned)
             {
                 CheckGameStatus();
+
+                if (CVAR_EnableStats.Value)
+                {
+                    if (!attacker.IsBot && !attacker.IsHLTV && IsClientHuman(attacker) && IsClientZombie(client))
+                        StatsSetData(attacker, 0, 1, 0).Wait();
+                }
 
                 if (RespawnEnable)
                 {

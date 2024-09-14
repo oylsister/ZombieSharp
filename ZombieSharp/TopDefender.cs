@@ -42,7 +42,18 @@
             if (ClientsDamage.Count <= 0)
                 return;
 
-            else if (ClientsDamage.Count < 3)
+            if (CVAR_EnableStats.Value)
+            {
+                foreach (var player in ClientsDamage)
+                {
+                    if (player.Key == null || player.Key.IsBot || player.Key.IsHLTV)
+                        continue;
+
+                    StatsSetData(player.Key, player.Value.Damage, 0, player.Value.Infected).Wait();
+                }
+            }
+
+            if (ClientsDamage.Count < 3)
                 item = ClientsDamage.Count;
 
             else
