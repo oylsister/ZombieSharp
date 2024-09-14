@@ -442,6 +442,9 @@ namespace ZombieSharp
                     return;
             }
 
+            if (client == null || !client.IsValid || !ZombiePlayers.ContainsKey(client.Slot))
+                return;
+
             AddTimer(0.0f, () =>
             {
                 if (activeclass == null)

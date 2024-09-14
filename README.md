@@ -8,7 +8,7 @@ Zombie-Sharp is a Zombie Mode plugin for CS2 referencing the features and functi
 - [x] Mother Zombie Cycle
 - [x] Infect and Human Command
 - [x] Respawn Toggle option
-- [x] Player Class Module (Mostly work, except player speed.)
+- [x] Player Class Module
 - [x] Weapon Module with purchase command.
 - [x] Hitgroups Module
 - [x] Knockback Module
@@ -19,6 +19,7 @@ Zombie-Sharp is a Zombie Mode plugin for CS2 referencing the features and functi
 - [x] Cash on damage zombie
 - [x] API for external plugin
 - [x] Grenade Napalm Effect (NEW! More coming soon.) 
+- [x] Player Stats (Work in progress now.)
 
 ### Requirements
 - [Metamode:Source](https://www.sourcemm.net/downloads.php/?branch=master) Dev build (2.x).
