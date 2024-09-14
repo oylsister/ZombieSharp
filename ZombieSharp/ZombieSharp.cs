@@ -48,7 +48,6 @@ namespace ZombieSharp
             CommandInitialize();
             VirtualFunctionsInitialize();
             PlayerSettingsOnLoad().Wait();
-            StatsOnLoad();
 
             if (HotReload)
             {

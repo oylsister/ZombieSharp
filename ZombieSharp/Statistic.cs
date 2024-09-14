@@ -1,4 +1,7 @@
-﻿using Dapper;
+﻿using CounterStrikeSharp.API.Core.Hosting;
+using Dapper;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
@@ -7,30 +10,11 @@ namespace ZombieSharp
 {
     public partial class ZombieSharp
     {
-        private StatsDatabase statsConfig;
-        MySqlConnection connection = null;
+        private readonly MySqlConnection _statsConnection;
 
-        private void StatsOnLoad()
+        public ZombieSharp(MySqlConnection statsConnection)
         {
-            var statsConfigPath = Path.Combine(ModuleDirectory, $"../../configs/zombiesharp/database.json");
-            statsConfig = JsonConvert.DeserializeObject<StatsDatabase>(File.ReadAllText(statsConfigPath));
-            connection = StatsConnect();
-        }
-
-        private MySqlConnection StatsConnect()
-        {
-            var query = $"Server={statsConfig.hostname}; database={statsConfig.database}; UID={statsConfig.username}; password={statsConfig.password}";
-            var conn = new MySqlConnection(query);
-
-            if(conn == null)
-            {
-                Logger.LogError("[Stats] Connection is null.");
-                return null;
-            }
-
-            conn.Open();
-
-            return conn;
+            _statsConnection = statsConnection;
         }
 
         private async Task StatsSetData(CCSPlayerController client, int damage = 0, int kill = 0, int infect = 0)
@@ -41,7 +25,7 @@ namespace ZombieSharp
                 return;
             }
 
-            if (connection == null)
+            if (_statsConnection == null)
             {
                 return;
             }
@@ -58,7 +42,7 @@ namespace ZombieSharp
 
             // Logger.LogInformation($"[Stats] Query: {query};");
 
-            await connection.ExecuteAsync($"{query};");
+            await _statsConnection.ExecuteAsync($"{query};");
         }
 
         private ClientStatsData GetClientStatsData(CCSPlayerController client)
@@ -66,12 +50,10 @@ namespace ZombieSharp
             if (client == null)
                 return null;
 
-            var conn = StatsConnect();
-
-            if (connection == null)
+            if (_statsConnection == null)
                 return null;
 
-            var data = new MySqlCommand($"SELECT * FROM `zsharp_stats` WHERE steam_auth = \"{client.AuthorizedSteamID.SteamId3}\";", conn);
+            var data = new MySqlCommand($"SELECT * FROM `zsharp_stats` WHERE steam_auth = \"{client.AuthorizedSteamID.SteamId3}\";", _statsConnection);
             var reader = data.ExecuteReader();
 
             var clientData = new ClientStatsData();
@@ -85,20 +67,17 @@ namespace ZombieSharp
                 clientData.TotalKill = reader.GetInt32(3);
                 clientData.TotalInfect = reader.GetInt32(4);
                 clientData.LastJoin = reader.GetDateTime(5);
-                Logger.LogInformation($"[Stats] Found the data of {client.PlayerName}.");
-
-                conn.Close();
+                Logger.LogInformation("[Stats] Found the data of {client}.", client.PlayerName);
 
                 return clientData;
             }
 
-            Logger.LogInformation($"[Stats] {client.PlayerName} Data is not in table.");
-            conn.Close();
+            Logger.LogInformation("[Stats] {client} Data is not in table.", client.PlayerName);
             return null;
         }
     }
 
-    public class StatsDatabase()
+    public class StatsDatabase
     {
         public string hostname { get; set; }
         public string database { get; set; }
@@ -106,7 +85,28 @@ namespace ZombieSharp
         public string password { get; set; }
     }
 
-    public class ClientStatsData()
+    public class StatsDatabaseCollection : IPluginServiceCollection<ZombieSharp>
+    {
+        public void ConfigureServices(IServiceCollection service)
+        {
+            service.AddScoped(service =>
+            {
+                var plugin = service.GetRequiredService<ZombieSharp>();
+                var moduleDirectory = plugin.ModuleDirectory;
+                var statsConfigPath = Path.Combine(moduleDirectory, $"../../configs/zombiesharp/database.json");
+
+                return JsonConvert.DeserializeObject<StatsDatabase>(File.ReadAllText(statsConfigPath));
+            });
+
+            service.AddScoped(service =>
+            {
+                var config = service.GetRequiredService<StatsDatabase>();
+                return new MySqlConnection($"Server={config.hostname}; database={config.database}; UID={config.username}; password={config.password}");
+            });
+        }
+    }
+
+    public class ClientStatsData
     {
         public string PlayerName { get; set; }
         public string SteamAuth { get; set; }
