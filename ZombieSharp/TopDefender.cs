@@ -46,10 +46,7 @@
             {
                 foreach (var player in ClientsDamage)
                 {
-                    if (player.Key == null)
-                        continue;
-
-                    if (player.Key.IsBot || player.Key.IsHLTV)
+                    if (player.Key == null || player.Key.IsBot || player.Key.IsHLTV)
                         continue;
 
                     StatsSetData(player.Key, player.Value.Damage, 0, player.Value.Infected).Wait();
