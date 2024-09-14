@@ -176,14 +176,17 @@ namespace ZombieSharp
                 damageInfo.Damage = 0;
             }
 
-            bool warmup = GetGameRules().WarmupPeriod;
-
-            if (warmup && !CVAR_EnableOnWarmup.Value)
+            if (enableWarmupOnline)
             {
-                if (client.DesignerName == "player" && attackInfo.Value.DesignerName == "player")
+                bool warmup = GetGameRules().WarmupPeriod;
+
+                if (warmup && !CVAR_EnableOnWarmup.Value)
                 {
-                    damageInfo.Damage = 0;
-                    return HookResult.Handled;
+                    if (client.DesignerName == "player" && attackInfo.Value.DesignerName == "player")
+                    {
+                        damageInfo.Damage = 0;
+                        return HookResult.Handled;
+                    }
                 }
             }
 

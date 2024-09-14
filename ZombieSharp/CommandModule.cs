@@ -159,6 +159,7 @@ namespace ZombieSharp
             }
         }
 
+        [RequiresPermissions(@"css/slay")]
         private void CommandClassFinder(CCSPlayerController client, CommandInfo info)
         {
             var playerclass = info.GetArg(1);
@@ -224,6 +225,7 @@ namespace ZombieSharp
             }
         }
 
+        [RequiresPermissions(@"css/slay")]
         private void ClientPlayerClassCommand(CCSPlayerController client, CommandInfo info)
         {
             info.ReplyToCommand($"Human Class: {ClientPlayerClass[client.Slot].HumanClass}");
@@ -263,6 +265,7 @@ namespace ZombieSharp
             PlayerClassMainMenu(client);
         }
 
+        [RequiresPermissions(@"css/slay")]
         private void ForceDropCommand(CCSPlayerController client, CommandInfo info)
         {
             if (client == null)
@@ -275,6 +278,7 @@ namespace ZombieSharp
             client.GiveNamedItem("weapon_knife");
         }
 
+        [RequiresPermissions(@"css/slay")]
         private void MyWeaponCommand(CCSPlayerController client, CommandInfo info)
         {
             if (client == null) return;
