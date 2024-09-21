@@ -354,9 +354,14 @@ namespace ZombieSharp
                     RepeatKillerOnPlayerDeath(client, attacker, weapon);
                 }
 
-                if (IsClientZombie(client))
+                if (ClientMoanTimer[client] != null)
                 {
-                    ZombieDie(client);
+                    ClientMoanTimer[client].Kill();
+                }
+
+                if (ZS_IsClientValid(client) && IsClientZombie(client))
+                {
+                    AddTimer(0.1f, () => ZombieDie(client));
                 }
 
                 RegenTimerStop(client);

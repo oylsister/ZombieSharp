@@ -13,6 +13,9 @@
 
         public void ZombieVoiceOnClientDisconnect(CCSPlayerController controller)
         {
+            if(ClientMoanTimer[controller] != null)
+                ClientMoanTimer[controller].Kill();
+
             if(ClientVoiceData.ContainsKey(controller))
                 ClientVoiceData.Remove(controller);
 
@@ -47,9 +50,9 @@
                 return;
             }
 
-            var pawn = client.PlayerPawn;
+            var pawn = client.Pawn.Get();
 
-            EmitSound(pawn.Value, sound);
+            EmitSound(pawn, sound);
         }
     }
 }

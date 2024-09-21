@@ -286,8 +286,13 @@ namespace ZombieSharp
                 CheckGameStatus();
             */
 
+            if (ClientMoanTimer[client] != null)
+            {
+                ClientMoanTimer[client].Kill();
+            }
+
             // create moan timer 
-            ClientMoanTimer[client] = AddTimer(10f, () =>
+            ClientMoanTimer[client] = AddTimer(20f, () =>
             {
                 if (client == null)
                 {
@@ -550,6 +555,14 @@ namespace ZombieSharp
 
             else
                 return false;
+        }
+
+        public bool ZS_IsClientValid(CCSPlayerController controller)
+        {
+            if (ZombiePlayers.ContainsKey(controller.Slot))
+                return true;
+
+            return false;
         }
     }
 }
