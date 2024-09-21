@@ -286,6 +286,31 @@ namespace ZombieSharp
                 CheckGameStatus();
             */
 
+            // create moan timer 
+            ClientMoanTimer[client] = AddTimer(10f, () =>
+            {
+                if (client == null)
+                {
+                    ClientMoanTimer[client].Kill();
+                    return;
+                }
+
+                if (!client.PawnIsAlive)
+                {
+                    ClientMoanTimer[client].Kill();
+                    return;
+                }
+
+                if(!IsClientZombie(client))
+                {
+                    ClientMoanTimer[client].Kill();
+                    return;
+                }
+
+                ZombieMoan(client);
+
+            }, TimerFlags.REPEAT);
+
             // if force then tell them that they has been punnished.
             if (force)
             {

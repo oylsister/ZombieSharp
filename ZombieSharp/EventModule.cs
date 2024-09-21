@@ -63,6 +63,8 @@ namespace ZombieSharp
 
             GrenadeEffectOnClientPutInServer(player);
 
+            ZombieVoiceOnClientPutInServer(player);
+
             Logger.LogInformation($"Player: {player.PlayerName} data is initialized with {player.Slot}");
         }
 
@@ -122,6 +124,8 @@ namespace ZombieSharp
             TopDefenderOnDisconnect(player);
 
             GrenadeEffectOnClientDisconnect(player);
+
+            ZombieVoiceOnClientDisconnect(player);
 
             Logger.LogInformation($"Player: {player.PlayerName} data is removed with {player.Slot}");
         }
@@ -288,6 +292,12 @@ namespace ZombieSharp
                     if (CVAR_CashOnDamage.Value)
                         DamageCash(attacker, dmgHealth);
 
+                    if(Server.EngineTime > ClientVoiceData[client])
+                    {
+                        ZombiePain(client);
+                        ClientVoiceData[client] = Server.EngineTime + 10f;
+                    }
+
                     if (weapon == "hegrenade")
                     {
                         var client_class = ClientPlayerClass[client.Slot].ActiveClass;
@@ -342,6 +352,11 @@ namespace ZombieSharp
                 {
                     RespawnPlayer(client);
                     RepeatKillerOnPlayerDeath(client, attacker, weapon);
+                }
+
+                if (IsClientZombie(client))
+                {
+                    ZombieDie(client);
                 }
 
                 RegenTimerStop(client);
