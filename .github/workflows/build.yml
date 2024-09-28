@@ -106,7 +106,7 @@ jobs:
         cp -r /home/runner/work/ZombieSharp/ZombieSharp/ZombieSharp/build/addons/counterstrikesharp/gamedata/ release/addons/counterstrikesharp/
         cp -r /home/runner/work/ZombieSharp/ZombieSharp/ZombieSharp/build/addons/counterstrikesharp/configs/ release/addons/counterstrikesharp/
 
-    - uses: actions/upload-artifact@4
+    - uses: actions/upload-artifact@v4
       with:
         name: ZombieSharp-build-${{env.SHORT_SHA}}
         path: release
