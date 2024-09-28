@@ -126,7 +126,7 @@ jobs:
           short_sha=$(echo $GITHUB_SHA | cut -c1-7)
           echo "SHORT_SHA=$short_sha" >> $GITHUB_ENV
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with: 
           name: ZombieSharp-build-${{ env.SHORT_SHA }}
           path: release/
