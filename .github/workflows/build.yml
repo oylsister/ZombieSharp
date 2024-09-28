@@ -89,14 +89,13 @@ jobs:
         path: release
   
   release:
-    needs: "build"
     if: ${{ github.event_name == 'push' && github.ref == 'ref/heads/main' }}
+    needs: "build"
     permissions:
       contents: write
     runs-on: ubuntu-latest
     steps:
       - name: Get Plugins Version
-        if: ${{ github.event_name == 'push' && github.ref == 'ref/heads/main' }}
         run: |
           version=$(grep 'public override string ModuleVersion =>' /home/runner/work/ZombieSharp/ZombieSharp/ZombieSharp/ZombieSharp.cs | sed 's/.*=> "\(.*\)";/\1/')
           version_under=${version// /_}
