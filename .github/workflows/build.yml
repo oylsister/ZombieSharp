@@ -120,7 +120,12 @@ jobs:
     permissions:
       contents: write
     runs-on: ubuntu-latest
-    steps:   
+    steps:
+      - name: Get Commit ID
+        run: |
+          short_sha=$(echo $GITHUB_SHA | cut -c1-7)
+          echo "SHORT_SHA=$short_sha" >> $GITHUB_ENV
+
       - uses: actions/download-artifact@v3
         with: 
           name: ZombieSharp-build-${{ env.SHORT_SHA }}
