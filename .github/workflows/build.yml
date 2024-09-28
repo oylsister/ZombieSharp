@@ -10,34 +10,7 @@ on:
     branches: [ "main", "dev" ]
 
 jobs:
-  setup: 
-    permissions:
-      contents: write
-
-    runs-on: ubuntu-latest
-    steps:
-    - name: Get Plugins Version
-      if: ${{ github.event_name == 'push' && github.ref == 'ref/heads/main' }}
-      run: |
-        version=$(grep 'public override string ModuleVersion =>' /home/runner/work/ZombieSharp/ZombieSharp/ZombieSharp/ZombieSharp.cs | sed 's/.*=> "\(.*\)";/\1/')
-        version_under=${version// /_}
-        version_minus=${version// /-}
-        tag=$(echo $version_minus | tr '[:upper:]' '[:lower:]')
-        file_ver=$(echo $version_under | tr '[:upper:]' '[:lower:]')
-        echo "VERSION=$version" >> $GITHUB_ENV
-        echo "VERSION_UNDER=$version_under" >> $GITHUB_ENV
-        echo "VERSION_MINUS=$version_minus" >> $GITHUB_ENV
-        echo "TAG=$tag" >> $GITHUB_ENV
-        echo "FILE_VER=$file_ver" >> $GITHUB_ENV
-
-    - name: Get Commit ID
-      run: |
-        short_sha=$(echo $GITHUB_SHA | cut -c1-7)
-        echo "SHORT_SHA=$short_sha" >> $GITHUB_ENV
-
-  # build
   build:
-    needs: setup
     runs-on: ubuntu-latest
 
     steps:
@@ -52,6 +25,11 @@ jobs:
       run: dotnet build --no-restore
     - name: Test
       run: dotnet test --no-build --verbosity normal
+
+    - name: Get Commit ID
+      run: |
+        short_sha=$(echo $GITHUB_SHA | cut -c1-7)
+        echo "SHORT_SHA=$short_sha" >> $GITHUB_ENV
 
     - name: Prepare main plugin
       run: |
@@ -107,21 +85,34 @@ jobs:
 
     - uses: actions/upload-artifact@v4
       with:
-        name: ZombieSharp-build-${{env.SHORT_SHA}}
+        name: ZombieSharp-build-${{ env.SHORT_SHA }}
         path: release
   
   release:
-    needs: [ "setup", "build" ]
+    needs: "build"
     if: ${{ github.event_name == 'push' && github.ref == 'ref/heads/main' }}
-
     permissions:
       contents: write
     runs-on: ubuntu-latest
     steps:
+      - name: Get Plugins Version
+        if: ${{ github.event_name == 'push' && github.ref == 'ref/heads/main' }}
+        run: |
+          version=$(grep 'public override string ModuleVersion =>' /home/runner/work/ZombieSharp/ZombieSharp/ZombieSharp/ZombieSharp.cs | sed 's/.*=> "\(.*\)";/\1/')
+          version_under=${version// /_}
+          version_minus=${version// /-}
+          tag=$(echo $version_minus | tr '[:upper:]' '[:lower:]')
+          file_ver=$(echo $version_under | tr '[:upper:]' '[:lower:]')
+          echo "VERSION=$version" >> $GITHUB_ENV
+          echo "VERSION_UNDER=$version_under" >> $GITHUB_ENV
+          echo "VERSION_MINUS=$version_minus" >> $GITHUB_ENV
+          echo "TAG=$tag" >> $GITHUB_ENV
+          echo "FILE_VER=$file_ver" >> $GITHUB_ENV
+          
       - name: Zip File
         run: |
           cd release/
-          zip -r "zsharp_stable_${{env.FILE_VER}}.zip"
+          zip -r "zsharp_stable_${{ env.FILE_VER }}.zip"
 
       - name: Tag Check
         uses: mukunku/tag-exists-action@v1.6.0
@@ -140,5 +131,5 @@ jobs:
         with:
           tag_name: stable-${{ env.TAG }}
           name: Stable ${{ env.VERSION }}
-          files: release/zsharp_stable_${{env.FILE_VER}}.zip
+          files: release/zsharp_stable_${{ env.FILE_VER }}.zip
         
