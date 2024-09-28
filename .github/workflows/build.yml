@@ -87,8 +87,8 @@ jobs:
         mkdir -p release/addons/counterstrikesharp/dotnet/shared/Microsoft.NETCore.App/8.0.3
 
         # copy sqlite dependencies files.
-        cp /home/runner/work/StopSound/StopSound/bin/Debug/net8.0/runtimes/linux-x64/native/libe_sqlite3.so release/addons/counterstrikesharp/dotnet/shared/Microsoft.NETCore.App/8.0.3/
-        cp /home/runner/work/StopSound/StopSound/bin/Debug/net8.0/runtimes/win-x64/native/e_sqlite3.dll release/addons/counterstrikesharp/dotnet/shared/Microsoft.NETCore.App/8.0.3/
+        cp /home/runner/work/ZombieSharp/ZombieSharp/ZombieSharp/bin/Debug/net8.0/runtimes/linux-x64/native/libe_sqlite3.so release/addons/counterstrikesharp/dotnet/shared/Microsoft.NETCore.App/8.0.3/
+        cp /home/runner/work/ZombieSharp/ZombieSharp/ZombieSharp/bin/Debug/net8.0/runtimes/win-x64/native/e_sqlite3.dll release/addons/counterstrikesharp/dotnet/shared/Microsoft.NETCore.App/8.0.3/
 
     - name: Prepare API folder
       run: |
