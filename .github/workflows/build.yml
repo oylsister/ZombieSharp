@@ -94,7 +94,7 @@ jobs:
         echo "Ref: ${{ github.ref }}"
 
   release:
-    if: ${{ github.event_name == 'push' && github.ref == 'ref/heads/main' }}
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
     needs: "build"
     permissions:
       contents: write
