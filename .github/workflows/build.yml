@@ -87,7 +87,12 @@ jobs:
       with:
         name: ZombieSharp-build-${{ env.SHORT_SHA }}
         path: release
-  
+
+    - name: Check Ref
+      run: |
+        echo "Event: ${{ github.event_name }}"
+        echo "Ref: ${{ github.ref }}"
+
   release:
     if: ${{ github.event_name == 'push' && github.ref == 'ref/heads/main' }}
     needs: "build"
