@@ -2,8 +2,26 @@
 {
     public partial class ZombieSharp
     {
-        public Dictionary<CCSPlayerController, bool> _ZombiePainList = new Dictionary<CCSPlayerController, bool>();
-        public Dictionary<CCSPlayerController, bool> _ZombieMoanList = new Dictionary<CCSPlayerController, bool>();
+        public Dictionary<CCSPlayerController, double> ClientVoiceData = new Dictionary<CCSPlayerController, double>();
+        public Dictionary<CCSPlayerController, CounterStrikeSharp.API.Modules.Timers.Timer> ClientMoanTimer = new Dictionary<CCSPlayerController, CounterStrikeSharp.API.Modules.Timers.Timer>();
+
+        public void ZombieVoiceOnClientPutInServer(CCSPlayerController controller)
+        {
+            ClientVoiceData.Add(controller, 0f);
+            ClientMoanTimer.Add(controller, null);
+        }
+
+        public void ZombieVoiceOnClientDisconnect(CCSPlayerController controller)
+        {
+            if(ClientMoanTimer[controller] != null)
+                ClientMoanTimer[controller].Kill();
+
+            if(ClientVoiceData.ContainsKey(controller))
+                ClientVoiceData.Remove(controller);
+
+            if(ClientMoanTimer.ContainsKey(controller))
+                ClientMoanTimer.Remove(controller);
+        }
 
         public void ZombiePain(CCSPlayerController client)
         {
@@ -32,9 +50,9 @@
                 return;
             }
 
-            var pawn = client.PlayerPawn;
+            var pawn = client.Pawn.Get();
 
-            EmitSound(pawn.Value, sound);
+            EmitSound(pawn, sound);
         }
     }
 }

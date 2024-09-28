@@ -11,7 +11,7 @@ namespace ZombieSharp
     {
         public override string ModuleName => "Zombie Sharp";
         public override string ModuleAuthor => "Oylsister, Kurumi, Sparky";
-        public override string ModuleVersion => "1.2.4";
+        public override string ModuleVersion => "1.2.5";
         public override string ModuleDescription => "Infection/survival style gameplay for CS2 in C#";
 
         public bool ZombieSpawned;
@@ -286,6 +286,36 @@ namespace ZombieSharp
                 CheckGameStatus();
             */
 
+            if (ClientMoanTimer[client] != null)
+            {
+                ClientMoanTimer[client].Kill();
+            }
+
+            // create moan timer 
+            ClientMoanTimer[client] = AddTimer(20f, () =>
+            {
+                if (client == null)
+                {
+                    ClientMoanTimer[client].Kill();
+                    return;
+                }
+
+                if (!client.PawnIsAlive)
+                {
+                    ClientMoanTimer[client].Kill();
+                    return;
+                }
+
+                if(!IsClientZombie(client))
+                {
+                    ClientMoanTimer[client].Kill();
+                    return;
+                }
+
+                ZombieMoan(client);
+
+            }, TimerFlags.REPEAT);
+
             // if force then tell them that they has been punnished.
             if (force)
             {
@@ -525,6 +555,14 @@ namespace ZombieSharp
 
             else
                 return false;
+        }
+
+        public bool ZS_IsClientValid(CCSPlayerController controller)
+        {
+            if (ZombiePlayers.ContainsKey(controller.Slot))
+                return true;
+
+            return false;
         }
     }
 }
