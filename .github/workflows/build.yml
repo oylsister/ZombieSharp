@@ -69,7 +69,6 @@ jobs:
         cp /home/runner/work/ZombieSharp/ZombieSharp/ZombieSharp/bin/Debug/net8.0/SQLitePCLRaw.core.dll release/addons/counterstrikesharp/plugins/ZombieSharp/
         cp /home/runner/work/ZombieSharp/ZombieSharp/ZombieSharp/bin/Debug/net8.0/SQLitePCLRaw.provider.e_sqlite3.dll release/addons/counterstrikesharp/plugins/ZombieSharp/
         cp /home/runner/work/ZombieSharp/ZombieSharp/ZombieSharp/bin/Debug/net8.0/System.Configuration.ConfigurationManager.dll release/addons/counterstrikesharp/plugins/ZombieSharp/
-        cp /home/runner/work/ZombieSharp/ZombieSharp/ZombieSharp/bin/Debug/net8.0/System.Diagnostics.DiagnosticSource.dll release/addons/counterstrikesharp/plugins/ZombieSharp/
         cp /home/runner/work/ZombieSharp/ZombieSharp/ZombieSharp/bin/Debug/net8.0/System.Diagnostics.EventLog.dll release/addons/counterstrikesharp/plugins/ZombieSharp/
         cp /home/runner/work/ZombieSharp/ZombieSharp/ZombieSharp/bin/Debug/net8.0/System.IO.Pipelines.dll release/addons/counterstrikesharp/plugins/ZombieSharp/
         cp /home/runner/work/ZombieSharp/ZombieSharp/ZombieSharp/bin/Debug/net8.0/System.Security.Cryptography.ProtectedData.dll release/addons/counterstrikesharp/plugins/ZombieSharp/
