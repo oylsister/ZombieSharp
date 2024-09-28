@@ -77,7 +77,7 @@ jobs:
         cp /home/runner/work/ZombieSharp/ZombieSharp/ZombieSharp/bin/Debug/net8.0/ZombieSharp.dll release/addons/counterstrikesharp/plugins/ZombieSharp/
         cp /home/runner/work/ZombieSharp/ZombieSharp/ZombieSharp/bin/Debug/net8.0/ZombieSharp.pdb release/addons/counterstrikesharp/plugins/ZombieSharp/
 
-        cp /home/runner/work/ZombieSharp/ZombieSharp/ZombieSharp/build/addons/counterstrikesharp/plugins/ZombieSharp/lang/ release/addons/counterstrikesharp/plugins/ZombieSharp/
+        cp -r /home/runner/work/ZombieSharp/ZombieSharp/ZombieSharp/build/addons/counterstrikesharp/plugins/ZombieSharp/lang/ release/addons/counterstrikesharp/plugins/ZombieSharp/
 
         cp /home/runner/work/ZombieSharp/ZombieSharp/ZombieSharp/build/addons/counterstrikesharp/plugins/ZombieSharp/hitgroups.json release/addons/counterstrikesharp/plugins/ZombieSharp/
         cp /home/runner/work/ZombieSharp/ZombieSharp/ZombieSharp/build/addons/counterstrikesharp/plugins/ZombieSharp/playerclasses.json release/addons/counterstrikesharp/plugins/ZombieSharp/
