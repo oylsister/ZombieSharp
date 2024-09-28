@@ -10,8 +10,34 @@ on:
     branches: [ "main", "dev" ]
 
 jobs:
-  build:
+  setup: 
+    permissions:
+      contents: write
 
+    runs-on: ubuntu-latest
+    steps:
+    - name: Get Plugins Version
+      if: ${{ github.event_name == 'push' && github.ref == 'ref/heads/main' }}
+      run: |
+        version=$(grep 'public override string ModuleVersion =>' /home/runner/work/ZombieSharp/ZombieSharp/ZombieSharp/ZombieSharp.cs | sed 's/.*=> "\(.*\)";/\1/')
+        version_under=${version// /_}
+        version_minus=${version// /-}
+        tag=$(echo $version_minus | tr '[:upper:]' '[:lower:]')
+        file_ver=$(echo $version_under | tr '[:upper:]' '[:lower:]')
+        echo "VERSION=$version" >> $GITHUB_ENV
+        echo "VERSION_UNDER=$version_under" >> $GITHUB_ENV
+        echo "VERSION_MINUS=$version_minus" >> $GITHUB_ENV
+        echo "TAG=$tag" >> $GITHUB_ENV
+        echo "FILE_VER=$file_ver" >> $GITHUB_ENV
+
+    - name: Get Commit ID
+      run: |
+        short_sha=$(echo $GITHUB_SHA | cut -c1-7)
+        echo "SHORT_SHA=$short_sha" >> $GITHUB_ENV
+
+  # build
+  build:
+    needs: setup
     runs-on: ubuntu-latest
 
     steps:
@@ -26,3 +52,94 @@ jobs:
       run: dotnet build --no-restore
     - name: Test
       run: dotnet test --no-build --verbosity normal
+
+    - name: Prepare main plugin
+      run: |
+        mkdir -p release/addons/counterstrikesharp/plugins/ZombieSharp
+
+        # Copy all plugins file
+        cp /home/runner/work/ZombieSharp/ZombieSharp/ZombieSharp/bin/Debug/net8.0/Dapper.dll release/addons/counterstrikesharp/plugins/ZombieSharp/
+        cp /home/runner/work/ZombieSharp/ZombieSharp/ZombieSharp/bin/Debug/net8.0/Google.Protobuf.dll release/addons/counterstrikesharp/plugins/ZombieSharp/
+        cp /home/runner/work/ZombieSharp/ZombieSharp/ZombieSharp/bin/Debug/net8.0/IZombieSharpAPI.dll release/addons/counterstrikesharp/plugins/ZombieSharp/
+        cp /home/runner/work/ZombieSharp/ZombieSharp/ZombieSharp/bin/Debug/net8.0/IZombieSharpAPI.pdb release/addons/counterstrikesharp/plugins/ZombieSharp/
+        cp /home/runner/work/ZombieSharp/ZombieSharp/ZombieSharp/bin/Debug/net8.0/Microsoft.Data.Sqlite.dll release/addons/counterstrikesharp/plugins/ZombieSharp/
+        cp /home/runner/work/ZombieSharp/ZombieSharp/ZombieSharp/bin/Debug/net8.0/MySql.Data.dll release/addons/counterstrikesharp/plugins/ZombieSharp/
+        cp /home/runner/work/ZombieSharp/ZombieSharp/ZombieSharp/bin/Debug/net8.0/Newtonsoft.Json.dll release/addons/counterstrikesharp/plugins/ZombieSharp/
+        cp /home/runner/work/ZombieSharp/ZombieSharp/ZombieSharp/bin/Debug/net8.0/SQLitePCLRaw.batteries_v2.dll release/addons/counterstrikesharp/plugins/ZombieSharp/
+        cp /home/runner/work/ZombieSharp/ZombieSharp/ZombieSharp/bin/Debug/net8.0/SQLitePCLRaw.core.dll release/addons/counterstrikesharp/plugins/ZombieSharp/
+        cp /home/runner/work/ZombieSharp/ZombieSharp/ZombieSharp/bin/Debug/net8.0/SQLitePCLRaw.provider.e_sqlite3.dll release/addons/counterstrikesharp/plugins/ZombieSharp/
+        cp /home/runner/work/ZombieSharp/ZombieSharp/ZombieSharp/bin/Debug/net8.0/System.Configuration.ConfigurationManager.dll release/addons/counterstrikesharp/plugins/ZombieSharp/
+        cp /home/runner/work/ZombieSharp/ZombieSharp/ZombieSharp/bin/Debug/net8.0/System.Diagnostics.DiagnosticSource.dll release/addons/counterstrikesharp/plugins/ZombieSharp/
+        cp /home/runner/work/ZombieSharp/ZombieSharp/ZombieSharp/bin/Debug/net8.0/System.Diagnostics.EventLog.dll release/addons/counterstrikesharp/plugins/ZombieSharp/
+        cp /home/runner/work/ZombieSharp/ZombieSharp/ZombieSharp/bin/Debug/net8.0/System.IO.Pipelines.dll release/addons/counterstrikesharp/plugins/ZombieSharp/
+        cp /home/runner/work/ZombieSharp/ZombieSharp/ZombieSharp/bin/Debug/net8.0/System.Security.Cryptography.ProtectedData.dll release/addons/counterstrikesharp/plugins/ZombieSharp/
+        cp /home/runner/work/ZombieSharp/ZombieSharp/ZombieSharp/bin/Debug/net8.0/System.Security.Permissions.dll release/addons/counterstrikesharp/plugins/ZombieSharp/
+        cp /home/runner/work/ZombieSharp/ZombieSharp/ZombieSharp/bin/Debug/net8.0/System.Windows.Extensions.dll release/addons/counterstrikesharp/plugins/ZombieSharp/
+        cp /home/runner/work/ZombieSharp/ZombieSharp/ZombieSharp/bin/Debug/net8.0/ZombieSharp.dll release/addons/counterstrikesharp/plugins/ZombieSharp/
+        cp /home/runner/work/ZombieSharp/ZombieSharp/ZombieSharp/bin/Debug/net8.0/ZombieSharp.pdb release/addons/counterstrikesharp/plugins/ZombieSharp/
+
+        cp /home/runner/work/ZombieSharp/ZombieSharp/ZombieSharp/build/addons/counterstrikesharp/plugins/ZombieSharp/lang/ release/addons/counterstrikesharp/plugins/ZombieSharp/
+
+        cp /home/runner/work/ZombieSharp/ZombieSharp/ZombieSharp/build/addons/counterstrikesharp/plugins/ZombieSharp/hitgroups.json release/addons/counterstrikesharp/plugins/ZombieSharp/
+        cp /home/runner/work/ZombieSharp/ZombieSharp/ZombieSharp/build/addons/counterstrikesharp/plugins/ZombieSharp/playerclasses.json release/addons/counterstrikesharp/plugins/ZombieSharp/
+        cp /home/runner/work/ZombieSharp/ZombieSharp/ZombieSharp/build/addons/counterstrikesharp/plugins/ZombieSharp/weapon.json release/addons/counterstrikesharp/plugins/ZombieSharp/
+
+        # make SQLite dependencies folder.
+        mkdir -p release/addons/counterstrikesharp/dotnet/shared/Microsoft.NETCore.App/8.0.3
+
+        # copy sqlite dependencies files.
+        cp /home/runner/work/StopSound/StopSound/bin/Debug/net8.0/runtimes/linux-x64/native/libe_sqlite3.so release/addons/counterstrikesharp/dotnet/shared/Microsoft.NETCore.App/8.0.3/
+        cp /home/runner/work/StopSound/StopSound/bin/Debug/net8.0/runtimes/win-x64/native/e_sqlite3.dll release/addons/counterstrikesharp/dotnet/shared/Microsoft.NETCore.App/8.0.3/
+
+    - name: Prepare API folder
+      run: |
+        cp -r /home/runner/work/ZombieSharp/ZombieSharp/ZombieSharpAPI/bin/Debug/net8.0/ release/addons/counterstrikesharp/
+        mv release/addons/counterstrikesharp/net8.0 release/addons/counterstrikesharp/shared
+
+    - name: Prepare other file
+      run: |
+        cp -r /home/runner/work/ZombieSharp/ZombieSharp/ZombieSharp/build/cfg/ release/  
+        cp -r /home/runner/work/ZombieSharp/ZombieSharp/ZombieSharp/build/characters/ release/
+        cp -r /home/runner/work/ZombieSharp/ZombieSharp/ZombieSharp/build/soundevents/ release/
+        cp -r /home/runner/work/ZombieSharp/ZombieSharp/ZombieSharp/build/sounds/ release/
+
+        cp -r /home/runner/work/ZombieSharp/ZombieSharp/ZombieSharp/build/addons/counterstrikesharp/gamedata/ release/addons/counterstrikesharp/
+        cp -r /home/runner/work/ZombieSharp/ZombieSharp/ZombieSharp/build/addons/counterstrikesharp/configs/ release/addons/counterstrikesharp/
+
+    - uses: actions/upload-artifact@4
+      with:
+        name: ZombieSharp-build-${{env.SHORT_SHA}}
+        path: release
+  
+  release:
+    needs: [ "setup", "build" ]
+    if: ${{ github.event_name == 'push' && github.ref == 'ref/heads/main' }}
+
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Zip File
+        run: |
+          cd release/
+          zip -r "zsharp_stable_${{env.FILE_VER}}.zip"
+
+      - name: Tag Check
+        uses: mukunku/tag-exists-action@v1.6.0
+        id: check-tag
+        with: 
+          tag: stable-${{ env.TAG }}
+
+      - name: Change Tag
+        if: steps.check.tag.outputs.exists == 'true'
+        run: | 
+          echo "VERSION=${{ env.VERSION }} Hotfix" >> $GITHUB_ENV
+          cho "TAG=${{ env.TAG }}-hotfix" >> $GITHUB_ENV
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: stable-${{ env.TAG }}
+          name: Stable ${{ env.VERSION }}
+          files: release/zsharp_stable_${{env.FILE_VER}}.zip
+        
