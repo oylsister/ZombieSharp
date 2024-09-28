@@ -81,7 +81,7 @@ jobs:
 
         cp /home/runner/work/ZombieSharp/ZombieSharp/ZombieSharp/build/addons/counterstrikesharp/plugins/ZombieSharp/hitgroups.json release/addons/counterstrikesharp/plugins/ZombieSharp/
         cp /home/runner/work/ZombieSharp/ZombieSharp/ZombieSharp/build/addons/counterstrikesharp/plugins/ZombieSharp/playerclasses.json release/addons/counterstrikesharp/plugins/ZombieSharp/
-        cp /home/runner/work/ZombieSharp/ZombieSharp/ZombieSharp/build/addons/counterstrikesharp/plugins/ZombieSharp/weapon.json release/addons/counterstrikesharp/plugins/ZombieSharp/
+        cp /home/runner/work/ZombieSharp/ZombieSharp/ZombieSharp/build/addons/counterstrikesharp/plugins/ZombieSharp/weapons.json release/addons/counterstrikesharp/plugins/ZombieSharp/
 
         # make SQLite dependencies folder.
         mkdir -p release/addons/counterstrikesharp/dotnet/shared/Microsoft.NETCore.App/8.0.3
