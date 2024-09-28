@@ -107,7 +107,7 @@ jobs:
     - uses: actions/upload-artifact@v4
       with:
         name: ZombieSharp-build-${{ env.SHORT_SHA }}
-        path: release
+        path: release/
 
     - name: Check Ref
       run: |
@@ -121,6 +121,11 @@ jobs:
       contents: write
     runs-on: ubuntu-latest
     steps:   
+      - uses: actions/download-artifact@v3
+        with: 
+          name: ZombieSharp-build-${{ env.SHORT_SHA }}
+          path: release/
+
       - name: Zip File
         run: |
           cd release/
