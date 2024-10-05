@@ -354,7 +354,7 @@ namespace ZombieSharp
                     RepeatKillerOnPlayerDeath(client, attacker, weapon);
                 }
 
-                if (ClientMoanTimer[client] != null)
+                if (ClientMoanTimer.ContainsKey(client) && ClientMoanTimer[client] != null)
                 {
                     ClientMoanTimer[client].Kill();
                 }
