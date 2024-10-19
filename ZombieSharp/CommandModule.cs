@@ -312,7 +312,7 @@ namespace ZombieSharp
                 return;
             }
 
-            RespawnClient(client);
+            client.Respawn();
         }
 
         private void ScreamCommand(CCSPlayerController client, CommandInfo info)

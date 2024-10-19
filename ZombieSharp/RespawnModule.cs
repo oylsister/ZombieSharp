@@ -60,7 +60,7 @@
             foreach (var client in Utilities.GetPlayers())
             {
                 if (client.IsValid && !client.PawnIsAlive && client.TeamNum > 1)
-                    RespawnClient(client);
+                    client.Respawn();
             }
         }
     }

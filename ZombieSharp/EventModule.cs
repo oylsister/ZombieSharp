@@ -98,7 +98,7 @@ namespace ZombieSharp
                 return HookResult.Continue;
 
             if (team > (int)CsTeam.Spectator)
-                AddTimer(1.0f, () => { RespawnClient(client); });
+                AddTimer(1.0f, () => client.Respawn());
 
             return HookResult.Continue;
         }
@@ -380,7 +380,7 @@ namespace ZombieSharp
                         ClientProtected[client.Slot].Protected = true;
 
                     // Server.PrintToChatAll($"Player {client.PlayerName} should be respawn here.");
-                    RespawnClient(client);
+                    client.Respawn();
                 });
             }
         }
