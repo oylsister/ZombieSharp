@@ -8,6 +8,14 @@
 
         public Dictionary<int, RespawnProtectData> ClientProtected = new();
 
+        public void RespawnClient(CCSPlayerController client)
+        {
+            if (!client.IsValid || client.PawnIsAlive || client.TeamNum < 2)
+                return;
+
+            client.Respawn();
+        }
+
         public void RespawnTogglerSetup()
         {
             CLogicRelay relay = Utilities.CreateEntityByName<CLogicRelay>("logic_relay");

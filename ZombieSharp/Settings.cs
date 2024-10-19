@@ -20,6 +20,7 @@ namespace ZombieSharp
         public FakeConVar<bool> CVAR_RespawnProtect = new("zs_respawn_protect", "Protect Human after respawn or not", false);
         public FakeConVar<float> CVAR_RespawnProtectTime = new("zs_respawn_protect_time", "Duration of human protection after they respawned.", 5.0f, ConVarFlags.FCVAR_NONE, new RangeValidator<float>(1.0f, 50.0f));
         public FakeConVar<float> CVAR_RespawnProtectSpeed = new("zs_respawn_protect_speed", "Human Speed during protection active.", 600.0f, ConVarFlags.FCVAR_NONE, new RangeValidator<float>(300.0f, 1200.0f));
+        public FakeConVar<bool> CVAR_RespawnEnableRelay = new("zs_respawn_enable_relay", "Enable Hooking logic_relay respawn for Zombie Escape", false);
 
         public FakeConVar<float> CVAR_RepeatKillerThreshold = new("zs_repeatkiller_threshold", "Death Ratio before disable spawning entirely in that round.", 0.0f, ConVarFlags.FCVAR_NONE, new RangeValidator<float>(0, 64));
         public FakeConVar<bool> CVAR_TopDefenderEnable = new("zs_topdefender_enable", "Enable Top defender or not", true);
