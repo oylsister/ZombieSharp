@@ -209,6 +209,11 @@ namespace ZombieSharp
                     return HookResult.Continue;
             }
 
+            foreach(var client in Utilities.GetPlayers())
+            {
+                ZombiePlayers[client.Slot].IsZombie = false;
+            }
+
             AddTimer(0.1f, () =>
             {
                 ToggleRespawn(true, true);
@@ -245,9 +250,6 @@ namespace ZombieSharp
                 {
                     if (!client.IsValid)
                         continue;
-
-                    // Reset Client Status.
-                    ZombiePlayers[client.Slot].IsZombie = false;
 
                     // if they were chosen as motherzombie then let's make them not to get chosen again.
                     if (ZombiePlayers[client.Slot].MotherZombieStatus == MotherZombieFlags.CHOSEN)

@@ -78,15 +78,12 @@ namespace ZombieSharp
                 }
             }
 
-            if (ZombieSpawned)
+            if (IsClientZombie(client))
             {
-                if (IsClientZombie(client))
+                if (vdata.GearSlot != gear_slot_t.GEAR_SLOT_KNIFE)
                 {
-                    if (vdata.GearSlot != gear_slot_t.GEAR_SLOT_KNIFE)
-                    {
-                        hook.SetReturn(AcquireResult.NotAllowedByProhibition);
-                        return HookResult.Handled;
-                    }
+                    hook.SetReturn(AcquireResult.NotAllowedByProhibition);
+                    return HookResult.Handled;
                 }
             }
 
@@ -150,6 +147,9 @@ namespace ZombieSharp
 
         private HookResult OnEntityIdentityAcceptInput(DynamicHook hook)
         {
+            if (!CVAR_RespawnEnableRelay.Value)
+                return HookResult.Continue;
+
             var identity = hook.GetParam<CEntityIdentity>(0);
             var input = hook.GetParam<IntPtr>(1);
 
