@@ -42,7 +42,7 @@ dotnet build
 
 ### Installation
 1. Install a Metamod and CounterStrikeSharp with Runtime build.
-2. Drag All files in zip to ``csgo/addons/counterstrikesharp/``.
+2. Drag All files in zip to ``game/csgo``.
 3. Doing command setting and file configuration.
 4. Start server and enjoy.
 
