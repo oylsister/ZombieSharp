@@ -11,7 +11,7 @@ namespace ZombieSharp
     {
         public override string ModuleName => "Zombie Sharp";
         public override string ModuleAuthor => "Oylsister, Kurumi, Sparky";
-        public override string ModuleVersion => "1.2.6";
+        public override string ModuleVersion => "1.2.7";
         public override string ModuleDescription => "Infection/survival style gameplay for CS2 in C#";
 
         public bool ZombieSpawned;
@@ -63,6 +63,13 @@ namespace ZombieSharp
 
                 Server.ExecuteCommand("mp_ignore_round_win_conditions 0");
             }
+        }
+
+        public override void OnAllPluginsLoaded(bool hotReload)
+        {
+            Server.ExecuteCommand("bot_quota_mode fill");
+            Server.ExecuteCommand("mp_autoteambalance 0");
+            Server.ExecuteCommand("mp_limitteams 0");
         }
 
         public void InfectOnRoundFreezeEnd()

@@ -16,15 +16,21 @@ namespace ZombieSharp
 
         public async Task CreatePlayerSettings(PlayerClassDB classDB)
         {
-            await PlayerDB.ExecuteAsync("INSERT INTO `player_class` (`SteamID`, `ZClass`, `HClass`) VALUES(@SteamID, @ZClass, @HClass) ON CONFLICT(`SteamID`) DO UPDATE SET `ZClass` = @ZClass, `HClass` = @HClass;", classDB);
+            await PlayerDB.ExecuteAsync("INSERT INTO `player_class` (`SteamID`, `ZClass`, `HClass`) VALUES(@steamID, @zclass, @hclass) ON CONFLICT(`SteamID`) DO UPDATE SET `ZClass` = @zclass, `HClass` = @hclass;",
+                new
+                {
+                    steamID = classDB.SteamID,
+                    zclass = classDB.ZClass,
+                    hclass = classDB.HClass
+                });
         }
 
         public async Task<PlayerClassDB> GetPlayerSettings(string steamid)
         {
-            PlayerClassDB db = await PlayerDB.QueryFirstOrDefaultAsync<PlayerClassDB>(@"SELECT * From `player_class` WHERE `SteamID` = @steamid",
+            PlayerClassDB db = await PlayerDB.QueryFirstOrDefaultAsync<PlayerClassDB>(@"SELECT * From `player_class` WHERE `SteamID` = @Steamid",
                 new
                 {
-                    steamid
+                    Steamid = steamid
                 });
 
             return db;
@@ -32,7 +38,13 @@ namespace ZombieSharp
 
         public async Task UpdatePlayerSettings(PlayerClassDB classDB)
         {
-            await PlayerDB.ExecuteAsync("Update player_class SET ZClass = @ZClass, HClass = @HClass WHERE SteamID = @SteamID", classDB);
+            await PlayerDB.ExecuteAsync("Update player_class SET ZClass = @zclass, HClass = @hclass WHERE SteamID = @steamID", 
+                new
+                {
+                    zclass = classDB.ZClass,
+                    hclass = classDB.HClass,
+                    steamID = classDB.SteamID
+                });
         }
 
         public void PlayerSettingsOnPutInServer(CCSPlayerController client)

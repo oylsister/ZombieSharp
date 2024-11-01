@@ -153,7 +153,9 @@ namespace ZombieSharp
         private HookResult OnRoundStart(EventRoundStart @event, GameEventInfo info)
         {
             RemoveRoundObjective();
-            RespawnTogglerSetup();
+
+            if(CVAR_RespawnEnableRelay.Value)
+                RespawnTogglerSetup();
 
             Server.PrintToChatAll($" {Localizer["Prefix"]} {Localizer["Goal"]}");
 

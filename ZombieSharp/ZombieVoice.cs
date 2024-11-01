@@ -13,6 +13,9 @@
 
         public void ZombieVoiceOnClientDisconnect(CCSPlayerController controller)
         {
+            if (!ClientMoanTimer.ContainsKey(controller))
+                return;
+
             if(ClientMoanTimer[controller] != null)
                 ClientMoanTimer[controller].Kill();
 
