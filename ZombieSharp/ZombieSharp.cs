@@ -65,6 +65,13 @@ namespace ZombieSharp
             }
         }
 
+        public override void OnAllPluginsLoaded(bool hotReload)
+        {
+            Server.ExecuteCommand("bot_quota_mode fill");
+            Server.ExecuteCommand("mp_autoteambalance 0");
+            Server.ExecuteCommand("mp_limitteams 0");
+        }
+
         public void InfectOnRoundFreezeEnd()
         {
             if(g_hCountdown != null)
