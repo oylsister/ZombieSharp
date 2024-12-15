@@ -24,7 +24,7 @@ public class GameSettings
 
         var configPath = Path.Combine(ZombieSharp.ConfigPath, "gamesettings.jsonc");
 
-        if(!File.Exists(configPath))
+        if (!File.Exists(configPath))
         {
             _logger.LogCritical("[GameSettingsOnMapStart] Couldn't find a gamesettings.jsonc file!");
             return;
@@ -33,4 +33,5 @@ public class GameSettings
         _logger.LogInformation("[GameSettingsOnMapStart] Load Game settings file.");
         Settings = JsonConvert.DeserializeObject<GameConfigs>(File.ReadAllText(configPath));
     }
+}  }
 }

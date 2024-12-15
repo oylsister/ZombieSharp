@@ -3,6 +3,8 @@ using CounterStrikeSharp.API.Core;
 using Microsoft.Extensions.Logging;
 using ZombieSharp.Models;
 using ZombieSharp.Plugin;
+using ZombieSharp.Plugin.Events;
+using ZombieSharp.Plugin.Listeners;
 
 namespace ZombieSharp;
 
@@ -13,7 +15,6 @@ public class ZombieSharp : BasePlugin
     public override string ModuleAuthor => "Oylsister";
     public override string ModuleDescription => "Infection/survival style gameplay for CS2 in C#";
 
-    private Events? _event;
     private Infect? _infect;
     private Utils? _utils;
     private Hook? _hook;
@@ -40,10 +41,13 @@ public class ZombieSharp : BasePlugin
         _settings = new GameSettings(_logger);
         _weapons = new Weapons(this, _logger);
         _hook = new Hook(this, _weapons, _logger);
-        _event = new Events(this, _infect, _settings, _classes, _weapons, _logger);
+
+        this.RegisterAllListeners();
+        this.RegisterAllEventHandlers();
+
         _knockback = new Knockback(_logger);
 
-        if(hotReload)
+        if (hotReload)
         {
             _logger.LogWarning("[Load] The plugin is hotReloaded! This might cause instability to your server.");
             _settings?.GameSettingsOnMapStart();
@@ -54,7 +58,6 @@ public class ZombieSharp : BasePlugin
         Server.ExecuteCommand("sv_predictable_damage_tag_ticks 0");
 
         // initial
-        _event.EventOnLoad();
         _hook.HookOnLoad();
     }
 
@@ -64,7 +67,8 @@ public class ZombieSharp : BasePlugin
         PlayerData.PlayerClassesData = null;
         PlayerData.PlayerPurchaseCount = null;
 
-        _event?.EventOnUnload();
+        this.RemoveAllListeners();
+        this.RegisterAllEventHandlers();
         _hook?.HookOnUnload();
     }
 

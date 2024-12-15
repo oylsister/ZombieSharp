@@ -15,6 +15,6 @@ public class ZombiePlayer
         Zombie = zombie;
     }
 
-    public MotherZombieStatus MotherZombie {  get; set; } = MotherZombieStatus.NONE;
+    public MotherZombieStatus MotherZombie { get; set; } = MotherZombieStatus.NONE;
     public bool Zombie { get; set; } = false;
 }

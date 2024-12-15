@@ -32,7 +32,7 @@ public class Classes
 
         var configPath = Path.Combine(ZombieSharp.ConfigPath, "playerclasses.jsonc");
 
-        if(!File.Exists(configPath))
+        if (!File.Exists(configPath))
         {
             _logger.LogCritical("[ClassesOnMapStart] Couldn't find a playerclasses.jsonc file!");
             return;
@@ -44,13 +44,13 @@ public class Classes
         ClassesConfig = JsonConvert.DeserializeObject<Dictionary<string, ClassAttribute>>(File.ReadAllText(configPath));
 
         // settings is loaded before classes so we can get default human and zombie.
-        if(GameSettings.Settings != null)
+        if (GameSettings.Settings != null)
         {
-            if(!string.IsNullOrEmpty(GameSettings.Settings.DefaultHumanBuffer))
+            if (!string.IsNullOrEmpty(GameSettings.Settings.DefaultHumanBuffer))
             {
                 var uniqueName = GameSettings.Settings.DefaultHumanBuffer;
 
-                if(!ClassesConfig!.ContainsKey(uniqueName))
+                if (!ClassesConfig!.ContainsKey(uniqueName))
                 {
                     _logger.LogCritical("[ClassesOnMapStart] Couldn't get classes \"{0}\" from playerclasses.jsonc", uniqueName);
                 }
@@ -60,11 +60,11 @@ public class Classes
                 _logger.LogInformation("[ClassesOnMapStart] Classes {0} is default class for human", DefaultHuman.Name);
             }
 
-            if(!string.IsNullOrEmpty(GameSettings.Settings.DefaultZombieBuffer))
+            if (!string.IsNullOrEmpty(GameSettings.Settings.DefaultZombieBuffer))
             {
                 var uniqueName = GameSettings.Settings.DefaultZombieBuffer;
 
-                if(!ClassesConfig!.ContainsKey(uniqueName))
+                if (!ClassesConfig!.ContainsKey(uniqueName))
                 {
                     _logger.LogCritical("[ClassesOnMapStart] Couldn't get classes \"{0}\" from playerclasses.jsonc", uniqueName);
                 }
@@ -74,11 +74,11 @@ public class Classes
                 _logger.LogInformation("[ClassesOnMapStart] Classes {0} is default class for human", DefaultZombie.Name);
             }
 
-            if(!string.IsNullOrEmpty(GameSettings.Settings.MotherZombieBuffer))
+            if (!string.IsNullOrEmpty(GameSettings.Settings.MotherZombieBuffer))
             {
                 var uniqueName = GameSettings.Settings.MotherZombieBuffer;
 
-                if(!ClassesConfig!.ContainsKey(uniqueName))
+                if (!ClassesConfig!.ContainsKey(uniqueName))
                 {
                     _logger.LogCritical("[ClassesOnMapStart] Couldn't get classes \"{0}\" from playerclasses.jsonc", uniqueName);
                 }
@@ -88,31 +88,31 @@ public class Classes
                 _logger.LogInformation("[ClassesOnMapStart] Classes {0} is mother zombie classes.", MotherZombie.Name);
             }
 
-            if(DefaultHuman == null)
+            if (DefaultHuman == null)
             {
                 _logger.LogCritical("[ClassesOnMapStart] Human class from GameSettings is empty or null!");
             }
 
-            if(DefaultZombie == null)
+            if (DefaultZombie == null)
             {
                 _logger.LogCritical("[ClassesOnMapStart] Zombie class from GameSettings is empty or null!");
             }
 
-            if(MotherZombie == null)
+            if (MotherZombie == null)
             {
                 _logger.LogInformation("[ClassesOnMapStart] Mother Zombie class from GameSettings is empty or null, when player infect will use their selected zombie class instead.");
             }
         }
-    } 
+    }
 
     public void ClassesOnClientPutInServer(CCSPlayerController client)
     {
-        if(DefaultHuman == null || DefaultZombie == null)
+        if (DefaultHuman == null || DefaultZombie == null)
         {
             _logger.LogError("[ClassesOnClientPutInServer] Default class is null!");
         }
 
-        if(PlayerData.PlayerClassesData == null)
+        if (PlayerData.PlayerClassesData == null)
         {
             _logger.LogError("[ClassesOnClientPutInServer] PlayerClassesData is null!");
             return;
@@ -121,22 +121,22 @@ public class Classes
         PlayerData.PlayerClassesData[client].HumanClass = DefaultHuman;
         PlayerData.PlayerClassesData[client].ZombieClass = DefaultZombie;
 
-        if(PlayerData.PlayerClassesData?[client].HumanClass == null)
+        if (PlayerData.PlayerClassesData?[client].HumanClass == null)
             _logger.LogInformation("[ClassesOnClientPutInServer] {0} is not null, but client got null anyway.", DefaultHuman?.Name);
 
-        if(PlayerData.PlayerClassesData?[client].ZombieClass == null)
+        if (PlayerData.PlayerClassesData?[client].ZombieClass == null)
             _logger.LogInformation("[ClassesOnClientPutInServer] {0} is not null, but client got null anyway.", DefaultZombie?.Name);
     }
 
     public void ClassesApplyToPlayer(CCSPlayerController client, ClassAttribute? data)
     {
-        if(client == null)
+        if (client == null)
         {
             _logger.LogError("[ClassesApplyToPlayer] Player is null!");
             return;
         }
 
-        if(data == null)
+        if (data == null)
         {
             _logger.LogError("[ClassesApplyToPlayer] Class data is null!");
             return;
@@ -144,25 +144,25 @@ public class Classes
 
         var playerPawn = client.PlayerPawn.Value;
 
-        if(playerPawn == null)
+        if (playerPawn == null)
         {
             _logger.LogError("[ClassesApplyToPlayer] Player Pawn is null!");
             return;
         }
 
         // if the model is not empty string and model path is not same as current model we have.
-        if(!string.IsNullOrEmpty(data.Model))
+        if (!string.IsNullOrEmpty(data.Model))
         {
             // set it.
-            if(data.Model != "default")
+            if (data.Model != "default")
                 playerPawn.SetModel(data.Model);
 
             // change to cs2 default model blyat
             else
             {
-                if(data.Team == 0)
+                if (data.Team == 0)
                     playerPawn.SetModel("characters/models/tm_phoenix/tm_phoenix.vmdl");
-                
+
                 else
                     playerPawn.SetModel("characters/models/ctm_sas/ctm_sas.vmdl");
             }
@@ -172,7 +172,7 @@ public class Classes
         playerPawn.Health = data.Health;
 
         // if zombie then remove their kevlar
-        if(data.Team == 0)
+        if (data.Team == 0)
         {
             playerPawn.ArmorValue = 0;
             client.PawnHasHelmet = false;
@@ -187,23 +187,23 @@ public class Classes
 
     public void ClassesOnPlayerHurt(CCSPlayerController? client)
     {
-        _core?.AddTimer(0.3f, () => 
+        _core?.AddTimer(0.3f, () =>
         {
             // need to be alive
-            if(client == null || !client.PawnIsAlive)
+            if (client == null || !client.PawnIsAlive)
                 return;
 
             // prevent error obviously.
-            if(!PlayerData.PlayerClassesData!.ContainsKey(client))
+            if (!PlayerData.PlayerClassesData!.ContainsKey(client))
             {
                 return;
             }
 
-            if(PlayerData.PlayerClassesData?[client].ActiveClass == null)
+            if (PlayerData.PlayerClassesData?[client].ActiveClass == null)
                 return;
 
             // if speed is equal to 250 then we don't need this.
-            if(PlayerData.PlayerClassesData?[client].ActiveClass?.Speed == 250f)
+            if (PlayerData.PlayerClassesData?[client].ActiveClass?.Speed == 250f)
                 return;
 
             // set speed back to velomodify

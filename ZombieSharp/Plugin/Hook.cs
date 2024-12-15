@@ -38,11 +38,11 @@ public class Hook
         var method = hook.GetParam<AcquireMethod>(2);
         var client = itemService.Pawn.Value.Controller.Value?.As<CCSPlayerController>();
 
-        if(client == null)
+        if (client == null)
             return HookResult.Continue;
 
         // if client is infect and weapon is not a knife.
-        if(Infect.IsClientInfect(client) && !weapon.Name.Contains("knife"))
+        if (Infect.IsClientInfect(client) && !weapon.Name.Contains("knife"))
         {
             hook.SetReturn(AcquireResult.NotAllowedByProhibition);
             return HookResult.Handled;
@@ -52,14 +52,14 @@ public class Hook
         var purchaseEnable = GameSettings.Settings?.WeaponPurchaseEnable ?? false;
 
         // weapon restrict section.
-        if(restirctEnable)
+        if (restirctEnable)
         {
             // if player buy from menu tell them they can't.
-            if(Weapons.IsRestricted(weapon.Name))
+            if (Weapons.IsRestricted(weapon.Name))
             {
                 var attribute = Weapons.GetWeaponAttributeByEntityName(weapon.Name);
 
-                if(method == AcquireMethod.Buy)
+                if (method == AcquireMethod.Buy)
                     client.PrintToChat($" {_core.Localizer["Prefix"]} {_core.Localizer["Weapon.IsRestricted", attribute?.WeaponName!]}");
 
                 hook.SetReturn(AcquireResult.NotAllowedByProhibition);
@@ -68,11 +68,11 @@ public class Hook
 
             else
             {
-                if(method == AcquireMethod.Buy && purchaseEnable)
+                if (method == AcquireMethod.Buy && purchaseEnable)
                 {
                     var attribute = Weapons.GetWeaponAttributeByEntityName(weapon.Name);
 
-                    if(attribute != null)
+                    if (attribute != null)
                     {
                         _weapons.PurchaseWeapon(client, attribute);
                         hook.SetReturn(AcquireResult.NotAllowedByProhibition);
@@ -84,11 +84,11 @@ public class Hook
 
         else
         {
-            if(method == AcquireMethod.Buy && purchaseEnable)
+            if (method == AcquireMethod.Buy && purchaseEnable)
             {
                 var attribute = Weapons.GetWeaponAttributeByEntityName(weapon.Name);
 
-                if(attribute != null)
+                if (attribute != null)
                 {
                     _weapons.PurchaseWeapon(client, attribute);
                     hook.SetReturn(AcquireResult.NotAllowedByProhibition);
@@ -108,13 +108,14 @@ public class Hook
         var client = Utils.GetCCSPlayerController(victim);
         var attacker = Utils.GetCCSPlayerController(info.Attacker.Value);
 
-        if(client == null || attacker == null)
+        if (client == null || attacker == null)
             return HookResult.Continue;
 
         // prevent death from backstabing.
-        if(Infect.IsClientInfect(attacker) && Infect.IsClientHuman(client))
+        if (Infect.IsClientInfect(attacker) && Infect.IsClientHuman(client))
             info.Damage = 1;
 
         return HookResult.Continue;
     }
+}    }
 }

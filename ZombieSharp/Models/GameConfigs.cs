@@ -13,6 +13,6 @@ public class GameConfigs
 
     // weapons section
     public bool WeaponPurchaseEnable { get; set; } = false;
-    public bool WeaponRestrictEnable { get; set; } = true; 
+    public bool WeaponRestrictEnable { get; set; } = true;
     public bool WeaponBuyZoneOnly { get; set; } = false;
 }

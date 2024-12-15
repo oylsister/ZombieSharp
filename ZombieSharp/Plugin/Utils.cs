@@ -22,10 +22,10 @@ public class Utils
 
     public static void PrintToCenterAll(string message)
     {
-        if(string.IsNullOrEmpty(message))
+        if (string.IsNullOrEmpty(message))
             return;
 
-        foreach(var player in Utilities.GetPlayers())
+        foreach (var player in Utilities.GetPlayers())
         {
             player.PrintToCenter(message);
         }
@@ -36,10 +36,10 @@ public class Utils
         var ct = Utilities.GetPlayers().Where(player => player.TeamNum == 3 && player.PawnIsAlive).Count();
         var t = Utilities.GetPlayers().Where(player => player.TeamNum == 2 && player.PawnIsAlive).Count();
 
-        if(ct == 0 && t > 0)
+        if (ct == 0 && t > 0)
             TerminateRound(CsTeam.Terrorist);
 
-        else if(t == 0 && ct > 0)
+        else if (t == 0 && ct > 0)
             TerminateRound(CsTeam.CounterTerrorist);
     }
 
@@ -47,7 +47,7 @@ public class Utils
     {
         var gameRules = Utilities.FindAllEntitiesByDesignerName<CCSGameRulesProxy>("cs_gamerules").First().GameRules;
 
-        if(gameRules == null)
+        if (gameRules == null)
         {
             _logger?.LogError("[TerminateRound] Gamerules is invalid cannot terminated round!");
             return;
@@ -55,7 +55,7 @@ public class Utils
 
         RoundEndReason reason;
 
-        if(team == CsTeam.Terrorist)
+        if (team == CsTeam.Terrorist)
             reason = RoundEndReason.TerroristsWin;
 
         else
@@ -66,7 +66,7 @@ public class Utils
 
     public static void EmitSound(CBaseEntity entity, string soundPath, int pitch = 100, float volume = 1.0f, float deley = 0.0f)
     {
-        if(entity == null || string.IsNullOrEmpty(soundPath))
+        if (entity == null || string.IsNullOrEmpty(soundPath))
             return;
 
         CBaseEntity_EmitSoundParamsFunc.Invoke(entity, soundPath, pitch, volume, deley);
@@ -100,7 +100,7 @@ public class Utils
 
     public static string? FindWeaponItemDefinition(CBasePlayerWeapon? weapon)
     {
-        if(weapon == null)
+        if (weapon == null)
             return null;
 
         var item = (ItemDefinition)weapon.AttributeManager.Item.ItemDefinitionIndex;
@@ -137,10 +137,10 @@ public class Utils
 
     public static void DropAllWeapon(CCSPlayerController client, bool remove = false)
     {
-        if(client == null)
+        if (client == null)
             return;
 
-        foreach(var weapon in WeaponList)
+        foreach (var weapon in WeaponList)
         {
             DropWeaponByDesignName(client, weapon, remove);
         }
@@ -148,9 +148,9 @@ public class Utils
 
     public static void DropWeaponByDesignName(CCSPlayerController client, string weaponName, bool remove = false)
     {
-        if(client == null)
+        if (client == null)
             return;
-            
+
         var matchedWeapon = client.PlayerPawn.Value?.WeaponServices?.MyWeapons.Where(x => x.Value?.DesignerName == weaponName).FirstOrDefault();
 
         if (matchedWeapon != null && matchedWeapon.IsValid)
@@ -158,9 +158,10 @@ public class Utils
             client.PlayerPawn.Value!.WeaponServices!.ActiveWeapon.Raw = matchedWeapon.Raw;
 
             // set timer to remove if remove is true.
-            if(remove)
+            if (remove)
             {
-                _core?.AddTimer(1f, () => {
+                _core?.AddTimer(1f, () =>
+                {
                     matchedWeapon.Value?.AddEntityIOEvent("Kill", matchedWeapon.Value, null, "", 0.1f);
                 });
             }
@@ -171,53 +172,54 @@ public class Utils
 
     public static bool IsClientInBuyZone(CCSPlayerController client)
     {
-        if(client == null)
+        if (client == null)
             return false;
 
         return client.PlayerPawn.Value?.InBuyZone ?? false;
     }
 
-    public static List<string> WeaponList = new List<string> 
-    { 
-        "weapon_deagle", 
-        "weapon_elite", 
-        "weapon_fiveseven", 
-        "weapon_glock", 
-        "weapon_ak47", 
-        "weapon_aug", 
-        "weapon_awp", 
-        "weapon_famas", 
-        "weapon_g3sg1", 
-        "weapon_galilar", 
-        "weapon_m249", 
-        "weapon_m4a1", 
-        "weapon_mac10", 
-        "weapon_p90", 
-        "weapon_mp5sd", 
-        "weapon_ump45", 
-        "weapon_xm1014", 
-        "weapon_bizon", 
-        "weapon_mag7", 
-        "weapon_negev", 
-        "weapon_sawedoff", 
-        "weapon_tec9", 
-        "weapon_hkp2000", 
-        "weapon_mp7", 
-        "weapon_mp9", 
-        "weapon_nova", 
-        "weapon_p250", 
-        "weapon_scar20", 
-        "weapon_sg556", 
-        "weapon_ssg08", 
-        "weapon_m4a1_silencer", 
-        "weapon_usp_silencer", 
-        "weapon_cz75a", 
-        "weapon_revolver", 
-        "weapon_hegrenade", 
-        "weapon_incgrenade", 
-        "weapon_decoy", 
-        "weapon_molotov", 
-        "weapon_flashbang", 
-        "weapon_smokegrenade" 
+    public static List<string> WeaponList = new List<string>
+    {
+        "weapon_deagle",
+        "weapon_elite",
+        "weapon_fiveseven",
+        "weapon_glock",
+        "weapon_ak47",
+        "weapon_aug",
+        "weapon_awp",
+        "weapon_famas",
+        "weapon_g3sg1",
+        "weapon_galilar",
+        "weapon_m249",
+        "weapon_m4a1",
+        "weapon_mac10",
+        "weapon_p90",
+        "weapon_mp5sd",
+        "weapon_ump45",
+        "weapon_xm1014",
+        "weapon_bizon",
+        "weapon_mag7",
+        "weapon_negev",
+        "weapon_sawedoff",
+        "weapon_tec9",
+        "weapon_hkp2000",
+        "weapon_mp7",
+        "weapon_mp9",
+        "weapon_nova",
+        "weapon_p250",
+        "weapon_scar20",
+        "weapon_sg556",
+        "weapon_ssg08",
+        "weapon_m4a1_silencer",
+        "weapon_usp_silencer",
+        "weapon_cz75a",
+        "weapon_revolver",
+        "weapon_hegrenade",
+        "weapon_incgrenade",
+        "weapon_decoy",
+        "weapon_molotov",
+        "weapon_flashbang",
+        "weapon_smokegrenade"
     };
+}   };
 }
