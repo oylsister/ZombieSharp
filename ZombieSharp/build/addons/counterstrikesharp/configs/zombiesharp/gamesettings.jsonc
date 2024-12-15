@@ -1,0 +1,12 @@
+{
+    "FirstInfectionTimer": 15.0,
+    "MotherZombieRatio": 7.0,
+
+    "DefaultHumanBuffer": "human_default",
+    "DefaultZombieBuffer": "zombie_default",
+    "MotherZombieBuffer": "motherzombie",
+
+    "WeaponPurchaseEnable": true,
+    "WeaponRestrictEnable": true,
+    "WeaponBuyZoneOnly": false
+}

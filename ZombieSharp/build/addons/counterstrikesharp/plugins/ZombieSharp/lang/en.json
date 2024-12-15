@@ -1,0 +1,17 @@
+{
+    "Prefix": "{Green}[Z:Sharp]{Default}",
+
+    "Core.MustBeAlive": "You must be alive to use this feature",
+    "Core.MustBeHuman": "You must be human to use this feature",
+
+    "Infect.BecomeZombie": "You have been infected! Go pass it on to as many other players as you can.",
+    "Infect.BecomeHuman": "The merciful gods (known as admins) have resurrected your soul, find some cover!",
+    "Infect.MotherZombieReset": "Mother Zombie cycle has been reset!",
+    "Infect.GameInfo": "Current gamemode is {Olive}Humans vs. Zombies{Default}, the goal for zombies is to infect all humans by knifing them.",
+    "Infect.Countdown": "First infection start in {0} seconds",
+
+    "Weapon.IsRestricted": "Weapon {Olive}{0}{Default} is restriced.",
+    "Weapon.NotEnoughCash": "You don't have enough cash to purchase this weapon.",
+    "Weapon.PurchaseSuccess": "You have purchased weapon {Olive}{0}{Default}.",
+    "Weapon.BuyZoneOnly": "You must be in buyzone to purchase a weapon."
+}

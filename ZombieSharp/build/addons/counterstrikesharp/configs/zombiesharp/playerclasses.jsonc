@@ -1,0 +1,32 @@
+{
+    "human_default": {
+        "Name": "Default Human",
+        "Enable": true,
+        "Team": 1,
+        "Model": null,
+        "MotherZombie": false,
+        "Health": 100,
+        "Knockback": 0.0,
+        "Speed": 250.0
+    },
+    "zombie_default": {
+        "Name": "Default Zombie",
+        "Enable": true,
+        "Team": 0,
+        "Model": null,
+        "MotherZombie": false,
+        "Health": 8000,
+        "Knockback": 5.0,
+        "Speed": 250.0
+    },
+    "motherzombie": {
+        "Name": "Mother Zombie",
+        "Enable": true,
+        "Team": 1,
+        "Model": null,
+        "MotherZombie": true,
+        "Health": 16000,
+        "Knockback": 5.0,
+        "Speed": 250.0
+    }
+}
