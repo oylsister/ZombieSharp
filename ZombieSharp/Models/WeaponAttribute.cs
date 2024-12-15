@@ -14,5 +14,10 @@ public class WeaponAttribute
 
 public class PurchaseCount
 {
+    public PurchaseCount()
+    {
+        WeaponCount = new Dictionary<string, int>();
+    }
+
     public Dictionary<string, int>? WeaponCount { get; set; } = null;
 }

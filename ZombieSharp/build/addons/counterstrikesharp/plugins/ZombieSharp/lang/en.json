@@ -13,5 +13,9 @@
     "Weapon.IsRestricted": "Weapon {Olive}{0}{Default} is restriced.",
     "Weapon.NotEnoughCash": "You don't have enough cash to purchase this weapon.",
     "Weapon.PurchaseSuccess": "You have purchased weapon {Olive}{0}{Default}.",
-    "Weapon.BuyZoneOnly": "You must be in buyzone to purchase a weapon."
+    "Weapon.BuyZoneOnly": "You must be in buyzone to purchase a weapon.",
+    "Weapon.ReachMaxPurchase": "You have reached maximum purchases for this item {Olive}({0} times).",
+    "Weapon.PurchaseCount": "Purchase Limit ({0}/{1})",
+
+    "Teleport.Countdown": "Teleport in {0} seconds"
 }

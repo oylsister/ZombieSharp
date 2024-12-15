@@ -8,24 +8,15 @@ using static CounterStrikeSharp.API.Core.Listeners;
 
 namespace ZombieSharp.Plugin;
 
-public class Events
+public class Events(ZombieSharp core, Infect infect, GameSettings settings, Classes classes, Weapons weapons, ILogger<ZombieSharp> logger, Teleport teleport)
 {
-    private readonly ZombieSharp _core;
-    private readonly Infect _infect;
-    private readonly Classes _classes;
-    private readonly GameSettings _settings;
-    private readonly Weapons _weapons;
-    private readonly ILogger<ZombieSharp> _logger;
-
-    public Events(ZombieSharp core, Infect infect, GameSettings settings, Classes classes, Weapons weapons, ILogger<ZombieSharp> logger)
-    {
-        _core = core;
-        _infect = infect;
-        _settings = settings;
-        _classes = classes;
-        _weapons = weapons;
-        _logger = logger;
-    }
+    private readonly ZombieSharp _core = core;
+    private readonly Infect _infect = infect;
+    private readonly Classes _classes = classes;
+    private readonly GameSettings _settings = settings;
+    private readonly Weapons _weapons = weapons;
+    private readonly ILogger<ZombieSharp> _logger = logger;
+    private readonly Teleport _teleport = teleport;
 
     public void EventOnLoad()
     {
@@ -70,6 +61,8 @@ public class Events
 
         PlayerData.ZombiePlayerData?.Add(client, new());
         PlayerData.PlayerClassesData?.Add(client, new());
+        PlayerData.PlayerPurchaseCount?.Add(client, new());
+        PlayerData.PlayerSpawnData?.Add(client, new());
 
         _classes?.ClassesOnClientPutInServer(client);
     }
@@ -83,6 +76,8 @@ public class Events
 
         PlayerData.ZombiePlayerData?.Remove(client);
         PlayerData.PlayerClassesData?.Remove(client);
+        PlayerData.PlayerPurchaseCount?.Remove(client);
+        PlayerData.PlayerSpawnData?.Remove(client);
     }
 
     // if reload a plugin this part won't be executed until you change map;
@@ -156,6 +151,10 @@ public class Events
 
         else
             _infect.HumanizeClient(client);
+
+        // refresh purchase count here.
+        Utils.RefreshPurchaseCount(client);
+        _core.AddTimer(0.2f, () => _teleport.TeleportOnPlayerSpawn(client));
 
         return HookResult.Continue;
     }

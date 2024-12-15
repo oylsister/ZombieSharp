@@ -21,6 +21,7 @@ public class ZombieSharp : BasePlugin
     private GameSettings? _settings;
     private Weapons? _weapons;
     private Knockback? _knockback;
+    private Teleport? _teleport;
     private readonly ILogger<ZombieSharp> _logger;
 
     public ZombieSharp(ILogger<ZombieSharp> logger)
@@ -40,7 +41,8 @@ public class ZombieSharp : BasePlugin
         _settings = new GameSettings(_logger);
         _weapons = new Weapons(this, _logger);
         _hook = new Hook(this, _weapons, _logger);
-        _event = new Events(this, _infect, _settings, _classes, _weapons, _logger);
+        _teleport = new Teleport(this, _logger);
+        _event = new Events(this, _infect, _settings, _classes, _weapons, _logger, _teleport);
         _knockback = new Knockback(_logger);
 
         if(hotReload)
@@ -56,6 +58,7 @@ public class ZombieSharp : BasePlugin
         // initial
         _event.EventOnLoad();
         _hook.HookOnLoad();
+        _teleport.TeleportOnLoad();
     }
 
     public override void Unload(bool hotReload)

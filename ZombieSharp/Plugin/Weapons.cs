@@ -1,25 +1,16 @@
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Commands;
-using CounterStrikeSharp.API.Modules.Entities.Constants;
-using CounterStrikeSharp.API.Modules.Utils;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using ZombieSharp.Models;
 
 namespace ZombieSharp.Plugin;
 
-public class Weapons
+public class Weapons(ZombieSharp core, ILogger<ZombieSharp> logger)
 {
-    private readonly ZombieSharp _core;
-    private readonly ILogger<ZombieSharp> _logger;
-
-    public Weapons(ZombieSharp core, ILogger<ZombieSharp> logger)
-    {
-        _core = core;
-        _logger = logger;
-    }
-
+    private readonly ZombieSharp _core = core;
+    private readonly ILogger<ZombieSharp> _logger = logger;
     public static Dictionary<string, WeaponAttribute>? WeaponsConfig = null;
     bool weaponCommandInitialized = false;
 
@@ -82,6 +73,8 @@ public class Weapons
                 _core.AddCommand(command, $"Weapon {weapon.WeaponName} Purchase Command", WeaponPurchaseCommand);
             }
         }
+
+        weaponCommandInitialized = true;
     }
 
     [CommandHelper(0, "", CommandUsage.CLIENT_ONLY)]
@@ -143,6 +136,37 @@ public class Weapons
         }
 
         // Max Purchase section, will be added later.
+        if(attribute.MaxPurchase != 0)
+        {
+            var count = 0;
+
+            if(PlayerData.PlayerPurchaseCount == null)
+            {
+                _logger.LogError("[RefreshPurchaseCount] Player Purchase count is null!");
+                return;
+            }
+
+            if(!PlayerData.PlayerPurchaseCount.ContainsKey(client))
+            {
+                _logger.LogError("[RefreshPurchaseCount] Player {0} is not in purchase count data", client.PlayerName);
+                return;
+            }
+
+            if(PlayerData.PlayerPurchaseCount[client].WeaponCount == null)
+            {
+                _logger.LogError("[RefreshPurchaseCount] Player {0} Purchase data is null", client.PlayerName);
+                return;
+            }
+
+            if(PlayerData.PlayerPurchaseCount[client].WeaponCount!.ContainsKey(attribute.WeaponEntity!))
+                count = PlayerData.PlayerPurchaseCount[client].WeaponCount![attribute.WeaponEntity!];
+
+            if(count >= attribute.MaxPurchase)
+            {
+                client.PrintToChat($" {_core.Localizer["Prefix"]} {_core.Localizer["Weapon.ReachMaxPurchase", attribute.MaxPurchase]}");
+                return;
+            }
+        }
         
         // we need to force drop weapon first before make an purchase
         var weapons = client.PlayerPawn.Value?.WeaponServices?.MyWeapons;
@@ -169,12 +193,28 @@ public class Weapons
             }
         }
 
-        // updated their cash.
-        Server.NextFrame(() => {
+        Server.NextFrame(() => 
+        {
             // we give weapon to them this part can't be null unless server manager fucked it up.
             client.GiveNamedItem(attribute.WeaponEntity!);
-            client.PrintToChat($" {_core.Localizer["Prefix"]} {_core.Localizer["Weapon.PurchaseSuccess", attribute.WeaponName!]}");
 
+            // update purchase history
+            if(PlayerData.PlayerPurchaseCount![client].WeaponCount!.ContainsKey(attribute.WeaponEntity!))
+                PlayerData.PlayerPurchaseCount![client].WeaponCount![attribute.WeaponEntity!]++;
+
+            else
+                PlayerData.PlayerPurchaseCount?[client].WeaponCount?.Add(attribute.WeaponEntity!, 1);
+
+            var purchaseCount = PlayerData.PlayerPurchaseCount![client].WeaponCount![attribute.WeaponEntity!];
+
+            var message = $" {_core.Localizer["Prefix"]} {_core.Localizer["Weapon.PurchaseSuccess", attribute.WeaponName!]}";
+
+            if(attribute.MaxPurchase > 0)
+                message += $" {_core.Localizer["Weapon.PurchaseCount", attribute.MaxPurchase - purchaseCount, attribute.MaxPurchase]}";
+
+            client.PrintToChat($"{message}");
+
+            // updated their cash.
             client.InGameMoneyServices!.Account -= attribute.Price;
             Utilities.SetStateChanged(client, "CCSPlayerController", "m_pInGameMoneyServices");
         });

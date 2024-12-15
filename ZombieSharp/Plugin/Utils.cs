@@ -4,6 +4,7 @@ using CounterStrikeSharp.API.Modules.Entities.Constants;
 using CounterStrikeSharp.API.Modules.Memory.DynamicFunctions;
 using CounterStrikeSharp.API.Modules.Utils;
 using Microsoft.Extensions.Logging;
+using ZombieSharp.Models;
 
 namespace ZombieSharp.Plugin;
 
@@ -167,6 +168,17 @@ public class Utils
 
             client.DropActiveWeapon();
         }
+    }
+
+    public static void RefreshPurchaseCount(CCSPlayerController client)
+    {
+        if(PlayerData.PlayerPurchaseCount == null || !PlayerData.PlayerPurchaseCount.ContainsKey(client))
+        {
+            _logger?.LogError("[RefreshPurchaseCount] Player Purchase count is null or {0} is not in array", client.PlayerName);
+            return;
+        }
+        // clear them all.
+        PlayerData.PlayerPurchaseCount[client].WeaponCount?.Clear();
     }
 
     public static bool IsClientInBuyZone(CCSPlayerController client)
