@@ -11,5 +11,10 @@
     "WeaponRestrictEnable": true,
     "WeaponBuyZoneOnly": false,
 
-    "TeleportAllow": true
+    "TeleportAllow": true,
+
+    "RespawnEnable": true,
+    "RespawnDelay": 5.0,
+    "AllowRespawnJoinLate": false,
+    "RespawnTeam": 0 // 1 for human team | 0 for zombie team | 2 for player's they were before death.
 }

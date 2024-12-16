@@ -1,4 +1,7 @@
+using System.Diagnostics;
+using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Memory;
 using CounterStrikeSharp.API.Modules.Memory.DynamicFunctions;
 using CounterStrikeSharp.API.Modules.Utils;
@@ -6,22 +9,27 @@ using Microsoft.Extensions.Logging;
 
 namespace ZombieSharp.Plugin;
 
-public class Hook(ZombieSharp core, Weapons weapons, ILogger<ZombieSharp> logger)
+public class Hook(ZombieSharp core, Weapons weapons, Respawn respawn, ILogger<ZombieSharp> logger)
 {
     private readonly ZombieSharp _core = core;
     private readonly Weapons _weapons = weapons;
+    private readonly Respawn _respawn = respawn;
     private readonly ILogger<ZombieSharp> _logger = logger;
 
     public void HookOnLoad()
     {
         VirtualFunctions.CCSPlayer_ItemServices_CanAcquireFunc.Hook(OnCanAcquire, HookMode.Pre);
         VirtualFunctions.CBaseEntity_TakeDamageOldFunc.Hook(OnTakeDamage, HookMode.Pre);
+
+        _core.AddCommandListener("jointeam", OnClientJoinTeam, HookMode.Pre);
     }
 
     public void HookOnUnload()
     {
         VirtualFunctions.CCSPlayer_ItemServices_CanAcquireFunc.Unhook(OnCanAcquire, HookMode.Pre);
         VirtualFunctions.CBaseEntity_TakeDamageOldFunc.Unhook(OnTakeDamage, HookMode.Pre);
+
+        //_core.RemoveCommandListener("jointeam", OnClientJoinTeam, HookMode.Pre);
     }
 
     public HookResult OnCanAcquire(DynamicHook hook)
@@ -107,6 +115,34 @@ public class Hook(ZombieSharp core, Weapons weapons, ILogger<ZombieSharp> logger
         // prevent death from backstabing.
         if(Infect.IsClientInfect(attacker) && Infect.IsClientHuman(client))
             info.Damage = 1;
+
+        return HookResult.Continue;
+    }
+
+    public HookResult OnClientJoinTeam(CCSPlayerController? client, CommandInfo info)
+    {
+        // check for client null again.
+        if(client == null)
+            return HookResult.Continue;
+
+        //Server.PrintToChatAll($"{client.PlayerName} is doing {info.GetArg(0)} {info.GetArg(1)}");
+
+        var team = (CsTeam)int.Parse(info.GetArg(1));
+
+        // for spectator case we allow this 
+        if(team == CsTeam.Spectator)
+        {
+            if(client.PawnIsAlive)
+                client.CommitSuicide(false, true);
+
+            client.SwitchTeam(team);
+        }
+
+        else
+        {
+            if((GameSettings.Settings?.RespawnEnable ?? true) && (GameSettings.Settings?.AllowRespawnJoinLate ?? true))
+                _respawn.RespawnClient(client);
+        }
 
         return HookResult.Continue;
     }

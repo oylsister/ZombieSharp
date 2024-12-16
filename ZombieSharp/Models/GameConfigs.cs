@@ -19,4 +19,10 @@ public class GameConfigs
 
     // teleport section
     public bool TeleportAllow { get; set; } = true;
+
+    // respawn section
+    public bool RespawnEnable { get; set; } = false;
+    public float RespawnDelay { get; set; } = 5.0f;
+    public bool AllowRespawnJoinLate { get; set; } = false;
+    public int RespawTeam { get; set; } = 0;
 }

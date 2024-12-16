@@ -1,3 +1,4 @@
+using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -163,6 +164,7 @@ public class Classes(ZombieSharp core, ILogger<ZombieSharp> logger)
 
         // set player health
         playerPawn.Health = data.Health;
+        Utilities.SetStateChanged(playerPawn, "CBaseEntity", "m_iHealth");
 
         // if zombie then remove their kevlar
         if(data.Team == 0)
@@ -174,6 +176,8 @@ public class Classes(ZombieSharp core, ILogger<ZombieSharp> logger)
         // set speed 
         playerPawn.VelocityModifier = data.Speed / 250f;
 
+        Server.PrintToChatAll($"{client.PlayerName} Classes Apply reach here!");
+
         // set active player data.
         PlayerData.PlayerClassesData![client].ActiveClass = data;
     }
@@ -183,7 +187,10 @@ public class Classes(ZombieSharp core, ILogger<ZombieSharp> logger)
         _core?.AddTimer(0.3f, () => 
         {
             // need to be alive
-            if(client == null || !client.PawnIsAlive)
+            if(client == null || client.Handle == IntPtr.Zero)
+                return;
+
+            if(!client.PawnIsAlive)
                 return;
 
             // prevent error obviously.

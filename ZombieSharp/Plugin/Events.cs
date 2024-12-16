@@ -8,7 +8,7 @@ using static CounterStrikeSharp.API.Core.Listeners;
 
 namespace ZombieSharp.Plugin;
 
-public class Events(ZombieSharp core, Infect infect, GameSettings settings, Classes classes, Weapons weapons, Teleport teleport, ILogger<ZombieSharp> logger)
+public class Events(ZombieSharp core, Infect infect, GameSettings settings, Classes classes, Weapons weapons, Teleport teleport, Respawn respawn, ILogger<ZombieSharp> logger)
 {
     private readonly ZombieSharp _core = core;
     private readonly Infect _infect = infect;
@@ -17,6 +17,7 @@ public class Events(ZombieSharp core, Infect infect, GameSettings settings, Clas
     private readonly Weapons _weapons = weapons;
     private readonly ILogger<ZombieSharp> _logger = logger;
     private readonly Teleport _teleport = teleport;
+    private readonly Respawn _respawn = respawn;
 
     public void EventOnLoad()
     {
@@ -136,6 +137,8 @@ public class Events(ZombieSharp core, Infect infect, GameSettings settings, Clas
         if(Infect.IsClientHuman(attacker) && Infect.IsClientInfect(client))
             Utils.EmitSound(client, "zr.amb.zombie_die");
 
+        _respawn.RespawnOnPlayerDeath(client);
+
         return HookResult.Continue;
     }
 
@@ -147,7 +150,27 @@ public class Events(ZombieSharp core, Infect infect, GameSettings settings, Clas
             return HookResult.Continue;
 
         if(Infect.InfectHasStarted())
-            _infect.InfectClient(client);
+        {
+            var team = GameSettings.Settings?.RespawTeam ?? 0;
+
+            if(team == 0)
+                _infect.InfectClient(client);
+
+            else if(team == 1)
+                _infect.HumanizeClient(client);
+
+            // get the player team
+            else
+            {
+                // not zombie
+                if(!PlayerData.ZombiePlayerData?[client].Zombie ?? false)
+                    _infect.HumanizeClient(client);
+
+                // human
+                else
+                    _infect.InfectClient(client);
+            }
+        }
 
         else
             _infect.HumanizeClient(client);
