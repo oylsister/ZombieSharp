@@ -6,18 +6,11 @@ using Microsoft.Extensions.Logging;
 
 namespace ZombieSharp.Plugin;
 
-public class Hook
+public class Hook(ZombieSharp core, Weapons weapons, ILogger<ZombieSharp> logger)
 {
-    private readonly ZombieSharp _core;
-    private readonly Weapons _weapons;
-    private readonly ILogger<ZombieSharp> _logger;
-
-    public Hook(ZombieSharp core, Weapons weapons, ILogger<ZombieSharp> logger)
-    {
-        _core = core;
-        _weapons = weapons;
-        _logger = logger;
-    }
+    private readonly ZombieSharp _core = core;
+    private readonly Weapons _weapons = weapons;
+    private readonly ILogger<ZombieSharp> _logger = logger;
 
     public void HookOnLoad()
     {

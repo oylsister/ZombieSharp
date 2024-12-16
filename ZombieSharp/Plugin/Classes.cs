@@ -5,17 +5,10 @@ using ZombieSharp.Models;
 
 namespace ZombieSharp.Plugin;
 
-public class Classes
+public class Classes(ZombieSharp core, ILogger<ZombieSharp> logger)
 {
-    private readonly ZombieSharp _core;
-    private readonly ILogger<ZombieSharp> _logger;
-
-    public Classes(ZombieSharp core, ILogger<ZombieSharp> logger)
-    {
-        _core = core;
-        _logger = logger;
-    }
-
+    private readonly ZombieSharp _core = core;
+    private readonly ILogger<ZombieSharp> _logger = logger;
     public static Dictionary<string, ClassAttribute>? ClassesConfig = null;
 
     public static ClassAttribute? DefaultHuman = null;

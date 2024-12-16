@@ -4,15 +4,9 @@ using ZombieSharp.Models;
 
 namespace ZombieSharp.Plugin;
 
-public class GameSettings
+public class GameSettings(ILogger<ZombieSharp> logger)
 {
-    private readonly ILogger<ZombieSharp> _logger;
-
-    public GameSettings(ILogger<ZombieSharp> logger)
-    {
-        _logger = logger;
-    }
-
+    private readonly ILogger<ZombieSharp> _logger = logger;
     public static GameConfigs? Settings = null;
 
     public void GameSettingsOnMapStart()

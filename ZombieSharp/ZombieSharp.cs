@@ -42,7 +42,7 @@ public class ZombieSharp : BasePlugin
         _weapons = new Weapons(this, _logger);
         _hook = new Hook(this, _weapons, _logger);
         _teleport = new Teleport(this, _logger);
-        _event = new Events(this, _infect, _settings, _classes, _weapons, _logger, _teleport);
+        _event = new Events(this, _infect, _settings, _classes, _weapons, _teleport, _logger);
         _knockback = new Knockback(_logger);
 
         if(hotReload)

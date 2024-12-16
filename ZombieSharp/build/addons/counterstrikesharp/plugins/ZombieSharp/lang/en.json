@@ -17,5 +17,6 @@
     "Weapon.ReachMaxPurchase": "You have reached maximum purchases for this item {Olive}({0} times).",
     "Weapon.PurchaseCount": "Purchase Limit ({0}/{1})",
 
-    "Teleport.Countdown": "Teleport in {0} seconds"
+    "Teleport.Countdown": "Teleport in {0} seconds",
+    "Teleport.Success": "You have been teleported back to spawn."
 }

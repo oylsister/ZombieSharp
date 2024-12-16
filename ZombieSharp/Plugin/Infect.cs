@@ -7,19 +7,11 @@ using ZombieSharp.Models;
 
 namespace ZombieSharp.Plugin;
 
-public class Infect
+public class Infect(ZombieSharp core, ILogger<ZombieSharp> logger, Classes classes)
 {
-    private ZombieSharp _core;
-    private readonly ILogger<ZombieSharp> _logger;
-    private Classes? _classes;
-
-    public Infect(ZombieSharp core, ILogger<ZombieSharp> logger, Classes classes)
-    {
-        _core = core;
-        _logger = logger;
-        _classes = classes;
-    }
-
+    private ZombieSharp _core = core;
+    private readonly ILogger<ZombieSharp> _logger = logger;
+    private Classes? _classes = classes;
     public static bool InfectStarted = false;
     private CounterStrikeSharp.API.Modules.Timers.Timer? _firstInfection = null;
     private CounterStrikeSharp.API.Modules.Timers.Timer? _infectCountTimer = null;

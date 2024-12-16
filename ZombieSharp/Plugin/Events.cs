@@ -8,7 +8,7 @@ using static CounterStrikeSharp.API.Core.Listeners;
 
 namespace ZombieSharp.Plugin;
 
-public class Events(ZombieSharp core, Infect infect, GameSettings settings, Classes classes, Weapons weapons, ILogger<ZombieSharp> logger, Teleport teleport)
+public class Events(ZombieSharp core, Infect infect, GameSettings settings, Classes classes, Weapons weapons, Teleport teleport, ILogger<ZombieSharp> logger)
 {
     private readonly ZombieSharp _core = core;
     private readonly Infect _infect = infect;
