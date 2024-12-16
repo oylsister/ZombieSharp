@@ -5,6 +5,7 @@ public class GameConfigs
     // Infection stuff.
     public float FirstInfectionTimer { get; set; } = 15f;
     public float MotherZombieRatio { get; set; } = 7f;
+    public bool MotherZombieTeleport { get; set; } = false;
 
     // human default class stuff.
     public string? DefaultHumanBuffer { get; set; }
@@ -15,4 +16,7 @@ public class GameConfigs
     public bool WeaponPurchaseEnable { get; set; } = false;
     public bool WeaponRestrictEnable { get; set; } = true; 
     public bool WeaponBuyZoneOnly { get; set; } = false;
+
+    // teleport section
+    public bool TeleportAllow { get; set; } = true;
 }

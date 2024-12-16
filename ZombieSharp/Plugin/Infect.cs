@@ -203,8 +203,27 @@ public class Infect(ZombieSharp core, ILogger<ZombieSharp> logger, Classes class
 
         // set motherzombie status to chosen
         if(motherzombie)
+        {
             PlayerData.ZombiePlayerData[client].MotherZombie = ZombiePlayer.MotherZombieStatus.CHOSEN;
 
+            // if teleport zombie back to spawn is enabled then we teleport them back to spawn.
+            if(GameSettings.Settings?.MotherZombieTeleport ?? false)
+            {
+                Server.NextFrame(() => 
+                {
+                    var pos = PlayerData.PlayerSpawnData?[client].PlayerPosition;
+                    var angle = PlayerData.PlayerSpawnData?[client].PlayerAngle;
+
+                    if(pos == null || angle == null)
+                    {
+                        _logger.LogError("[InfectClient] Position of {0} is null!", client.PlayerName);
+                        return;
+                    }
+
+                    Teleport.TeleportClientToSpawn(client, pos, angle);
+                });
+            }
+        }
         // switch team to terrorist
         client.SwitchTeam(CsTeam.Terrorist);
 

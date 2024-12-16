@@ -1,6 +1,7 @@
 {
     "FirstInfectionTimer": 15.0,
     "MotherZombieRatio": 7.0,
+    "MotherZombieTeleport": false,
 
     "DefaultHumanBuffer": "human_default",
     "DefaultZombieBuffer": "zombie_default",
@@ -8,5 +9,7 @@
 
     "WeaponPurchaseEnable": true,
     "WeaponRestrictEnable": true,
-    "WeaponBuyZoneOnly": false
+    "WeaponBuyZoneOnly": false,
+
+    "TeleportAllow": true
 }

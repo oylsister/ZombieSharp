@@ -46,6 +46,12 @@ public class Teleport(ZombieSharp core, ILogger<ZombieSharp> logger)
     [CommandHelper(0, "", CommandUsage.CLIENT_ONLY)]
     public void TeleportCommand(CCSPlayerController? client, CommandInfo info)
     {
+        if(!GameSettings.Settings?.TeleportAllow ?? false)
+        {
+            info.ReplyToCommand($" {_core.Localizer["Prefix"]} {_core.Localizer["Core.FeatureDisbled"]}");
+            return;
+        }
+
         if(client == null || !client.PawnIsAlive)
         {
             info.ReplyToCommand($" {_core.Localizer["Prefix"]} {_core.Localizer["Core.MustBeAlive"]}");
@@ -72,11 +78,16 @@ public class Teleport(ZombieSharp core, ILogger<ZombieSharp> logger)
 
         _core.AddTimer(timer, () => 
         {
-            if(client == null || !client.PawnIsAlive)
-                return;
-
-            client.PlayerPawn.Value?.Teleport(pos, angle);
+            TeleportClientToSpawn(client, pos, angle);
             client.PrintToChat($" {_core.Localizer["Prefix"]} {_core.Localizer["Teleport.Success", timer]}");
         });
+    }
+
+    public static void TeleportClientToSpawn(CCSPlayerController client, Vector pos, QAngle angle)
+    {
+        if(client == null || !client.PawnIsAlive)
+            return;
+
+        client.PlayerPawn.Value?.Teleport(pos, angle);
     }
 }
