@@ -3,6 +3,8 @@
 
     "Core.MustBeAlive": "You must be alive to use this feature.",
     "Core.MustBeHuman": "You must be human to use this feature.",
+    "Core.MustBeDead": "You must be dead to use this feature",
+    "Core.MustBeInTeam": "You must join team to use this feature",
     "Core.FeatureDisbled": "This feature has been disabled by server.",
 
     "Infect.BecomeZombie": "You have been infected! Go pass it on to as many other players as you can.",
@@ -19,5 +21,7 @@
     "Weapon.PurchaseCount": "Purchase Limit ({0}/{1})",
 
     "Teleport.Countdown": "Teleport in {0} seconds",
-    "Teleport.Success": "You have been teleported back to spawn."
+    "Teleport.Success": "You have been teleported back to spawn.",
+
+    "Respawn.Disabled": "Currently respawn has been disabled. You will be respawned again next round."
 }

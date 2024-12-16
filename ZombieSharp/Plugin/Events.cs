@@ -1,6 +1,7 @@
 using System.Xml.Schema;
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Modules.Extensions;
 using CounterStrikeSharp.API.Modules.Utils;
 using Microsoft.Extensions.Logging;
 using ZombieSharp.Models;
@@ -125,7 +126,8 @@ public class Events(ZombieSharp core, Infect infect, GameSettings settings, Clas
     public HookResult OnPlayerDeath(EventPlayerDeath @event, GameEventInfo info)
     {
         // check the player count if there is any team that all dead.
-        Utils.CheckGameStatus();
+        if(Infect.InfectHasStarted())
+            Utils.CheckGameStatus();
 
         // play sound for zombie when killed by human.
         var client = @event.Userid;
@@ -147,6 +149,9 @@ public class Events(ZombieSharp core, Infect infect, GameSettings settings, Clas
         var client = @event.Userid;
 
         if(client == null)
+            return HookResult.Continue;
+
+        if(client.Team == CsTeam.None || client.Team == CsTeam.Spectator)
             return HookResult.Continue;
 
         if(Infect.InfectHasStarted())
@@ -190,6 +195,7 @@ public class Events(ZombieSharp core, Infect infect, GameSettings settings, Clas
 
     public HookResult OnRoundStart(EventRoundStart @event, GameEventInfo info)
     {
+        _infect.InfectKillInfectionTimer();
         Server.PrintToChatAll($" {_core.Localizer["Prefix"]} {_core.Localizer["Infect.GameInfo"]}");
         return HookResult.Continue;
     }
@@ -210,6 +216,7 @@ public class Events(ZombieSharp core, Infect infect, GameSettings settings, Clas
     public HookResult OnRoundEnd(EventRoundEnd @event, GameEventInfo info)
     {
         Infect.InfectStarted = false;
+        _infect.InfectKillInfectionTimer();
         return HookResult.Continue;
     }
 }

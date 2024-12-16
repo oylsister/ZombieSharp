@@ -1,4 +1,6 @@
 using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Modules.Commands;
+using CounterStrikeSharp.API.Modules.Utils;
 using Microsoft.Extensions.Logging;
 
 namespace ZombieSharp.Plugin;
@@ -7,6 +9,38 @@ public class Respawn(ZombieSharp core, ILogger<ZombieSharp> logger)
 {
     private readonly ZombieSharp _core = core;
     private readonly ILogger<ZombieSharp> _logger = logger;
+
+    public void RespawnOnLoad()
+    {
+        _core.AddCommand("css_zspawn", "Zspawn command obviously", ZSpawnCommand);
+    }
+
+    [CommandHelper(0, "", CommandUsage.CLIENT_ONLY)]
+    public void ZSpawnCommand(CCSPlayerController? client, CommandInfo info)
+    {
+        if(client == null)
+            return;
+
+        if(client.Team != CsTeam.Terrorist && client.Team != CsTeam.CounterTerrorist)
+        {
+            client.PrintToChat($" {_core.Localizer["Prefix"]} {_core.Localizer["Core.MustBeInTeam"]}");
+            return;
+        }
+
+        if(client.PawnIsAlive)
+        {
+            client.PrintToChat($" {_core.Localizer["Prefix"]} {_core.Localizer["Core.MustBeDead"]}");
+            return;
+        }
+
+        if(!GameSettings.Settings?.RespawnEnable ?? true)
+        {
+            client.PrintToChat($" {_core.Localizer["Prefix"]} {_core.Localizer["Respawn.Disabled"]}");
+            return;
+        }
+
+        RespawnClient(client);
+    }
 
     public void RespawnOnPlayerDeath(CCSPlayerController? client)
     {
@@ -26,6 +60,9 @@ public class Respawn(ZombieSharp core, ILogger<ZombieSharp> logger)
     public void RespawnClient(CCSPlayerController? client)
     {
         if(client == null || client.PawnIsAlive)
+            return;
+
+        if(client.Team == CsTeam.Spectator || client.Team == CsTeam.None)
             return;
 
         if(!GameSettings.Settings?.RespawnEnable ?? true)

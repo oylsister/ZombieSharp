@@ -234,7 +234,7 @@ public class Infect(ZombieSharp core, ILogger<ZombieSharp> logger, Classes class
         Utils.EmitSound(client, "zr.amb.scream");
 
         // apply class attribute.
-        Server.NextFrame(() => _classes?.ClassesApplyToPlayer(client, PlayerData.PlayerClassesData?[client].ZombieClass!));
+        _classes?.ClassesApplyToPlayer(client, PlayerData.PlayerClassesData?[client].ZombieClass!);
 
         // create fake killfeed
         if(attacker != null)
@@ -275,7 +275,7 @@ public class Infect(ZombieSharp core, ILogger<ZombieSharp> logger, Classes class
             client.PrintToChat($" {_core.Localizer["Prefix"]} {_core.Localizer["Infect.BecomeHuman"]}");
 
         // apply class attribute.
-        Server.NextFrame(() => _classes?.ClassesApplyToPlayer(client, PlayerData.PlayerClassesData?[client].HumanClass!));
+        _classes?.ClassesApplyToPlayer(client, PlayerData.PlayerClassesData?[client].HumanClass!);
     }
 
     public static bool InfectHasStarted()

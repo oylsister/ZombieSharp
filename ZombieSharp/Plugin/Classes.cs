@@ -144,39 +144,45 @@ public class Classes(ZombieSharp core, ILogger<ZombieSharp> logger)
             return;
         }
 
-        // if the model is not empty string and model path is not same as current model we have.
-        if(!string.IsNullOrEmpty(data.Model))
+        Server.NextFrame(() => 
         {
-            // set it.
-            if(data.Model != "default")
-                playerPawn.SetModel(data.Model);
-
-            // change to cs2 default model blyat
-            else
+            // if the model is not empty string and model path is not same as current model we have.
+            if(!string.IsNullOrEmpty(data.Model))
             {
-                if(data.Team == 0)
-                    playerPawn.SetModel("characters/models/tm_phoenix/tm_phoenix.vmdl");
-                
+                // set it.
+                if(data.Model != "default")
+                    playerPawn.SetModel(data.Model);
+
+                // change to cs2 default model blyat
                 else
-                    playerPawn.SetModel("characters/models/ctm_sas/ctm_sas.vmdl");
+                {
+                    if(data.Team == 0)
+                        playerPawn.SetModel("characters/models/tm_phoenix/tm_phoenix.vmdl");
+                    
+                    else
+                        playerPawn.SetModel("characters/models/ctm_sas/ctm_sas.vmdl");
+                }
             }
-        }
 
-        // set player health
-        playerPawn.Health = data.Health;
-        Utilities.SetStateChanged(playerPawn, "CBaseEntity", "m_iHealth");
+            if(data.Team == 0)
+            {
+                playerPawn.ArmorValue = 0;
+                client.PawnHasHelmet = false;
+            }
+        });
 
-        // if zombie then remove their kevlar
-        if(data.Team == 0)
-        {
-            playerPawn.ArmorValue = 0;
-            client.PawnHasHelmet = false;
-        }
+        _core.AddTimer(0.3f, () => {
+            playerPawn.Health = data.Health;
+            Utilities.SetStateChanged(playerPawn, "CBaseEntity", "m_iHealth");
+            if(data.Team == 0)
+            {
+                playerPawn.ArmorValue = 0;
+                client.PawnHasHelmet = false;
+            }
+        });
 
         // set speed 
         playerPawn.VelocityModifier = data.Speed / 250f;
-
-        Server.PrintToChatAll($"{client.PlayerName} Classes Apply reach here!");
 
         // set active player data.
         PlayerData.PlayerClassesData![client].ActiveClass = data;

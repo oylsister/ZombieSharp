@@ -29,7 +29,7 @@ public class Hook(ZombieSharp core, Weapons weapons, Respawn respawn, ILogger<Zo
         VirtualFunctions.CCSPlayer_ItemServices_CanAcquireFunc.Unhook(OnCanAcquire, HookMode.Pre);
         VirtualFunctions.CBaseEntity_TakeDamageOldFunc.Unhook(OnTakeDamage, HookMode.Pre);
 
-        //_core.RemoveCommandListener("jointeam", OnClientJoinTeam, HookMode.Pre);
+        _core.RemoveCommandListener("jointeam", OnClientJoinTeam, HookMode.Pre);
     }
 
     public HookResult OnCanAcquire(DynamicHook hook)
@@ -130,18 +130,29 @@ public class Hook(ZombieSharp core, Weapons weapons, Respawn respawn, ILogger<Zo
         var team = (CsTeam)int.Parse(info.GetArg(1));
 
         // for spectator case we allow this 
-        if(team == CsTeam.Spectator)
+        if(team == CsTeam.Spectator || team == CsTeam.None)
         {
             if(client.PawnIsAlive)
                 client.CommitSuicide(false, true);
 
-            client.SwitchTeam(team);
+            client.SwitchTeam(CsTeam.Spectator);
         }
 
         else
         {
             if((GameSettings.Settings?.RespawnEnable ?? true) && (GameSettings.Settings?.AllowRespawnJoinLate ?? true))
-                _respawn.RespawnClient(client);
+            {
+                if(team == client.Team)
+                {
+                    client.PrintToChat("You're choosing the same team!");
+                    return HookResult.Continue;
+                }
+
+                if(client.PawnIsAlive)
+                    client.CommitSuicide(false, true);
+
+                client.SwitchTeam(team);
+            }
         }
 
         return HookResult.Continue;

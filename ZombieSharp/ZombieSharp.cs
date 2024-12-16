@@ -61,6 +61,7 @@ public class ZombieSharp : BasePlugin
         _event.EventOnLoad();
         _hook.HookOnLoad();
         _teleport.TeleportOnLoad();
+        _respawn.RespawnOnLoad();
     }
 
     public override void Unload(bool hotReload)
