@@ -20,7 +20,7 @@ public class Teleport(ZombieSharp core, ILogger<ZombieSharp> logger)
 
     public void TeleportOnPlayerSpawn(CCSPlayerController client)
     {
-        if(client == null || !client.PawnIsAlive)
+        if(client == null || !Utils.IsPlayerAlive(client))
             return;
 
         if(PlayerData.PlayerSpawnData == null)
@@ -52,7 +52,7 @@ public class Teleport(ZombieSharp core, ILogger<ZombieSharp> logger)
             return;
         }
 
-        if(client == null || !client.PawnIsAlive)
+        if(client == null || !Utils.IsPlayerAlive(client))
         {
             info.ReplyToCommand($" {_core.Localizer["Prefix"]} {_core.Localizer["Core.MustBeAlive"]}");
             return;
@@ -85,7 +85,7 @@ public class Teleport(ZombieSharp core, ILogger<ZombieSharp> logger)
 
     public static void TeleportClientToSpawn(CCSPlayerController client, Vector pos, QAngle angle)
     {
-        if(client == null || !client.PawnIsAlive)
+        if(client == null || !Utils.IsPlayerAlive(client))
             return;
 
         client.PlayerPawn.Value?.Teleport(pos, angle);

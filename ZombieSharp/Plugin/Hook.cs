@@ -132,7 +132,7 @@ public class Hook(ZombieSharp core, Weapons weapons, Respawn respawn, ILogger<Zo
         // for spectator case we allow this 
         if(team == CsTeam.Spectator || team == CsTeam.None)
         {
-            if(client.PawnIsAlive)
+            if(Utils.IsPlayerAlive(client))
                 client.CommitSuicide(false, true);
 
             client.SwitchTeam(CsTeam.Spectator);
@@ -148,7 +148,7 @@ public class Hook(ZombieSharp core, Weapons weapons, Respawn respawn, ILogger<Zo
                     return HookResult.Continue;
                 }
 
-                if(client.PawnIsAlive)
+                if(Utils.IsPlayerAlive(client))
                     client.CommitSuicide(false, true);
 
                 client.SwitchTeam(team);

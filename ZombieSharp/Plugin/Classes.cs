@@ -163,7 +163,7 @@ public class Classes(ZombieSharp core, ILogger<ZombieSharp> logger)
         Server.NextFrame(() => 
         {
             // if the model is not empty string and model path is not same as current model we have.
-            if(!string.IsNullOrEmpty(data.Model))
+            if(!string.IsNullOrEmpty(data.Model) && playerPawn.IsValid)
             {
                 // set it.
                 if(data.Model != "default")
@@ -234,7 +234,7 @@ public class Classes(ZombieSharp core, ILogger<ZombieSharp> logger)
             if(client == null || client.Handle == IntPtr.Zero)
                 return;
 
-            if(!client.PawnIsAlive)
+            if(!Utils.IsPlayerAlive(client))
                 return;
 
             // prevent error obviously.

@@ -198,6 +198,12 @@ public class Infect(ZombieSharp core, ILogger<ZombieSharp> logger, Classes class
             return;
         }
 
+        if(!PlayerData.ZombiePlayerData.ContainsKey(client))
+        {
+            _logger.LogCritical("[InfectClient] client is not in ZombiePlayersData!");
+            return;
+        }
+
         // set player zombie to true.
         PlayerData.ZombiePlayerData[client].Zombie = true;
 
@@ -260,7 +266,13 @@ public class Infect(ZombieSharp core, ILogger<ZombieSharp> logger, Classes class
     {
         if(PlayerData.ZombiePlayerData == null)
         {
-            _logger.LogCritical("[InfectClient] ZombiePlayers data is null!");
+            _logger.LogCritical("[HumanizeClient] ZombiePlayers data is null!");
+            return;
+        }
+
+        if(!PlayerData.ZombiePlayerData.ContainsKey(client))
+        {
+            _logger.LogCritical("[HumanizeClient] client is not in ZombiePlayersData!");
             return;
         }
         

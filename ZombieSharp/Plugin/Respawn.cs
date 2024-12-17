@@ -27,7 +27,7 @@ public class Respawn(ZombieSharp core, ILogger<ZombieSharp> logger)
             return;
         }
 
-        if(client.PawnIsAlive)
+        if(Utils.IsPlayerAlive(client))
         {
             client.PrintToChat($" {_core.Localizer["Prefix"]} {_core.Localizer["Core.MustBeDead"]}");
             return;
@@ -44,7 +44,7 @@ public class Respawn(ZombieSharp core, ILogger<ZombieSharp> logger)
 
     public void RespawnOnPlayerDeath(CCSPlayerController? client)
     {
-        if(client == null || !client.PawnIsAlive)
+        if(client == null || !Utils.IsPlayerAlive(client))
         {
             _logger.LogCritical("[RespawnOnPlayerDeath] client {0} is null or not alive", client?.PlayerName ?? "Unnamed");
             return;
@@ -59,7 +59,10 @@ public class Respawn(ZombieSharp core, ILogger<ZombieSharp> logger)
 
     public void RespawnClient(CCSPlayerController? client)
     {
-        if(client == null || client.PawnIsAlive)
+        if(client == null || client.Handle == IntPtr.Zero)
+            return;
+
+        if(Utils.IsPlayerAlive(client))
             return;
 
         if(client.Team == CsTeam.Spectator || client.Team == CsTeam.None)

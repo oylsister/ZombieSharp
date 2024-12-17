@@ -189,6 +189,20 @@ public class Utils
         return client.PlayerPawn.Value?.InBuyZone ?? false;
     }
 
+    public static bool IsPlayerAlive(CCSPlayerController client)
+    {
+        if(client == null)
+            return false;
+
+        if(client.Handle == IntPtr.Zero)
+        {
+            _logger?.LogError("[IsPlayerAlive] Client is invalid pointer!");
+            return false;
+        }
+
+        return client.PawnIsAlive;
+    }
+
     public static ClassAttribute? GetRandomPlayerClasses(int team)
     {
         if(Classes.ClassesConfig == null)

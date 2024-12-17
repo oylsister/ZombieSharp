@@ -99,7 +99,7 @@ public class Weapons(ZombieSharp core, ILogger<ZombieSharp> logger)
             return;
 
         // if not alive.
-        if(!client.PawnIsAlive)
+        if(!Utils.IsPlayerAlive(client))
         {
             client.PrintToChat($" {_core.Localizer["Prefix"]} {_core.Localizer["Core.MustBeAlive"]}");
             return;
