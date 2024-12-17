@@ -56,6 +56,8 @@ public class ZombieSharp : BasePlugin
         }
 
         Server.ExecuteCommand("sv_predictable_damage_tag_ticks 0");
+        Server.ExecuteCommand("mp_ignore_round_win_conditions 1");
+        Server.ExecuteCommand("mp_give_player_c4 0");
 
         // initial
         _event.EventOnLoad();

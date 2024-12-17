@@ -88,7 +88,10 @@ public class Events(ZombieSharp core, Infect infect, GameSettings settings, Clas
         _settings.GameSettingsOnMapStart();
         _classes.ClassesOnMapStart();
         _weapons.WeaponsOnMapStart();
+        
         Server.ExecuteCommand("sv_predictable_damage_tag_ticks 0");
+        Server.ExecuteCommand("mp_ignore_round_win_conditions 1");
+        Server.ExecuteCommand("mp_give_player_c4 0");
     }
 
     public void OnPrecahceResources(ResourceManifest manifest)
@@ -151,6 +154,7 @@ public class Events(ZombieSharp core, Infect infect, GameSettings settings, Clas
         if(client == null)
             return HookResult.Continue;
 
+        // when player join server this automatically trigger so we have to prevent this so they can switch team later.
         if(client.Team == CsTeam.None || client.Team == CsTeam.Spectator)
             return HookResult.Continue;
 
