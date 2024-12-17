@@ -50,9 +50,9 @@ public class ZombieSharp : BasePlugin
         if(hotReload)
         {
             _logger.LogWarning("[Load] The plugin is hotReloaded! This might cause instability to your server.");
-            _settings?.GameSettingsOnMapStart();
-            _classes?.ClassesOnMapStart();
-            _weapons?.WeaponsOnMapStart();
+            _settings.GameSettingsOnMapStart();
+            _classes.ClassesOnMapStart();
+            _weapons.WeaponsOnMapStart();
         }
 
         Server.ExecuteCommand("sv_predictable_damage_tag_ticks 0");
@@ -64,6 +64,7 @@ public class ZombieSharp : BasePlugin
         _hook.HookOnLoad();
         _teleport.TeleportOnLoad();
         _respawn.RespawnOnLoad();
+        _classes.ClassesOnLoad();
     }
 
     public override void Unload(bool hotReload)

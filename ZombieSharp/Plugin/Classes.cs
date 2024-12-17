@@ -1,5 +1,7 @@
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Modules.Commands;
+using CounterStrikeSharp.API.Modules.Menu;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using ZombieSharp.Models;
@@ -10,11 +12,16 @@ public class Classes(ZombieSharp core, ILogger<ZombieSharp> logger)
 {
     private readonly ZombieSharp _core = core;
     private readonly ILogger<ZombieSharp> _logger = logger;
-    public static Dictionary<string, ClassAttribute>? ClassesConfig = null;
+    public static Dictionary<string, ClassAttribute>? ClassesConfig = [];
 
     public static ClassAttribute? DefaultHuman = null;
     public static ClassAttribute? DefaultZombie = null;
     public static ClassAttribute? MotherZombie = null;
+
+    public void ClassesOnLoad()
+    {
+        _core.AddCommand("css_zclass", "Select Class Menu Command", ClassesMainMenuCommand);
+    }
 
     public void ClassesOnMapStart()
     {
@@ -215,5 +222,75 @@ public class Classes(ZombieSharp core, ILogger<ZombieSharp> logger)
             // set speed back to velomodify
             client.PlayerPawn.Value!.VelocityModifier = PlayerData.PlayerClassesData![client].ActiveClass!.Speed / 250f;
         });
+    }
+
+    // CLASSES MENU
+    [CommandHelper(0, "", CommandUsage.CLIENT_ONLY)]
+    public void ClassesMainMenuCommand(CCSPlayerController? client, CommandInfo? info)
+    {
+        if(client == null)
+            return;
+
+        if(!PlayerData.PlayerClassesData?.ContainsKey(client) ?? false)
+        {
+            _logger.LogError("[ClassesMenuCommand] {0} is not in PlayerClassesData!", client.PlayerName);
+            return;
+        }
+
+        var menu = new ChatMenu($" {_core.Localizer["Prefix"]} {_core.Localizer["Classes.MainMenu"]}");
+        menu.AddMenuOption(_core.Localizer["Classes.MainMenu.Zombie"], (client, option) => ClassesSelectMenu(client, 0));
+        menu.AddMenuOption(_core.Localizer["Classes.MainMenu.Human"], (client, option) => ClassesSelectMenu(client, 1));
+        MenuManager.OpenChatMenu(client, menu);
+    }
+
+    public void ClassesSelectMenu(CCSPlayerController client, int team)
+    {
+        if(ClassesConfig == null)
+        {
+            _logger.LogError("[ClassesSelectMenu] ClassesConfig is null!");
+            return;
+        }
+
+        string title;
+
+        if (team == 0)
+            title = $" {_core.Localizer["Prefix"]} {_core.Localizer["Classes.Select.Zombie"]}";
+
+        else
+            title = $" {_core.Localizer["Prefix"]} {_core.Localizer["Classes.Select.Human"]}";
+
+        var selectmenu = new ChatMenu(title);
+        var menuhandle = (CCSPlayerController client, ChatMenuOption option) =>
+        {
+            if (option.Text == "Back")
+            {
+                ClassesMainMenuCommand(client, null);
+                return;
+            }
+
+            if (team == 0)
+                PlayerData.PlayerClassesData![client].ZombieClass = ClassesConfig.FirstOrDefault(x => x.Value.Name == option.Text).Value;
+
+            else
+                PlayerData.PlayerClassesData![client].HumanClass = ClassesConfig.FirstOrDefault(x => x.Value.Name == option.Text).Value;
+
+            client.PrintToChat($" {_core.Localizer["Prefix"]} {_core.Localizer["Classes.SelectSuccess"]}");
+            MenuManager.CloseActiveMenu(client);
+        };
+
+        foreach (var playerclass in ClassesConfig)
+        {
+            if (playerclass.Value.Team == team)
+            {
+                bool alreadyselected = playerclass.Value == PlayerData.PlayerClassesData?[client].HumanClass || playerclass.Value == PlayerData.PlayerClassesData?[client].ZombieClass;
+                bool motherzombie = playerclass.Value.MotherZombie;
+                bool disable = !playerclass.Value.Enable;
+
+                selectmenu.AddMenuOption(playerclass.Value.Name!, menuhandle, alreadyselected || motherzombie || disable);
+            }
+        }
+
+        selectmenu.AddMenuOption("Back", menuhandle);
+        MenuManager.OpenChatMenu(client, selectmenu);
     }
 }

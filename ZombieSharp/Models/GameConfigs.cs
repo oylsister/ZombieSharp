@@ -11,6 +11,8 @@ public class GameConfigs
     public string? DefaultHumanBuffer { get; set; }
     public string? DefaultZombieBuffer { get; set; }
     public string? MotherZombieBuffer { get; set; }
+    public bool RandomClassesOnConnect { get; set; } = true;
+    public bool RandomClassesOnSpawn { get; set; } = false;
 
     // weapons section
     public bool WeaponPurchaseEnable { get; set; } = false;

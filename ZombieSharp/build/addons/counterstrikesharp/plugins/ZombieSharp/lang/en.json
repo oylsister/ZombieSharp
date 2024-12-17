@@ -23,5 +23,12 @@
     "Teleport.Countdown": "Teleport in {0} seconds",
     "Teleport.Success": "You have been teleported back to spawn.",
 
-    "Respawn.Disabled": "Currently respawn has been disabled. You will be respawned again next round."
+    "Respawn.Disabled": "Currently respawn has been disabled. You will be respawned again next round.",
+
+    "Classes.MainMenu": "Player Classes Menu",
+    "Classes.MainMenu.Zombie": "Zombie Classes",
+    "Classes.MainMenu.Human": "Human Classes",
+    "Classes.Select.Zombie": "Zombie Classes Menu",
+    "Classes.Select.Human": "Human Classes Menu",
+    "Classes.SelectSuccess": "You have selected a new player classes, this will be updated on next round."
 }
