@@ -6,6 +6,8 @@
     "DefaultHumanBuffer": "human_default",
     "DefaultZombieBuffer": "zombie_default",
     "MotherZombieBuffer": "motherzombie",
+    "RandomClassesOnConnect": false,
+    "RandomClassesOnSpawn": true,
 
     "WeaponPurchaseEnable": true,
     "WeaponRestrictEnable": true,

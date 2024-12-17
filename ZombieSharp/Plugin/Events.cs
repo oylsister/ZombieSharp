@@ -158,6 +158,8 @@ public class Events(ZombieSharp core, Infect infect, GameSettings settings, Clas
         if(client.Team == CsTeam.None || client.Team == CsTeam.Spectator)
             return HookResult.Continue;
 
+        _classes.ClassesOnPlayerSpawn(client);
+
         if(Infect.InfectHasStarted())
         {
             var team = GameSettings.Settings?.RespawTeam ?? 0;

@@ -189,6 +189,41 @@ public class Utils
         return client.PlayerPawn.Value?.InBuyZone ?? false;
     }
 
+    public static ClassAttribute? GetRandomPlayerClasses(int team)
+    {
+        if(Classes.ClassesConfig == null)
+        {
+            _logger?.LogError("[GetRandomPlayerClasses] ClassesConfig is null!");
+            return null;
+        }
+
+        List<ClassAttribute> classes = [];
+
+        foreach(var playerClasses in Classes.ClassesConfig)
+        {
+            if(playerClasses.Value.Team == team && playerClasses.Value.Enable)
+                classes.Add(playerClasses.Value);
+        }
+
+        if(classes.Count <= 0)
+        {
+            _logger?.LogError("[GetRandomPlayerClasses] Can't get one from it since it's empty!");
+            return null;
+        }
+
+        return GetRandomItem(classes);
+    }
+
+    public static T GetRandomItem<T>(List<T> list) 
+    { 
+        // Create a new Random instance 
+        Random random = new Random(); 
+        // Generate a random index 
+        int index = random.Next(list.Count); 
+        // Return the item at the random index 
+        return list[index];
+    }
+
     public static List<string> WeaponList = new List<string> 
     { 
         "weapon_deagle", 

@@ -119,8 +119,17 @@ public class Classes(ZombieSharp core, ILogger<ZombieSharp> logger)
             return;
         }
 
-        PlayerData.PlayerClassesData[client].HumanClass = DefaultHuman;
-        PlayerData.PlayerClassesData[client].ZombieClass = DefaultZombie;
+        if(GameSettings.Settings?.RandomClassesOnConnect ?? false)
+        {
+            PlayerData.PlayerClassesData[client].HumanClass = Utils.GetRandomPlayerClasses(1);
+            PlayerData.PlayerClassesData[client].ZombieClass = Utils.GetRandomPlayerClasses(0);
+        }
+
+        else
+        {
+            PlayerData.PlayerClassesData[client].HumanClass = DefaultHuman;
+            PlayerData.PlayerClassesData[client].ZombieClass = DefaultZombie;
+        }
 
         if(PlayerData.PlayerClassesData?[client].HumanClass == null)
             _logger.LogInformation("[ClassesOnClientPutInServer] {0} is not null, but client got null anyway.", DefaultHuman?.Name);
@@ -193,6 +202,28 @@ public class Classes(ZombieSharp core, ILogger<ZombieSharp> logger)
 
         // set active player data.
         PlayerData.PlayerClassesData![client].ActiveClass = data;
+    }
+
+    public void ClassesOnPlayerSpawn(CCSPlayerController? client)
+    {
+        if(client == null)
+            return;
+            
+        if(PlayerData.PlayerClassesData == null)
+        {
+            return;
+        }
+
+        if(!PlayerData.PlayerClassesData!.ContainsKey(client))
+        {
+            return;
+        }
+
+        if(GameSettings.Settings?.RandomClassesOnSpawn ?? false)
+        {
+            PlayerData.PlayerClassesData[client].HumanClass = Utils.GetRandomPlayerClasses(1);
+            PlayerData.PlayerClassesData[client].ZombieClass = Utils.GetRandomPlayerClasses(0);
+        }
     }
 
     public void ClassesOnPlayerHurt(CCSPlayerController? client)
