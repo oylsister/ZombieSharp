@@ -4,14 +4,16 @@ using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Menu;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using ZombieSharp.Database;
 using ZombieSharp.Models;
 
 namespace ZombieSharp.Plugin;
 
-public class Classes(ZombieSharp core, ILogger<ZombieSharp> logger)
+public class Classes(ZombieSharp core, DatabaseMain database, ILogger<ZombieSharp> logger)
 {
     private readonly ZombieSharp _core = core;
     private readonly ILogger<ZombieSharp> _logger = logger;
+    private readonly DatabaseMain _database = database;
     public static Dictionary<string, ClassAttribute>? ClassesConfig = [];
 
     public static ClassAttribute? DefaultHuman = null;
@@ -129,6 +131,29 @@ public class Classes(ZombieSharp core, ILogger<ZombieSharp> logger)
         {
             PlayerData.PlayerClassesData[client].HumanClass = DefaultHuman;
             PlayerData.PlayerClassesData[client].ZombieClass = DefaultZombie;
+
+            if(!client.IsBot)
+            {
+                var steamid = client.AuthorizedSteamID?.SteamId64;
+                _logger.LogInformation("[ClassesOnClientPutInServer] client {0} join with steamid: {1}", client.PlayerName, steamid);
+
+                if(steamid == null)
+                {
+                    _logger.LogError("[ClassesOnClientPutInServer] client {0} steam id is null!", client.PlayerName);
+                    return;
+                }
+
+                Task.Run(async () => 
+                { 
+                    _logger.LogInformation("[ClassesOnClientPutInServer] Getting data of {0}", steamid);
+                    var data = await _database.GetPlayerClassData((ulong)steamid);
+
+                    if(data == null)
+                    {
+                        await _database.InsertPlayerClassData((ulong)steamid, PlayerData.PlayerClassesData[client]);
+                    }
+                });
+            }
         }
 
         if(PlayerData.PlayerClassesData?[client].HumanClass == null)
@@ -307,6 +332,17 @@ public class Classes(ZombieSharp core, ILogger<ZombieSharp> logger)
 
             client.PrintToChat($" {_core.Localizer["Prefix"]} {_core.Localizer["Classes.SelectSuccess"]}");
             MenuManager.CloseActiveMenu(client);
+
+            // update their player class into database
+            var steamid = client.AuthorizedSteamID?.SteamId64;
+
+            if(steamid == null)
+            {
+                _logger.LogError("[ClassesMenuCommand] SteamID of {0} is null!", client.PlayerName);
+                return;
+            }
+
+            Task.Run(async () => await _database.InsertPlayerClassData((ulong)steamid, PlayerData.PlayerClassesData![client]));
         };
 
         foreach (var playerclass in ClassesConfig)

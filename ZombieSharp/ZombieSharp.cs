@@ -1,6 +1,9 @@
 ﻿using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
+using Microsoft.Data.Sqlite;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using ZombieSharp.Database;
 using ZombieSharp.Models;
 using ZombieSharp.Plugin;
 
@@ -23,6 +26,7 @@ public class ZombieSharp : BasePlugin
     private Knockback? _knockback;
     private Teleport? _teleport;
     private Respawn? _respawn;
+    private DatabaseMain? _database;
     private readonly ILogger<ZombieSharp> _logger;
 
     public ZombieSharp(ILogger<ZombieSharp> logger)
@@ -36,7 +40,8 @@ public class ZombieSharp : BasePlugin
         PlayerData.PlayerClassesData = new();
         PlayerData.PlayerPurchaseCount = new();
 
-        _classes = new Classes(this, _logger);
+        _database = new DatabaseMain(this, _logger);
+        _classes = new Classes(this, _database, _logger);
         _infect = new Infect(this, _logger, _classes);
         _utils = new Utils(this, _logger);
         _settings = new GameSettings(_logger);
@@ -65,6 +70,8 @@ public class ZombieSharp : BasePlugin
         _teleport.TeleportOnLoad();
         _respawn.RespawnOnLoad();
         _classes.ClassesOnLoad();
+
+        _database.DatabaseOnLoad().Wait();
     }
 
     public override void Unload(bool hotReload)
@@ -75,6 +82,7 @@ public class ZombieSharp : BasePlugin
 
         _event?.EventOnUnload();
         _hook?.HookOnUnload();
+        _database?.DatabaseOnUnload();
     }
 
     public static string ConfigPath = Path.Combine(Application.RootDirectory, "configs/zombiesharp/");

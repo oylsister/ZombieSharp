@@ -67,12 +67,6 @@ public class Events(ZombieSharp core, Infect infect, GameSettings settings, Clas
         PlayerData.PlayerSpawnData?.Add(client, new());
 
         _classes?.ClassesOnClientPutInServer(client);
-
-        if(!client.IsBot)
-        {
-            var id = client.SteamID;
-            _logger.LogInformation("client {0} join with steamid: {1}", client.PlayerName, id);
-        }
     }
 
     public void OnClientDisconnect(int playerslot)
