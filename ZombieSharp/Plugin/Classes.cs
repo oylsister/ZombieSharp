@@ -135,9 +135,9 @@ public class Classes(ZombieSharp core, DatabaseMain database, ILogger<ZombieShar
             if(!client.IsBot)
             {
                 var steamid = client.AuthorizedSteamID?.SteamId64;
-                _logger.LogInformation("[ClassesOnClientPutInServer] client {0} join with steamid: {1}", client.PlayerName, steamid);
+                //_logger.LogInformation("[ClassesOnClientPutInServer] client {0} join with steamid: {1}", client.PlayerName, steamid);
 
-                if(steamid == null)
+                if(steamid == null || !steamid.HasValue)
                 {
                     _logger.LogError("[ClassesOnClientPutInServer] client {0} steam id is null!", client.PlayerName);
                     return;
@@ -145,12 +145,19 @@ public class Classes(ZombieSharp core, DatabaseMain database, ILogger<ZombieShar
 
                 Task.Run(async () => 
                 { 
-                    _logger.LogInformation("[ClassesOnClientPutInServer] Getting data of {0}", steamid);
-                    var data = await _database.GetPlayerClassData((ulong)steamid);
+                    _logger.LogInformation("[ClassesOnClientPutInServer] Getting data of {0}", steamid.Value);
+                    var data = await _database.GetPlayerClassData(steamid.Value);
 
                     if(data == null)
                     {
-                        await _database.InsertPlayerClassData((ulong)steamid, PlayerData.PlayerClassesData[client]);
+                        await _database.InsertPlayerClassData(steamid.Value, PlayerData.PlayerClassesData[client]);
+                        _logger.LogInformation("[ClassesOnClientPutInServer] Client {0} data is null, initialize a new one.", steamid.Value);
+                    }
+
+                    else
+                    {
+                        PlayerData.PlayerClassesData[client].HumanClass = data.HumanClass;
+                        PlayerData.PlayerClassesData[client].ZombieClass = data.ZombieClass;
                     }
                 });
             }
@@ -336,13 +343,13 @@ public class Classes(ZombieSharp core, DatabaseMain database, ILogger<ZombieShar
             // update their player class into database
             var steamid = client.AuthorizedSteamID?.SteamId64;
 
-            if(steamid == null)
+            if(steamid == null || !steamid.HasValue)
             {
                 _logger.LogError("[ClassesMenuCommand] SteamID of {0} is null!", client.PlayerName);
                 return;
             }
 
-            Task.Run(async () => await _database.InsertPlayerClassData((ulong)steamid, PlayerData.PlayerClassesData![client]));
+            Task.Run(async () => await _database.InsertPlayerClassData(steamid.Value, PlayerData.PlayerClassesData![client]));
         };
 
         foreach (var playerclass in ClassesConfig)

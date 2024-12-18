@@ -19,7 +19,7 @@ public class DatabaseMain(ZombieSharp core, ILogger<ZombieSharp> logger)
 
         _logger.LogInformation("[DatabaseOnLoad] Database has been created. to {0}", Path.Join(_core.ModuleDirectory, "zsharpdatabase.db"));
 
-        await _connection.ExecuteAsync(@"CREATE TABLE IF NOT EXISTS player_classes (player_auth INT PRIMARY KEY, zombie_class VARCHAR(64), human_class VARCHAR(64));");
+        await _connection.ExecuteAsync(@"CREATE TABLE IF NOT EXISTS player_classes (player_auth TEXT PRIMARY KEY, zombie_class VARCHAR(64), human_class VARCHAR(64));");
     }
 
     public void DatabaseOnUnload()
@@ -43,10 +43,12 @@ public class DatabaseMain(ZombieSharp core, ILogger<ZombieSharp> logger)
 
         var query = @"SELECT * FROM player_classes WHERE player_auth = @Auth;";
         var reader = await _connection.ExecuteReaderAsync(query, new {
-            Auth = steamid
+            Auth = steamid.ToString()
         });
 
-        if(reader.HasRows)
+        //_logger.LogInformation("[GetPlayerClassData] Getting Player Data start here.");
+
+        if(await reader.ReadAsync())
         {
             var humanClass = reader["human_class"].ToString();
             var zombieClass = reader["zombie_class"].ToString();
@@ -64,9 +66,11 @@ public class DatabaseMain(ZombieSharp core, ILogger<ZombieSharp> logger)
             if(classes.ZombieClass == null)
                 _logger.LogError("[GetPlayerClassData] ZombieClass: \"{0}\" is null in classes config!", zombieClass);
 
+            //_logger.LogInformation("[GetPlayerClassData] We done here.");
             return classes;
         }
 
+        // _logger.LogInformation("[GetPlayerClassData] It's null");
         return null;
     } 
 
@@ -102,7 +106,7 @@ public class DatabaseMain(ZombieSharp core, ILogger<ZombieSharp> logger)
         var query = @"INSERT INTO player_classes (player_auth, zombie_class, human_class) VALUES(@Auth, @ZombieClass, @HumanClass) ON CONFLICT(player_auth) DO UPDATE SET zombie_class = @ZombieClass, human_class = @HumanClass";
 
         await _connection.ExecuteAsync(query, new {
-            Auth = steamid,
+            Auth = steamid.ToString(),
             ZombieClass = zombieClass,
             HumanClass = humanClass
         });
