@@ -13,6 +13,8 @@ public class GameConfigs
     public string? MotherZombieBuffer { get; set; }
     public bool RandomClassesOnConnect { get; set; } = true;
     public bool RandomClassesOnSpawn { get; set; } = false;
+    public bool AllowSavingClass { get; set; } = true;
+    public bool AllowChangeClass { get; set; } = true;
 
     // weapons section
     public bool WeaponPurchaseEnable { get; set; } = false;

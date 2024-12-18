@@ -294,6 +294,12 @@ public class Classes(ZombieSharp core, DatabaseMain database, ILogger<ZombieShar
         if(client == null)
             return;
 
+        if(!GameSettings.Settings?.AllowChangeClass ?? true)
+        {
+            client.PrintToChat($" {_core.Localizer["Prefix"]} {_core.Localizer["Core.FeatureDisbled"]}");
+            return;
+        }
+
         if(!PlayerData.PlayerClassesData?.ContainsKey(client) ?? false)
         {
             _logger.LogError("[ClassesMenuCommand] {0} is not in PlayerClassesData!", client.PlayerName);
@@ -341,15 +347,18 @@ public class Classes(ZombieSharp core, DatabaseMain database, ILogger<ZombieShar
             MenuManager.CloseActiveMenu(client);
 
             // update their player class into database
-            var steamid = client.AuthorizedSteamID?.SteamId64;
-
-            if(steamid == null || !steamid.HasValue)
+            if(GameSettings.Settings?.AllowSavingClass ?? true)
             {
-                _logger.LogError("[ClassesMenuCommand] SteamID of {0} is null!", client.PlayerName);
-                return;
-            }
+                var steamid = client.AuthorizedSteamID?.SteamId64;
 
-            Task.Run(async () => await _database.InsertPlayerClassData(steamid.Value, PlayerData.PlayerClassesData![client]));
+                if(steamid == null || !steamid.HasValue)
+                {
+                    _logger.LogError("[ClassesMenuCommand] SteamID of {0} is null!", client.PlayerName);
+                    return;
+                }
+
+                Task.Run(async () => await _database.InsertPlayerClassData(steamid.Value, PlayerData.PlayerClassesData![client]));
+            }
         };
 
         foreach (var playerclass in ClassesConfig)
