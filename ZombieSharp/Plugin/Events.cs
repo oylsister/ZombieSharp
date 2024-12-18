@@ -110,6 +110,8 @@ public class Events(ZombieSharp core, Infect infect, GameSettings settings, Clas
                     manifest.AddResource(classes.Model!);
             }
         }
+
+        manifest.AddResource("particles\\oylsister\\env_fire_large.vpcf");
     }
 
     public HookResult OnPlayerHurt(EventPlayerHurt @event, GameEventInfo info)

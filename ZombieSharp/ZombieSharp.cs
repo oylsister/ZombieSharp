@@ -1,7 +1,5 @@
 ﻿using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
-using Microsoft.Data.Sqlite;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using ZombieSharp.Database;
 using ZombieSharp.Models;
@@ -27,6 +25,7 @@ public class ZombieSharp : BasePlugin
     private Teleport? _teleport;
     private Respawn? _respawn;
     private DatabaseMain? _database;
+    private Napalm? _napalm;
     private readonly ILogger<ZombieSharp> _logger;
 
     public ZombieSharp(ILogger<ZombieSharp> logger)
@@ -51,6 +50,7 @@ public class ZombieSharp : BasePlugin
         _teleport = new Teleport(this, _logger);
         _event = new Events(this, _infect, _settings, _classes, _weapons, _teleport, _respawn, _logger);
         _knockback = new Knockback(_logger);
+        _napalm = new(this);
 
         if(hotReload)
         {
@@ -70,6 +70,7 @@ public class ZombieSharp : BasePlugin
         _teleport.TeleportOnLoad();
         _respawn.RespawnOnLoad();
         _classes.ClassesOnLoad();
+        _napalm.NapalmOnLoad();
 
         _database.DatabaseOnLoad().Wait();
     }

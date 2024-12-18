@@ -1,6 +1,8 @@
+using System.Runtime.InteropServices;
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Entities.Constants;
+using CounterStrikeSharp.API.Modules.Memory;
 using CounterStrikeSharp.API.Modules.Memory.DynamicFunctions;
 using CounterStrikeSharp.API.Modules.Utils;
 using Microsoft.Extensions.Logging;
@@ -236,6 +238,61 @@ public class Utils
         int index = random.Next(list.Count); 
         // Return the item at the random index 
         return list[index];
+    }
+
+    public static void TakeDamage(CCSPlayerController? client, CCSPlayerController? attacker = null, int damage = 1)
+    {
+        if(client == null)
+        {
+            _logger?.LogError("[TakeDamage] Client is null!");
+            return;
+        }
+
+        if(IsPlayerAlive(client))
+        {
+            return;
+        }
+
+        var size = Schema.GetClassSize("CTakeDamageInfo");
+        var ptr = Marshal.AllocHGlobal(size);
+
+        for (var i = 0; i < size; i++)
+            Marshal.WriteByte(ptr, i, 0);
+
+        var damageInfo = new CTakeDamageInfo(ptr);
+
+        CAttackerInfo attackerInfo;
+
+        if(attacker == null)
+            attackerInfo = new CAttackerInfo(client);
+
+        else
+            attackerInfo = new CAttackerInfo(attacker);
+
+        Marshal.StructureToPtr(attackerInfo, new IntPtr(ptr.ToInt64() + 0x80), false);
+
+        if(attacker == null)
+        {
+            Schema.SetSchemaValue(damageInfo.Handle, "CTakeDamageInfo", "m_hInflictor", client.Pawn.Raw);
+            Schema.SetSchemaValue(damageInfo.Handle, "CTakeDamageInfo", "m_hAttacker", client.Pawn.Raw);
+        }
+
+        else
+        {
+            Schema.SetSchemaValue(damageInfo.Handle, "CTakeDamageInfo", "m_hInflictor", attacker.Pawn.Raw);
+            Schema.SetSchemaValue(damageInfo.Handle, "CTakeDamageInfo", "m_hAttacker", attacker.Pawn.Raw);
+        }
+
+        damageInfo.Damage = damage;
+
+        if(client.Pawn.Value == null)
+        {
+            _logger?.LogError("[TakeDamage] Client Pawn is null!");
+            return;
+        }
+
+        VirtualFunctions.CBaseEntity_TakeDamageOldFunc.Invoke(client.Pawn.Value, damageInfo);
+        Marshal.FreeHGlobal(ptr);
     }
 
     public static List<string> WeaponList = new List<string> 
