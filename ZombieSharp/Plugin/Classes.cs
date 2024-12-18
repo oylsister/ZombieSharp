@@ -219,7 +219,11 @@ public class Classes(ZombieSharp core, DatabaseMain database, ILogger<ZombieShar
             }
         });
 
-        _core.AddTimer(0.3f, () => {
+        _core.AddTimer(0.3f, () => 
+        {
+            if(!Utils.IsPlayerAlive(client))
+                return;
+
             playerPawn.Health = data.Health;
             Utilities.SetStateChanged(playerPawn, "CBaseEntity", "m_iHealth");
             if(data.Team == 0)
