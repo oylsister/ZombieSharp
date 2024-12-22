@@ -35,9 +35,10 @@ public class ZombieSharp : BasePlugin
 
     public override void Load(bool hotReload)
     {
-        PlayerData.ZombiePlayerData = new();
-        PlayerData.PlayerClassesData = new();
-        PlayerData.PlayerPurchaseCount = new();
+        PlayerData.ZombiePlayerData = [];
+        PlayerData.PlayerClassesData = [];
+        PlayerData.PlayerPurchaseCount = [];
+        PlayerData.PlayerBurnData = [];
 
         _database = new DatabaseMain(this, _logger);
         _classes = new Classes(this, _database, _logger);
@@ -50,7 +51,7 @@ public class ZombieSharp : BasePlugin
         _teleport = new Teleport(this, _logger);
         _event = new Events(this, _infect, _settings, _classes, _weapons, _teleport, _respawn, _logger);
         _knockback = new Knockback(_logger);
-        _napalm = new(this);
+        _napalm = new(this, _logger);
 
         if(hotReload)
         {

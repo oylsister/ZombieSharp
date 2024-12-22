@@ -248,7 +248,7 @@ public class Utils
             return;
         }
 
-        if(IsPlayerAlive(client))
+        if(!IsPlayerAlive(client))
         {
             return;
         }

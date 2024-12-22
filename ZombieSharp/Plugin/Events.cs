@@ -1,6 +1,7 @@
 using System.Xml.Schema;
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Modules.Entities;
 using CounterStrikeSharp.API.Modules.Extensions;
 using CounterStrikeSharp.API.Modules.Utils;
 using Microsoft.Extensions.Logging;
@@ -65,6 +66,7 @@ public class Events(ZombieSharp core, Infect infect, GameSettings settings, Clas
         PlayerData.PlayerClassesData?.Add(client, new());
         PlayerData.PlayerPurchaseCount?.Add(client, new());
         PlayerData.PlayerSpawnData?.Add(client, new());
+        PlayerData.PlayerBurnData?.Add(client, null);
 
         _classes?.ClassesOnClientPutInServer(client);
     }
@@ -80,6 +82,7 @@ public class Events(ZombieSharp core, Infect infect, GameSettings settings, Clas
         PlayerData.PlayerClassesData?.Remove(client);
         PlayerData.PlayerPurchaseCount?.Remove(client);
         PlayerData.PlayerSpawnData?.Remove(client);
+        PlayerData.PlayerBurnData?.Remove(client);
     }
 
     // if reload a plugin this part won't be executed until you change map;

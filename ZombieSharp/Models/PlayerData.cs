@@ -8,4 +8,5 @@ public class PlayerData
     public static Dictionary<CCSPlayerController, PlayerClasses>? PlayerClassesData { get; set; } = [];
     public static Dictionary<CCSPlayerController, PurchaseCount>? PlayerPurchaseCount { get; set; } = [];
     public static Dictionary<CCSPlayerController, SpawnData>? PlayerSpawnData { get; set; } = [];
+    public static Dictionary<CCSPlayerController, CParticleSystem?>? PlayerBurnData { get; set; } = [];
 }
