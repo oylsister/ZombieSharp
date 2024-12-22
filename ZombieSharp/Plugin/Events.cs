@@ -1,8 +1,5 @@
-using System.Xml.Schema;
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
-using CounterStrikeSharp.API.Modules.Entities;
-using CounterStrikeSharp.API.Modules.Extensions;
 using CounterStrikeSharp.API.Modules.Utils;
 using Microsoft.Extensions.Logging;
 using ZombieSharp.Models;
@@ -10,7 +7,7 @@ using static CounterStrikeSharp.API.Core.Listeners;
 
 namespace ZombieSharp.Plugin;
 
-public class Events(ZombieSharp core, Infect infect, GameSettings settings, Classes classes, Weapons weapons, Teleport teleport, Respawn respawn, ILogger<ZombieSharp> logger)
+public class Events(ZombieSharp core, Infect infect, GameSettings settings, Classes classes, Weapons weapons, Teleport teleport, Respawn respawn, Napalm napalm, ILogger<ZombieSharp> logger)
 {
     private readonly ZombieSharp _core = core;
     private readonly Infect _infect = infect;
@@ -19,6 +16,7 @@ public class Events(ZombieSharp core, Infect infect, GameSettings settings, Clas
     private readonly Weapons _weapons = weapons;
     private readonly ILogger<ZombieSharp> _logger = logger;
     private readonly Teleport _teleport = teleport;
+    private readonly Napalm _napalm = napalm;
     private readonly Respawn _respawn = respawn;
 
     public void EventOnLoad()
@@ -126,6 +124,7 @@ public class Events(ZombieSharp core, Infect infect, GameSettings settings, Clas
 
         _infect.InfectOnPlayerHurt(client, attacker);
         Knockback.KnockbackClient(client, attacker, weapon, dmgHealth);
+        _napalm.NapalmOnHurt(client, attacker, weapon, dmgHealth);
         _classes.ClassesOnPlayerHurt(client);
 
         return HookResult.Continue;

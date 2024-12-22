@@ -1,12 +1,8 @@
-using System.Runtime.InteropServices;
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
-using CounterStrikeSharp.API.Core.Attributes.Registration;
 using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Commands;
-using CounterStrikeSharp.API.Modules.Memory;
 using CounterStrikeSharp.API.Modules.Timers;
-using CounterStrikeSharp.API.Modules.Utils;
 using Microsoft.Extensions.Logging;
 using ZombieSharp.Models;
 
@@ -28,6 +24,22 @@ public class Napalm(ZombieSharp core, ILogger<ZombieSharp> logger)
     {
         info.ReplyToCommand("Start Burn");
         IgnitePawn(client, null, 1, 5f);
+    }
+
+    public void NapalmOnHurt(CCSPlayerController? client, CCSPlayerController? attacker, string weapon, int damage)
+    {
+        if(!weapon.Contains("hegrenade"))
+            return;
+
+        if(client == null)
+            return;
+
+        var time = PlayerData.PlayerClassesData?[client].ActiveClass?.NapalmTime;
+
+        if(time <= 0)
+            return;
+        
+        IgnitePawn(client, attacker, damage, time ?? 1);
     }
 
     public bool IgnitePawn(CCSPlayerController? client, CCSPlayerController? attacker = null, int damage = 1, float duration = 1)

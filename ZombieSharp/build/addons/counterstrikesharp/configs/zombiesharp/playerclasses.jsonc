@@ -5,6 +5,7 @@
         "Team": 1,
         "Model": null,
         "MotherZombie": false,
+        "NapalmTime": 0.0,
         "Health": 100,
         "Knockback": 0.0,
         "Speed": 250.0
@@ -15,6 +16,7 @@
         "Team": 0,
         "Model": null,
         "MotherZombie": false,
+        "NapalmTime": 5.0,
         "Health": 8000,
         "Knockback": 5.0,
         "Speed": 250.0
@@ -22,9 +24,10 @@
     "motherzombie": {
         "Name": "Mother Zombie",
         "Enable": true,
-        "Team": 1,
+        "Team": 0,
         "Model": null,
         "MotherZombie": true,
+        "NapalmTime": 5.0,
         "Health": 16000,
         "Knockback": 5.0,
         "Speed": 250.0

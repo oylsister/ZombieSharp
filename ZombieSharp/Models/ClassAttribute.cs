@@ -7,6 +7,7 @@ public class ClassAttribute
     public int Team { get; set; }
     public string? Model { get; set; }
     public bool MotherZombie { get; set; } = false;
+    public float NapalmTime { get; set; } = 0f;
     public int Health { get; set; } = 100;
     public float Knockback { get; set; }
     public float Speed { get; set; } = 250f;
