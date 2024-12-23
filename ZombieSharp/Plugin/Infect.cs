@@ -1,5 +1,7 @@
 ﻿using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Modules.Admin;
+using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Timers;
 using CounterStrikeSharp.API.Modules.Utils;
 using Microsoft.Extensions.Logging;
@@ -16,6 +18,99 @@ public class Infect(ZombieSharp core, ILogger<ZombieSharp> logger, Classes class
     private CounterStrikeSharp.API.Modules.Timers.Timer? _firstInfection = null;
     private CounterStrikeSharp.API.Modules.Timers.Timer? _infectCountTimer = null;
     private int _infectCountNumber = 0;
+
+    public void InfectOnLoad()
+    {
+        _core.AddCommand("zs_infect", "Infection Command", InfectClientCommand);
+        _core.AddCommand("zs_human", "Humanize Command", HumanizeClientCommand);
+    }
+
+    [CommandHelper(1, "zs_infect <targetname>")]
+    [RequiresPermissions("@css/slay")]
+    public void InfectClientCommand(CCSPlayerController? client, CommandInfo info)
+    {
+        var target = info.GetArgTargetResult(1);
+
+        if(target == null || target.Count() <= 0)
+        {
+            info.ReplyToCommand($" {_core.Localizer["Prefix"]} {_core.Localizer["Core.TargetInvalid"]}");
+            return;
+        }
+
+        var mother = false;
+
+        if(!InfectHasStarted())
+            mother = true;
+
+        foreach(var player in target)
+        {
+            if(player == null) continue;
+            if(!Utils.IsPlayerAlive(player))
+            {
+                if(target.Count() < 2)
+                    info.ReplyToCommand($" {_core.Localizer["Prefix"]} {_core.Localizer["Core.MustBeAlive"]}");
+
+                continue;
+            }
+
+            if(IsClientInfect(player))
+            {
+                if(target.Count() < 2)
+                    info.ReplyToCommand($" {_core.Localizer["Prefix"]} {_core.Localizer["Infect.AlreadyZombie"]}");
+
+                continue;
+            }
+
+            InfectClient(player, null, mother, true);
+        }
+
+        if(target.Count() > 1)
+            info.ReplyToCommand($" {_core.Localizer["Prefix"]} {_core.Localizer["Infect.SuccessAll"]}");
+
+        else if(target.Count() < 2 && target.FirstOrDefault() != null)
+            info.ReplyToCommand($" {_core.Localizer["Prefix"]} {_core.Localizer["Infect.Success", target.FirstOrDefault()!.PlayerName]}");
+    }
+
+    [CommandHelper(1, "zs_human <targetname>")]
+    [RequiresPermissions("@css/slay")]
+    public void HumanizeClientCommand(CCSPlayerController? client, CommandInfo info)
+    {
+        var target = info.GetArgTargetResult(1);
+
+        if(target == null || target.Count() <= 0)
+        {
+            info.ReplyToCommand($" {_core.Localizer["Prefix"]} {_core.Localizer["Core.TargetInvalid"]}");
+            return;
+        }
+
+        foreach(var player in target)
+        {
+            if(player == null) continue;
+            if(!Utils.IsPlayerAlive(player))
+            {
+                if(target.Count() < 2)
+                    info.ReplyToCommand($" {_core.Localizer["Prefix"]} {_core.Localizer["Core.MustBeAlive"]}");
+
+                continue;
+            }
+
+            if(IsClientHuman(player))
+            {
+                if(target.Count() < 2)
+                    info.ReplyToCommand($" {_core.Localizer["Prefix"]} {_core.Localizer["Human.AlreadyHuman"]}");
+
+                continue;
+            }
+
+            HumanizeClient(player, true);
+        }
+
+        if(target.Count() > 1)
+            info.ReplyToCommand($" {_core.Localizer["Prefix"]} {_core.Localizer["Human.SuccessAll"]}");
+
+        else if(target.Count() < 2 && target.FirstOrDefault() != null)
+            info.ReplyToCommand($" {_core.Localizer["Prefix"]} {_core.Localizer["Human.Success", target.FirstOrDefault()!.PlayerName]}");
+    }
 
     public void InfectOnRoundFreezeEnd()
     {

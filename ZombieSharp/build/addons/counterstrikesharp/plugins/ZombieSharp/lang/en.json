@@ -12,6 +12,12 @@
     "Infect.MotherZombieReset": "Mother Zombie cycle has been reset!",
     "Infect.GameInfo": "Current gamemode is {Olive}Humans vs. Zombies{Default}, the goal for zombies is to infect all humans by knifing them.",
     "Infect.Countdown": "First infection start in {0} seconds",
+    "Infect.AlreadyZombie": "Target is already infected.",
+    "Infect.SuccessAll": "Successfully infected all targets.",
+    "Infect.Success": "Successfully infected {Olive}{0}{Default}.",
+    "Human.AlreadyHuman": "Target is already humanized.",
+    "Human.SuccessAll": "Successfully humanized all targets.",
+    "Human.Success": "Successfully humanized {Olive}{0}{Default}.",
 
     "Weapon.IsRestricted": "Weapon {Olive}{0}{Default} is restriced.",
     "Weapon.NotEnoughCash": "You don't have enough cash to purchase this weapon.",
