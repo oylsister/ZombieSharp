@@ -19,6 +19,12 @@
     "Weapon.BuyZoneOnly": "You must be in buyzone to purchase a weapon.",
     "Weapon.ReachMaxPurchase": "You have reached maximum purchases for this item {Olive}({0} times).",
     "Weapon.PurchaseCount": "Purchase Limit ({0}/{1})",
+    "Weapon.NotFound": "Weapon \"{0}\" is not found",
+    
+    "Restrict.Weapon": "Weapon {Olive}{0}{Default} has been restricted",
+    "Restrict.MainMenu": "Weapon Restriction Menu",
+    "Unrestrict.Weapon": "Weapon {Olive}{0}{Default} has been unrestricted",
+    "Unrestrict.MainMenu": "Weapon Unrestriction Menu",
 
     "Teleport.Countdown": "Teleport in {0} seconds",
     "Teleport.Success": "You have been teleported back to spawn.",

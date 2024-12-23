@@ -1,32 +1,28 @@
 # ZombieSharp
-<b>This project is linux focusing as Windows has a lot issues with Virtual Functions. However, if Windows issue is solved, the plugin will mostly work fine.</b>
 
 Zombie-Sharp is a Zombie Mode plugin for CS2 referencing the features and functions from the previous SourcePawn Zombie:Reloaded plugin. You can say this is the Zombie:Reloaded remake but in C#. Here is the list of features.
 
 ### Feature of Zombie-Sharp
 - [x] Basic Zombie Infection Initial with Timer
 - [x] Mother Zombie Cycle
-- [x] Infect and Human Command
+- [ ] Infect and Human Command
 - [x] Respawn Toggle option
 - [x] Player Class Module
 - [x] Weapon Module with purchase command.
-- [x] Hitgroups Module
+- [ ] Hitgroups Module (Will add later)
 - [x] Knockback Module
 - [x] ZTeleport Module
 - [x] Configuration for Infection Settings (ConVar)
-- [x] Repeat Killer Module (Obsolete now)
-- [x] Top Defender
 - [x] Cash on damage zombie
-- [x] API for external plugin
-- [x] Grenade Napalm Effect (NEW! More coming soon.) 
-- [x] Player Stats (Work in progress now.)
+- [ ] API for external plugin
+- [x] Grenade Napalm Effect
 
 ### Requirements
 - [Metamode:Source](https://www.sourcemm.net/downloads.php/?branch=master) Dev build (2.x).
 - [CounterStrikeSharp](https://github.com/roflmuffin/CounterStrikeSharp) 
 - [CSSharpFixes](https://github.com/CharlesBarone/CSSharp-Fixes) or [MovementUnlocker](https://github.com/Source2ZE/MovementUnlocker) plugin for knockback.
 - [Newtonsoft.Json](https://github.com/JamesNK/Newtonsoft.Json/releases) (This is already included in Release)
-- [Dual Mounting](https://github.com/Source2ZE/MultiAddonManager) for Custom Content for zombie mod.
+- [MultiAddonManager](https://github.com/Source2ZE/MultiAddonManager) for Custom Content for zombie mod.
 
 ### Recommend Plugin
 - [NoBlock](https://github.com/ManifestManah/NoBlock) for Zombie Escape mode.
@@ -35,7 +31,7 @@ Zombie-Sharp is a Zombie Mode plugin for CS2 referencing the features and functi
 1. Install [.NET 8.0 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/8.0) and [Git](https://git-scm.com/downloads).
 2. Open up Windows Powershell and follow these command
 ```shell
-git clone https://github.com/Oylneechan/ZombieSharp
+git clone https://github.com/oylsister/ZombieSharp
 cd ZombieSharp
 dotnet build
 ```

@@ -1,6 +1,8 @@
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Commands;
+using CounterStrikeSharp.API.Modules.Menu;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using ZombieSharp.Models;
@@ -13,6 +15,12 @@ public class Weapons(ZombieSharp core, ILogger<ZombieSharp> logger)
     private readonly ILogger<ZombieSharp> _logger = logger;
     public static Dictionary<string, WeaponAttribute>? WeaponsConfig = null;
     bool weaponCommandInitialized = false;
+
+    public void WeaponOnLoad()
+    {
+        _core.AddCommand("zs_restrict", "Restrict Weapon Command", WeaponRestrictCommand);
+        _core.AddCommand("zs_unrestrict", "Unrestrict Weapon Command", WeaponUnrestrictCommand);
+    }
 
     public void WeaponsOnMapStart()
     {
@@ -75,6 +83,94 @@ public class Weapons(ZombieSharp core, ILogger<ZombieSharp> logger)
         }
 
         weaponCommandInitialized = true;
+    }
+
+    [RequiresPermissions("@css/slay")]
+    public void WeaponRestrictCommand(CCSPlayerController? client, CommandInfo info)
+    {
+        if(WeaponsConfig == null)
+        {
+            _logger.LogError("[WeaponRestrictCommand] WeaponsConfig is null!");
+            return;
+        }
+
+        if(info.ArgCount > 1)
+        {
+            var weaponname = info.GetArg(1);
+            var weapon = GetWeaponAttributeByName(weaponname);
+
+            if(weapon == null)
+            {
+                info.ReplyToCommand($" {_core.Localizer["Prefix"]} {_core.Localizer["Weapon.NotFound", weaponname]}");
+                return;
+            }
+
+            Server.PrintToChatAll($" {_core.Localizer["Prefix"]} {_core.Localizer["Restrict.Weapon", weapon.WeaponName!]}");
+            weapon.Restrict = true;
+            return;
+        }
+
+        if(client == null)
+            return;
+
+        var menu = new ChatMenu($" {_core.Localizer["Prefix"]} {_core.Localizer["Restrict.MainMenu"]}");
+        
+        foreach(var weapon in WeaponsConfig)
+        {
+            menu.AddMenuOption(weapon.Value.WeaponName!, (client, option) => 
+            {
+                weapon.Value.Restrict = true;
+                Server.PrintToChatAll($" {_core.Localizer["Prefix"]} {_core.Localizer["Restrict.Weapon", weapon.Value.WeaponName!]}");
+                MenuManager.CloseActiveMenu(client);
+            }, 
+            weapon.Value.Restrict);
+        }
+        menu.ExitButton = true;
+        MenuManager.OpenChatMenu(client, menu);
+    }
+
+    [RequiresPermissions("@css/slay")]
+    public void WeaponUnrestrictCommand(CCSPlayerController? client, CommandInfo info)
+    {
+        if(WeaponsConfig == null)
+        {
+            _logger.LogError("[WeaponRestrictCommand] WeaponsConfig is null!");
+            return;
+        }
+
+        if(info.ArgCount > 1)
+        {
+            var weaponname = info.GetArg(1);
+            var weapon = GetWeaponAttributeByName(weaponname);
+
+            if(weapon == null)
+            {
+                info.ReplyToCommand($" {_core.Localizer["Prefix"]} {_core.Localizer["Weapon.NotFound"]}");
+                return;
+            }
+
+            Server.PrintToChatAll($" {_core.Localizer["Prefix"]} {_core.Localizer["Unrestrict.Weapon", weapon.WeaponName!]}");
+            weapon.Restrict = false;
+            return;
+        }
+
+        if(client == null)
+            return;
+
+        var menu = new ChatMenu($" {_core.Localizer["Prefix"]} {_core.Localizer["Unrestrict.MainMenu"]}");
+        
+        foreach(var weapon in WeaponsConfig)
+        {
+            menu.AddMenuOption(weapon.Value.WeaponName!, (client, option) => 
+            {
+                weapon.Value.Restrict = false;
+                Server.PrintToChatAll($" {_core.Localizer["Prefix"]} {_core.Localizer["Unrestrict.Weapon", weapon.Value.WeaponName!]}");
+                MenuManager.CloseActiveMenu(client);
+            }, 
+            !weapon.Value.Restrict);
+        }
+        menu.ExitButton = true;
+        MenuManager.OpenChatMenu(client, menu);
     }
 
     [CommandHelper(0, "", CommandUsage.CLIENT_ONLY)]
@@ -239,5 +335,13 @@ public class Weapons(ZombieSharp core, ILogger<ZombieSharp> logger)
             return null;
 
         return WeaponsConfig.Where(data => data.Value.WeaponEntity == weaponentity).FirstOrDefault().Value;
+    }
+
+    public static WeaponAttribute? GetWeaponAttributeByName(string? weapon)
+    {
+        if(WeaponsConfig == null)
+            return null;
+
+        return WeaponsConfig.Where(data => string.Equals(data.Value.WeaponName, weapon, StringComparison.OrdinalIgnoreCase)).FirstOrDefault().Value;
     }
 }
