@@ -207,10 +207,13 @@ public class Infect(ZombieSharp core, ILogger<ZombieSharp> logger, Classes class
         // set player zombie to true.
         PlayerData.ZombiePlayerData[client].Zombie = true;
 
+        var applyClass = PlayerData.PlayerClassesData?[client].ZombieClass;
+
         // set motherzombie status to chosen
         if(motherzombie)
         {
             PlayerData.ZombiePlayerData[client].MotherZombie = ZombiePlayer.MotherZombieStatus.CHOSEN;
+            applyClass = Classes.MotherZombie;
 
             // if teleport zombie back to spawn is enabled then we teleport them back to spawn.
             if(GameSettings.Settings?.MotherZombieTeleport ?? false)
@@ -240,7 +243,7 @@ public class Infect(ZombieSharp core, ILogger<ZombieSharp> logger, Classes class
         Utils.EmitSound(client, "zr.amb.scream");
 
         // apply class attribute.
-        _classes?.ClassesApplyToPlayer(client, PlayerData.PlayerClassesData?[client].ZombieClass!);
+        _classes?.ClassesApplyToPlayer(client, applyClass);
 
         // create fake killfeed
         if(attacker != null)

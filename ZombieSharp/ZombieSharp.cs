@@ -1,5 +1,7 @@
 ﻿using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Modules.Cvars;
+using CounterStrikeSharp.API.Modules.Cvars.Validators;
 using Microsoft.Extensions.Logging;
 using ZombieSharp.Database;
 using ZombieSharp.Models;
@@ -7,7 +9,7 @@ using ZombieSharp.Plugin;
 
 namespace ZombieSharp;
 
-public class ZombieSharp : BasePlugin
+public partial class ZombieSharp : BasePlugin
 {
     public override string ModuleName => "ZombieSharp";
     public override string ModuleVersion => "2.0.0";
@@ -26,6 +28,7 @@ public class ZombieSharp : BasePlugin
     private Respawn? _respawn;
     private DatabaseMain? _database;
     private Napalm? _napalm;
+    private ConVars? _convar;
     private readonly ILogger<ZombieSharp> _logger;
 
     public ZombieSharp(ILogger<ZombieSharp> logger)
@@ -50,7 +53,8 @@ public class ZombieSharp : BasePlugin
         _hook = new Hook(this, _weapons, _respawn, _logger);
         _teleport = new Teleport(this, _logger);
         _napalm = new(this, _logger);
-        _event = new Events(this, _infect, _settings, _classes, _weapons, _teleport, _respawn, _napalm, _logger);
+        _convar = new ConVars(this, _logger);
+        _event = new Events(this, _infect, _settings, _classes, _weapons, _teleport, _respawn, _napalm, _convar, _logger);
         _knockback = new Knockback(_logger);
 
         if(hotReload)
@@ -59,6 +63,8 @@ public class ZombieSharp : BasePlugin
             _settings.GameSettingsOnMapStart();
             _classes.ClassesOnMapStart();
             _weapons.WeaponsOnMapStart();
+            _convar.ConVarOnLoad();
+            _convar.ConVarExecuteOnMapStart(Server.MapName);
         }
 
         Server.ExecuteCommand("sv_predictable_damage_tag_ticks 0");

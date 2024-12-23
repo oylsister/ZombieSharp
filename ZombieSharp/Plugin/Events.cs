@@ -7,7 +7,7 @@ using static CounterStrikeSharp.API.Core.Listeners;
 
 namespace ZombieSharp.Plugin;
 
-public class Events(ZombieSharp core, Infect infect, GameSettings settings, Classes classes, Weapons weapons, Teleport teleport, Respawn respawn, Napalm napalm, ILogger<ZombieSharp> logger)
+public class Events(ZombieSharp core, Infect infect, GameSettings settings, Classes classes, Weapons weapons, Teleport teleport, Respawn respawn, Napalm napalm, ConVars convar, ILogger<ZombieSharp> logger)
 {
     private readonly ZombieSharp _core = core;
     private readonly Infect _infect = infect;
@@ -18,6 +18,7 @@ public class Events(ZombieSharp core, Infect infect, GameSettings settings, Clas
     private readonly Teleport _teleport = teleport;
     private readonly Napalm _napalm = napalm;
     private readonly Respawn _respawn = respawn;
+    private readonly ConVars _convar = convar;
 
     public void EventOnLoad()
     {
@@ -87,8 +88,10 @@ public class Events(ZombieSharp core, Infect infect, GameSettings settings, Clas
     public void OnMapStart(string mapname)
     {
         _settings.GameSettingsOnMapStart();
-        _classes.ClassesOnMapStart();
         _weapons.WeaponsOnMapStart();
+        _classes.ClassesOnMapStart();
+        _convar.ConVarOnLoad();
+        _convar.ConVarExecuteOnMapStart(mapname);
         
         Server.ExecuteCommand("sv_predictable_damage_tag_ticks 0");
         Server.ExecuteCommand("mp_ignore_round_win_conditions 1");

@@ -74,7 +74,7 @@ public class Classes(ZombieSharp core, DatabaseMain database, ILogger<ZombieShar
 
                 DefaultZombie = ClassesConfig[uniqueName];
 
-                _logger.LogInformation("[ClassesOnMapStart] Classes {0} is default class for human", DefaultZombie.Name);
+                _logger.LogInformation("[ClassesOnMapStart] Classes {0} is default class for zombie", DefaultZombie.Name);
             }
 
             if(!string.IsNullOrEmpty(GameSettings.Settings.MotherZombieBuffer))
