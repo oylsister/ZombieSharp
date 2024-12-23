@@ -6,9 +6,10 @@ using ZombieSharp.Models;
 
 namespace ZombieSharp.Plugin;
 
-public class ConVars(ZombieSharp core, ILogger<ZombieSharp> logger)
+public class ConVars(ZombieSharp core, Weapons weapons, ILogger<ZombieSharp> logger)
 {
     private ZombieSharp _core = core;
+    private readonly Weapons _weapon = weapons;
     private readonly ILogger<ZombieSharp> _logger = logger;
 
     public void ConVarOnLoad()
@@ -88,6 +89,8 @@ public class ConVars(ZombieSharp core, ILogger<ZombieSharp> logger)
         // weapon section
         _core.CVAR_WeaponPurchaseEnable.ValueChanged += (sender, value) => {
             GameSettings.Settings.WeaponPurchaseEnable = value;
+            _logger.LogInformation("[ConVarChanged] zs_weapon_purchase_enable changed to {0}", value);
+            _weapon.IntialWeaponPurchaseCommand();
         };
 
         _core.CVAR_WeaponRestrictEnable.ValueChanged += (sender, value) => {

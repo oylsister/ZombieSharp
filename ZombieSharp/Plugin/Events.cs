@@ -35,6 +35,7 @@ public class Events(ZombieSharp core, Infect infect, GameSettings settings, Clas
         _core.RegisterEventHandler<EventPlayerDeath>(OnPlayerDeath);
         _core.RegisterEventHandler<EventWarmupEnd>(OnWarmupEnd);
         _core.RegisterEventHandler<EventRoundEnd>(OnRoundEnd);
+        _core.RegisterEventHandler<EventPlayerTeam>(OnPlayerTeam);
     }
 
     public void EventOnUnload()
@@ -52,6 +53,7 @@ public class Events(ZombieSharp core, Infect infect, GameSettings settings, Clas
         _core.DeregisterEventHandler<EventPlayerDeath>(OnPlayerDeath);
         _core.DeregisterEventHandler<EventWarmupEnd>(OnWarmupEnd);
         _core.DeregisterEventHandler<EventRoundEnd>(OnRoundEnd);
+        _core.DeregisterEventHandler<EventPlayerTeam>(OnPlayerTeam);
     }
 
     public void OnClientPutInServer(int playerslot)
@@ -196,6 +198,36 @@ public class Events(ZombieSharp core, Infect infect, GameSettings settings, Clas
         // refresh purchase count here.
         Utils.RefreshPurchaseCount(client);
         _core.AddTimer(0.2f, () => _teleport.TeleportOnPlayerSpawn(client));
+
+        return HookResult.Continue;
+    }
+
+    public HookResult OnPlayerTeam(EventPlayerTeam @event, GameEventInfo info)
+    {
+        var client = @event.Userid;
+        var team = @event.Team;
+        var isBot = @event.Isbot;
+
+        if(isBot)
+            return HookResult.Continue;
+
+        //Server.PrintToChatAll($"{client?.PlayerName} join team {team}.");
+
+        if(!GameSettings.Settings?.AllowRespawnJoinLate ?? false)
+            return HookResult.Continue;
+
+        if(team > 1)
+        {
+            _core.AddTimer(1.0f, () => {
+                if(client == null)
+                {
+                    //Server.PrintToChatAll("Client is fucking null!");
+                    return;
+                }
+
+                Respawn.RespawnClient(client);
+            });
+        }
 
         return HookResult.Continue;
     }
