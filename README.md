@@ -9,7 +9,7 @@ Zombie-Sharp is a Zombie Mode plugin for CS2 referencing the features and functi
 - [x] Respawn Toggle option
 - [x] Player Class Module
 - [x] Weapon Module with purchase command.
-- [ ] Hitgroups Module (Will add later)
+- [x] Hitgroups Module (Will add later)
 - [x] Knockback Module
 - [x] ZTeleport Module
 - [x] Configuration for Infection Settings (ConVar)

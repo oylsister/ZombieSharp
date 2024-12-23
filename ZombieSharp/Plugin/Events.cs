@@ -7,7 +7,7 @@ using static CounterStrikeSharp.API.Core.Listeners;
 
 namespace ZombieSharp.Plugin;
 
-public class Events(ZombieSharp core, Infect infect, GameSettings settings, Classes classes, Weapons weapons, Teleport teleport, Respawn respawn, Napalm napalm, ConVars convar, ILogger<ZombieSharp> logger)
+public class Events(ZombieSharp core, Infect infect, GameSettings settings, Classes classes, Weapons weapons, Teleport teleport, Respawn respawn, Napalm napalm, ConVars convar, HitGroup hitgroup, ILogger<ZombieSharp> logger)
 {
     private readonly ZombieSharp _core = core;
     private readonly Infect _infect = infect;
@@ -19,6 +19,7 @@ public class Events(ZombieSharp core, Infect infect, GameSettings settings, Clas
     private readonly Napalm _napalm = napalm;
     private readonly Respawn _respawn = respawn;
     private readonly ConVars _convar = convar;
+    private readonly HitGroup _hitgroup = hitgroup;
 
     public void EventOnLoad()
     {
@@ -92,6 +93,7 @@ public class Events(ZombieSharp core, Infect infect, GameSettings settings, Clas
         _settings.GameSettingsOnMapStart();
         _weapons.WeaponsOnMapStart();
         _classes.ClassesOnMapStart();
+        _hitgroup.HitGroupOnMapStart();
         _convar.ConVarOnLoad();
         _convar.ConVarExecuteOnMapStart(mapname);
         
@@ -126,9 +128,10 @@ public class Events(ZombieSharp core, Infect infect, GameSettings settings, Clas
         var attacker = @event.Attacker;
         var weapon = @event.Weapon;
         var dmgHealth = @event.DmgHealth;
+        var hitgroups = @event.Hitgroup;
 
         _infect.InfectOnPlayerHurt(client, attacker);
-        Knockback.KnockbackClient(client, attacker, weapon, dmgHealth);
+        Knockback.KnockbackClient(client, attacker, weapon, dmgHealth, hitgroups);
         _napalm.NapalmOnHurt(client, attacker, weapon, dmgHealth);
         _classes.ClassesOnPlayerHurt(client);
 

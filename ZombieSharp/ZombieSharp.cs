@@ -29,6 +29,7 @@ public partial class ZombieSharp : BasePlugin
     private DatabaseMain? _database;
     private Napalm? _napalm;
     private ConVars? _convar;
+    private HitGroup? _hitgroups;
     private readonly ILogger<ZombieSharp> _logger;
 
     public ZombieSharp(ILogger<ZombieSharp> logger)
@@ -54,7 +55,8 @@ public partial class ZombieSharp : BasePlugin
         _teleport = new Teleport(this, _logger);
         _napalm = new(this, _logger);
         _convar = new ConVars(this, _weapons, _logger);
-        _event = new Events(this, _infect, _settings, _classes, _weapons, _teleport, _respawn, _napalm, _convar, _logger);
+        _hitgroups = new HitGroup(_logger);
+        _event = new Events(this, _infect, _settings, _classes, _weapons, _teleport, _respawn, _napalm, _convar, _hitgroups, _logger);
         _knockback = new Knockback(_logger);
 
         if(hotReload)
@@ -63,6 +65,7 @@ public partial class ZombieSharp : BasePlugin
             _settings.GameSettingsOnMapStart();
             _classes.ClassesOnMapStart();
             _weapons.WeaponsOnMapStart();
+            _hitgroups.HitGroupOnMapStart();
             _convar.ConVarOnLoad();
             _convar.ConVarExecuteOnMapStart(Server.MapName);
         }

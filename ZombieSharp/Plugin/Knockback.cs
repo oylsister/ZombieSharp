@@ -15,7 +15,7 @@ public class Knockback
         _logger = logger;
     }
 
-    public static void KnockbackClient(CCSPlayerController? client, CCSPlayerController? attacker, string weaponname, float dmgHealth)
+    public static void KnockbackClient(CCSPlayerController? client, CCSPlayerController? attacker, string weaponname, float dmgHealth, int hitgroups)
     {
         if(client == null || attacker == null)
             return;
@@ -84,7 +84,9 @@ public class Knockback
                 weaponknockback = weapon.Knockback;
         }
 
-        var pushVelocity = normalizedDir * dmgHealth * PlayerData.PlayerClassesData[client].ActiveClass!.Knockback * weaponknockback;
+        var hitgroupsKnockback = HitGroup.GetHitGroupKnockback(hitgroups);
+
+        var pushVelocity = normalizedDir * dmgHealth * PlayerData.PlayerClassesData[client].ActiveClass!.Knockback * weaponknockback * hitgroupsKnockback;
         client.PlayerPawn.Value?.AbsVelocity.Add(pushVelocity);
     }
 
