@@ -140,7 +140,8 @@ public class Napalm(ZombieSharp core, ILogger<ZombieSharp> logger)
                 return;
             }
             
-            Utils.TakeDamage(client, attacker, damage);
+            if(damage > 0)
+                Utils.TakeDamage(client, attacker, damage);
 
         }, TimerFlags.REPEAT|TimerFlags.STOP_ON_MAPCHANGE);
 
