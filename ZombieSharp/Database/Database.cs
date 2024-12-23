@@ -6,7 +6,7 @@ using ZombieSharp.Plugin;
 
 namespace ZombieSharp.Database;
 
-public class DatabaseMain(ZombieSharp core, ILogger<ZombieSharp> logger)
+public class DatabaseMain(ZombieSharp core, ILogger<ZombieSharp> logger) : IDisposable
 {
     private SqliteConnection? _connection;
     private readonly ZombieSharp _core = core;
@@ -17,7 +17,7 @@ public class DatabaseMain(ZombieSharp core, ILogger<ZombieSharp> logger)
         _connection = new SqliteConnection($"Data Source={Path.Join(_core.ModuleDirectory, "zsharpdatabase.db")}");
         _connection.Open();
 
-        _logger.LogInformation("[DatabaseOnLoad] Database has been created. to {0}", Path.Join(_core.ModuleDirectory, "zsharpdatabase.db"));
+        _logger.LogInformation("[DatabaseOnLoad] Database has been created. to {Directory}", Path.Join(_core.ModuleDirectory, "zsharpdatabase.db"));
 
         await _connection.ExecuteAsync(@"CREATE TABLE IF NOT EXISTS player_classes (player_auth TEXT PRIMARY KEY, zombie_class VARCHAR(64), human_class VARCHAR(64));");
     }
@@ -41,16 +41,23 @@ public class DatabaseMain(ZombieSharp core, ILogger<ZombieSharp> logger)
             return null;
         }
 
+        /*
         var query = @"SELECT * FROM player_classes WHERE player_auth = @Auth;";
         var reader = await _connection.ExecuteReaderAsync(query, new {
+            Auth = steamid.ToString()
+        });
+        */
+
+        var result = await _connection.QueryAsync<ClassesResult>("SELECT [zombie_class], [human_class] FROM player_classes WHERE player_auth = @Auth;", new {
             Auth = steamid.ToString()
         });
 
         //_logger.LogInformation("[GetPlayerClassData] Getting Player Data start here.");
 
-        if(await reader.ReadAsync())
+        if(result != null)
         {
-            var humanClass = reader["human_class"].ToString();
+            result.ToList();
+            var humanClass =
             var zombieClass = reader["zombie_class"].ToString();
 
             PlayerClasses classes = new();
@@ -111,4 +118,15 @@ public class DatabaseMain(ZombieSharp core, ILogger<ZombieSharp> logger)
             HumanClass = humanClass
         });
     }
-}   
+
+    public void Dispose()
+    {
+        _connection?.Close();
+    }
+}
+
+public class ClassesResult
+{
+    public string zombie_class = string.Empty;
+    public string human_class = string.Empty;
+}

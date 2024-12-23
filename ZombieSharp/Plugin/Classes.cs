@@ -55,12 +55,12 @@ public class Classes(ZombieSharp core, DatabaseMain database, ILogger<ZombieShar
 
                 if(!ClassesConfig!.ContainsKey(uniqueName))
                 {
-                    _logger.LogCritical("[ClassesOnMapStart] Couldn't get classes \"{0}\" from playerclasses.jsonc", uniqueName);
+                    _logger.LogCritical("[ClassesOnMapStart] Couldn't get classes \"{uniqueName}\" from playerclasses.jsonc", uniqueName);
                 }
 
                 DefaultHuman = ClassesConfig[uniqueName];
 
-                _logger.LogInformation("[ClassesOnMapStart] Classes {0} is default class for human", DefaultHuman.Name);
+                _logger.LogInformation("[ClassesOnMapStart] Classes {Name} is default class for human", DefaultHuman.Name);
             }
 
             if(!string.IsNullOrEmpty(GameSettings.Settings.DefaultZombieBuffer))
@@ -83,7 +83,7 @@ public class Classes(ZombieSharp core, DatabaseMain database, ILogger<ZombieShar
 
                 if(!ClassesConfig!.ContainsKey(uniqueName))
                 {
-                    _logger.LogCritical("[ClassesOnMapStart] Couldn't get classes \"{0}\" from playerclasses.jsonc", uniqueName);
+                    _logger.LogCritical("[ClassesOnMapStart] Couldn't get classes \"{uniqueName}\" from playerclasses.jsonc", uniqueName);
                 }
 
                 MotherZombie = ClassesConfig[uniqueName];
