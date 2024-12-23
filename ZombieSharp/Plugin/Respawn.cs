@@ -57,7 +57,7 @@ public class Respawn(ZombieSharp core, ILogger<ZombieSharp> logger)
         _core.AddTimer(GameSettings.Settings?.RespawnDelay ?? 5.0f, () => RespawnClient(client));
     }
 
-    public void RespawnClient(CCSPlayerController? client)
+    public static void RespawnClient(CCSPlayerController? client)
     {
         if(client == null || client.Handle == IntPtr.Zero)
             return;

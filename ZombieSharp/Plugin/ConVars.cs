@@ -1,5 +1,6 @@
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Modules.Cvars;
+using CounterStrikeSharp.API.Modules.Utils;
 using Microsoft.Extensions.Logging;
 using ZombieSharp.Models;
 
@@ -64,7 +65,7 @@ public class ConVars(ZombieSharp core, ILogger<ZombieSharp> logger)
                 _logger.LogCritical("[ConVarOnLoad] Couldn't get classes \"{0}\" from playerclasses.jsonc", value);
                 return;
             }
-            
+
             Classes.MotherZombie = Classes.ClassesConfig[value];
         };
 
@@ -105,6 +106,26 @@ public class ConVars(ZombieSharp core, ILogger<ZombieSharp> logger)
         // respawn
         _core.CVAR_RespawnEnable.ValueChanged += (sender, value) => {
             GameSettings.Settings.RespawnEnable = value;
+
+            _logger.LogInformation("[ConVarChanged] zs_respawn_enable changed to {0}", value);
+            Server.PrintToChatAll($" {_core.Localizer["Prefix"]} zs_respawn_enable changed to {value}");
+
+            _core.AddTimer(1.0f, () => {
+                foreach(var player in Utilities.GetPlayers())
+                {
+                    if(player == null)
+                        continue;
+
+                    if(Utils.IsPlayerAlive(player))
+                        continue;
+
+                    if(player.Team == CsTeam.None || player.Team == CsTeam.Spectator)
+                        continue;
+
+                    Respawn.RespawnClient(player);
+                }
+            });
+
         };
         _core.CVAR_RespawnDelay.ValueChanged += (sender, value) => {
             GameSettings.Settings.RespawnDelay = value;
