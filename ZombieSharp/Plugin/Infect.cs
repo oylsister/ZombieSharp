@@ -275,8 +275,9 @@ public class Infect(ZombieSharp core, ILogger<ZombieSharp> logger, Classes class
             // set to false.
             PlayerData.ZombiePlayerData[player].Zombie = false;
 
-            // switch their team to CT.
-            player.SwitchTeam(CsTeam.CounterTerrorist);
+            // switch their team to CT. and make sure they are not spectator or else they will get spawned with another.
+            if(player.Team != CsTeam.Spectator && player.Team != CsTeam.None)
+                player.SwitchTeam(CsTeam.CounterTerrorist);
         }
     }
 
