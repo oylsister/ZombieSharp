@@ -79,7 +79,7 @@ jobs:
       run: |
         mkdir -p release/addons/counterstrikesharp/shared
         cp -r /home/runner/work/ZombieSharp/ZombieSharp/ZombieSharpAPI/bin/Debug/net8.0/ release/addons/counterstrikesharp/shared
-        mv release/addons/counterstrikesharp/shared/net8.0 release/addons/counterstrikesharp/shared/net8.0/ZombieSharpAPI
+        mv release/addons/counterstrikesharp/shared/net8.0 release/addons/counterstrikesharp/shared/ZombieSharpAPI
 
     - name: Prepare other file
       run: |
