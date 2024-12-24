@@ -118,6 +118,16 @@ public class Hook(ZombieSharp core, Weapons weapons, Respawn respawn, ILogger<Zo
             var inferno = new CInferno(info.Inflictor.Value.Handle);
             if(client == inferno.OwnerEntity.Value)
                 return HookResult.Handled;
+
+            if(client.Team == attacker.Team)
+                return HookResult.Handled;
+
+            Utils.SetStamina(client, 40.0f);
+        }
+
+        if(info.Inflictor.Value?.DesignerName == "hegrenade")
+        {
+            Knockback.KnockbackClientExplosion(client, info.Inflictor.Value, info.Damage);
         }
 
         // prevent death from backstabing.

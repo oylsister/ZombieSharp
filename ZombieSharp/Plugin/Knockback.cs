@@ -90,6 +90,58 @@ public class Knockback
         client.PlayerPawn.Value?.AbsVelocity.Add(pushVelocity);
     }
 
+    public static void KnockbackClientExplosion(CCSPlayerController? client, CBaseEntity? grenade, float dmgHealth)
+    {
+        if(client == null || grenade == null)
+            return;
+
+        // knockback is for zombie only.
+        if (!Infect.IsClientInfect(client))
+            return;
+
+        var clientPos = client.PlayerPawn.Value?.AbsOrigin;
+        var grenadePos = grenade.AbsOrigin;
+
+        if(clientPos == null || grenadePos == null)
+            return;
+
+        var direction = clientPos - grenadePos;
+        var normalizedDir = NormalizeVector(direction);
+
+        // Class Data section.
+        if(PlayerData.PlayerClassesData == null)
+        {
+            _logger?.LogError("[KnockbackClientExplosion] PlayerClassesData is null!");
+            return;
+        }
+
+        if(!PlayerData.PlayerClassesData.ContainsKey(client))
+        {
+            _logger?.LogError("[KnockbackClientExplosion] client {name} is not in playerdata!", client.PlayerName);
+            return;
+        }
+
+        if(PlayerData.PlayerClassesData[client].ActiveClass == null)
+        {
+            _logger?.LogError("[KnockbackClientExplosion] client {name} active class is null!",  client.PlayerName);
+            return;
+        }
+
+        float weaponknockback = 1.0f;
+
+        // weapon knockback section
+        if(Weapons.WeaponsConfig == null)
+            _logger?.LogError("[KnockbackClientExplosion] Weapon Data is null!");
+
+        var weapon = Weapons.GetWeaponAttributeByEntityName("weapon_hegrenade");
+
+        if(weapon != null)
+            weaponknockback = weapon.Knockback;
+
+        var pushVelocity = normalizedDir * dmgHealth * PlayerData.PlayerClassesData[client].ActiveClass!.Knockback * weaponknockback;
+        client.PlayerPawn.Value?.AbsVelocity.Add(pushVelocity);
+    }
+
     private static Vector NormalizeVector(Vector vector)
     {
         var x = vector.X;

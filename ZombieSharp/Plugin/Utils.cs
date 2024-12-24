@@ -323,6 +323,23 @@ public class Utils
         }
     }
 
+    public static void SetStamina(CCSPlayerController? client, float stamina)
+    {
+        if(client == null)
+            return;
+
+        if(client.PlayerPawn.Value == null)
+            return;
+
+        var service = client.PlayerPawn.Value.MovementServices?.As<CCSPlayer_MovementServices>();
+
+        if(service == null)
+            return;
+
+        service.Stamina = stamina;
+        Utilities.SetStateChanged(client, "CCSPlayer_MovementServices", "m_flStamina");
+    }
+
     public static List<string> WeaponList = new List<string> 
     { 
         "weapon_deagle", 

@@ -143,6 +143,8 @@ public class Napalm(ZombieSharp core, ILogger<ZombieSharp> logger)
             if(damage > 0)
                 Utils.TakeDamage(client, attacker, damage);
 
+            Utils.SetStamina(client, 40.0f);
+
         }, TimerFlags.REPEAT|TimerFlags.STOP_ON_MAPCHANGE);
 
         return true;
