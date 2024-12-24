@@ -86,6 +86,7 @@ public partial class ZombieSharp : BasePlugin
         Server.ExecuteCommand("mp_give_player_c4 0");
 
         // initial
+        _infect.InfectOnLoad();
         _weapons.WeaponOnLoad();
         _event.EventOnLoad();
         _hook.HookOnLoad();
