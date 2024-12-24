@@ -337,7 +337,11 @@ public class Utils
             return;
 
         service.Stamina = stamina;
-        Utilities.SetStateChanged(client, "CCSPlayer_MovementServices", "m_flStamina");
+        //SV:  284/CCSPlayerPawn:  requested resolve all 7 changes, actually resolved only 6 changes
+        //SV:    6                                     1248 not resolved
+        // need to figure out this
+        // service.OffsetTickCompleteTime = 0.0f;
+        Utilities.SetStateChanged(client.PlayerPawn.Value, "CCSPlayer_MovementServices", "m_flStamina");
     }
 
     public static List<string> WeaponList = new List<string> 
