@@ -28,4 +28,9 @@ public class ZombieSharpInterface : IZombieSharpAPI
     {
         return Infect.IsClientInfect(client);
     }
+
+    public void ZS_RespawnClient(CCSPlayerController client)
+    {
+        Respawn.RespawnClient(client);
+    }
 }

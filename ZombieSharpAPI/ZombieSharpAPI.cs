@@ -11,4 +11,5 @@ public interface IZombieSharpAPI
     public HookResult? ZS_OnClientHumanize(CCSPlayerController client, bool force);
     public bool ZS_IsClientHuman(CCSPlayerController client);
     public bool ZS_IsClientInfect(CCSPlayerController client);
+    public void ZS_RespawnClient(CCSPlayerController client);
 }
