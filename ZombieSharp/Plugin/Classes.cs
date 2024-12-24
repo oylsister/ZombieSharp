@@ -264,7 +264,7 @@ public class Classes(ZombieSharp core, DatabaseMain database, ILogger<ZombieShar
 
     public void ClassesOnPlayerHurt(CCSPlayerController? client)
     {
-        _core?.AddTimer(0.3f, () => 
+        _core?.AddTimer(0.5f, () => 
         {
             // need to be alive
             if(client == null || client.Handle == IntPtr.Zero)

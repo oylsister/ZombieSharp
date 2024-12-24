@@ -331,17 +331,7 @@ public class Utils
         if(client.PlayerPawn.Value == null)
             return;
 
-        var service = client.PlayerPawn.Value.MovementServices?.As<CCSPlayer_MovementServices>();
-
-        if(service == null)
-            return;
-
-        service.Stamina = stamina;
-        //SV:  284/CCSPlayerPawn:  requested resolve all 7 changes, actually resolved only 6 changes
-        //SV:    6                                     1248 not resolved
-        // need to figure out this
-        // service.OffsetTickCompleteTime = 0.0f;
-        Utilities.SetStateChanged(client.PlayerPawn.Value, "CCSPlayer_MovementServices", "m_flStamina");
+        client.PlayerPawn.Value.VelocityModifier = stamina / 100f;
     }
 
     public static List<string> WeaponList = new List<string> 

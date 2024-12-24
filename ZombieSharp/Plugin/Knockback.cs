@@ -17,6 +17,9 @@ public class Knockback
 
     public static void KnockbackClient(CCSPlayerController? client, CCSPlayerController? attacker, string weaponname, float dmgHealth, int hitgroups)
     {
+        if(weaponname.Contains("hegrenade"))
+            return;
+
         if(client == null || attacker == null)
             return;
 
@@ -62,7 +65,7 @@ public class Knockback
         if(Weapons.WeaponsConfig == null)
             _logger?.LogError("[KnockbackClient] Weapon Data is null!");
 
-        if(weaponname.Contains("knife") || weaponname.Contains("hegrenade"))
+        if(weaponname.Contains("knife"))
         {
             var weapon = Weapons.GetWeaponAttributeByEntityName(weaponname);
 
