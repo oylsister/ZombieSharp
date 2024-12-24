@@ -112,6 +112,14 @@ public class Hook(ZombieSharp core, Weapons weapons, Respawn respawn, ILogger<Zo
         if(client == null || attacker == null)
             return HookResult.Continue;
 
+        if(info.Inflictor.Value?.DesignerName == "inferno")
+        {
+            // prevent self damage from molotov.
+            var inferno = new CInferno(info.Inflictor.Value.Handle);
+            if(client == inferno.OwnerEntity.Value)
+                return HookResult.Handled;
+        }
+
         // prevent death from backstabing.
         if(Infect.IsClientInfect(attacker) && Infect.IsClientHuman(client))
             info.Damage = 1;
