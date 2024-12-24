@@ -132,6 +132,7 @@ public class Events(ZombieSharp core, Infect infect, GameSettings settings, Clas
 
         _infect.InfectOnPlayerHurt(client, attacker);
         Knockback.KnockbackClient(client, attacker, weapon, dmgHealth, hitgroups);
+        Utils.UpdatedPlayerCash(attacker, dmgHealth);
         _napalm.NapalmOnHurt(client, attacker, weapon, dmgHealth);
         _classes.ClassesOnPlayerHurt(client);
 

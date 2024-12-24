@@ -2,6 +2,7 @@
     "FirstInfectionTimer": 15.0,
     "MotherZombieRatio": 7.0,
     "MotherZombieTeleport": false,
+    "CashOnDamage": false,
 
     "DefaultHumanBuffer": "human_default",
     "DefaultZombieBuffer": "zombie_default",

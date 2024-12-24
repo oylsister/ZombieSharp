@@ -33,6 +33,10 @@ public class ConVars(ZombieSharp core, Weapons weapons, ILogger<ZombieSharp> log
             GameSettings.Settings.MotherZombieTeleport = value;
         };
 
+        _core.CVAR_CashOnDamage.ValueChanged += (sender, value) => {
+            GameSettings.Settings.CashOnDamage = value;
+        };
+
         // class section
         _core.CVAR_DefaultHuman.ValueChanged += (sender, value) => {
             GameSettings.Settings.DefaultHumanBuffer = value;
@@ -187,6 +191,7 @@ public class ConVars(ZombieSharp core, Weapons weapons, ILogger<ZombieSharp> log
         CreateConVarLine(configFile, _core.CVAR_FirstInfectionTimer);
         CreateConVarLine(configFile, _core.CVAR_MotherZombieRatio);
         CreateConVarLine(configFile, _core.CVAR_MotherZombieTeleport);
+        CreateConVarLine(configFile, _core.CVAR_CashOnDamage);
 
         CreateConVarLine(configFile, _core.CVAR_DefaultHuman);
         CreateConVarLine(configFile, _core.CVAR_DefaultZombie);

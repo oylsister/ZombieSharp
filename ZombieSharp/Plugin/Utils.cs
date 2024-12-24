@@ -295,6 +295,18 @@ public class Utils
         Marshal.FreeHGlobal(ptr);
     }
 
+    public static void UpdatedPlayerCash(CCSPlayerController? client, int damage)
+    {
+        if(client == null)
+            return;
+
+        if(client.InGameMoneyServices == null)
+            return;
+
+        client.InGameMoneyServices.Account += damage;
+        Utilities.SetStateChanged(client, "CCSPlayerController", "m_pInGameMoneyServices");
+    }
+
     public static List<string> WeaponList = new List<string> 
     { 
         "weapon_deagle", 

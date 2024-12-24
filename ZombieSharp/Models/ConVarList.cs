@@ -8,6 +8,7 @@ public partial class ZombieSharp
     public FakeConVar<float> CVAR_FirstInfectionTimer = new("zs_infect_timer", "First Infection Countdown", 15f, default, new RangeValidator<float>(5.0f, 60.0f));
     public FakeConVar<float> CVAR_MotherZombieRatio = new("zs_infect_motherzombie_ratio", "Mother zombie ratio", 7f, default, new RangeValidator<float>(1.0f, 64.0f));
     public FakeConVar<bool> CVAR_MotherZombieTeleport = new("zs_infect_motherzombie_spawn", "Teleport Motherzombie back to spawn", false, default, new RangeValidator<bool>(false, true));
+    public FakeConVar<bool> CVAR_CashOnDamage = new("zs_infect_cash_damage_enable", "Enable earning cash from damaging player", false, default, new RangeValidator<bool>(false, true));
 
     public FakeConVar<string> CVAR_DefaultHuman = new("zs_classes_default_human", "Default classes for human", "human_default");
     public FakeConVar<string> CVAR_DefaultZombie = new("zs_classes_default_zombie", "Default classes for human", "zombie_default");

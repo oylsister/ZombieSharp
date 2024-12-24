@@ -14,7 +14,7 @@ Zombie-Sharp is a Zombie Mode plugin for CS2 referencing the features and functi
 - [x] ZTeleport Module
 - [x] Configuration for Infection Settings (ConVar)
 - [x] Cash on damage zombie
-- [ ] API for external plugin
+- [x] API for external plugin
 - [x] Grenade Napalm Effect
 
 ### Requirements
