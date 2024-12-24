@@ -238,19 +238,19 @@ public class Weapons(ZombieSharp core, ILogger<ZombieSharp> logger)
 
             if(PlayerData.PlayerPurchaseCount == null)
             {
-                _logger.LogError("[RefreshPurchaseCount] Player Purchase count is null!");
+                _logger.LogError("[PurchaseWeapon] Player Purchase count is null!");
                 return;
             }
 
             if(!PlayerData.PlayerPurchaseCount.ContainsKey(client))
             {
-                _logger.LogError("[RefreshPurchaseCount] Player {0} is not in purchase count data", client.PlayerName);
-                return;
+                _logger.LogError("[PurchaseWeapon] Player {name} is not in purchase count data, so create a new one", client.PlayerName);
+                PlayerData.PlayerPurchaseCount.Add(client, new());
             }
 
             if(PlayerData.PlayerPurchaseCount[client].WeaponCount == null)
             {
-                _logger.LogError("[RefreshPurchaseCount] Player {0} Purchase data is null", client.PlayerName);
+                _logger.LogError("[PurchaseWeapon] Player {name} Purchase data is null", client.PlayerName);
                 return;
             }
 

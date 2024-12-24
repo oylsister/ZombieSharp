@@ -174,11 +174,18 @@ public class Utils
 
     public static void RefreshPurchaseCount(CCSPlayerController client)
     {
-        if(PlayerData.PlayerPurchaseCount == null || !PlayerData.PlayerPurchaseCount.ContainsKey(client))
+        if(PlayerData.PlayerPurchaseCount == null)
         {
-            _logger?.LogError("[RefreshPurchaseCount] Player Purchase count is null or {0} is not in array", client.PlayerName);
+            _logger?.LogError("[RefreshPurchaseCount] Player Purchase count is null");
             return;
         }
+
+        if(!PlayerData.PlayerPurchaseCount.ContainsKey(client))
+        {
+            _logger?.LogError("[RefreshPurchaseCount] {name} is not in array data, so create a new one for player.", client.PlayerName);
+            PlayerData.PlayerPurchaseCount.Add(client, new());
+        }
+
         // clear them all.
         PlayerData.PlayerPurchaseCount[client].WeaponCount?.Clear();
     }
