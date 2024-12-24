@@ -307,6 +307,22 @@ public class Utils
         Utilities.SetStateChanged(client, "CCSPlayerController", "m_pInGameMoneyServices");
     }
 
+    public static void RemoveRoundObjective()
+    {
+        var objectivelist = new List<string>() { "func_bomb_target", "func_hostage_rescue", "hostage_entity", "c4" };
+
+        foreach (string objectivename in objectivelist)
+        {
+            var entityIndex = Utilities.FindAllEntitiesByDesignerName<CEntityInstance>(objectivename);
+
+            foreach (var entity in entityIndex)
+            {
+                _logger?.LogInformation("[RemoveRoundObjective]: Removed {entityname}", entity.DesignerName);
+                entity.AddEntityIOEvent("Kill", entity, null, "", 0.1f);
+            }
+        }
+    }
+
     public static List<string> WeaponList = new List<string> 
     { 
         "weapon_deagle", 
