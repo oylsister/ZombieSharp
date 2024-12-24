@@ -5,15 +5,17 @@ using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Timers;
 using CounterStrikeSharp.API.Modules.Utils;
 using Microsoft.Extensions.Logging;
+using ZombieSharp.Api;
 using ZombieSharp.Models;
 
 namespace ZombieSharp.Plugin;
 
-public class Infect(ZombieSharp core, ILogger<ZombieSharp> logger, Classes classes)
+public class Infect(ZombieSharp core, ILogger<ZombieSharp> logger, Classes classes, ZombieSharpInterface api)
 {
     private ZombieSharp _core = core;
     private readonly ILogger<ZombieSharp> _logger = logger;
     private Classes? _classes = classes;
+    private readonly ZombieSharpInterface _api = api;
     public static bool InfectStarted = false;
     private CounterStrikeSharp.API.Modules.Timers.Timer? _firstInfection = null;
     private CounterStrikeSharp.API.Modules.Timers.Timer? _infectCountTimer = null;
@@ -280,6 +282,20 @@ public class Infect(ZombieSharp core, ILogger<ZombieSharp> logger, Classes class
 
     public void InfectClient(CCSPlayerController client, CCSPlayerController? attacker = null, bool motherzombie = false, bool force = false)
     {
+        if(client == null)
+        {
+            _logger.LogError("[InfectClient] Client is null!");
+            return;
+        }
+
+        var result = _api.ZS_OnClientInfect(client, attacker, motherzombie, force);
+        
+        if(result == HookResult.Handled || result == HookResult.Stop)
+        {
+            _logger.LogInformation("[InfectClient] {name} Infection has been stopped by API", client.PlayerName);
+            return;
+        }
+
         // if infect is not started yet then tell them yeah.
         if(!InfectHasStarted())
         {
@@ -362,6 +378,20 @@ public class Infect(ZombieSharp core, ILogger<ZombieSharp> logger, Classes class
 
     public void HumanizeClient(CCSPlayerController client, bool force = false)
     {
+        if(client == null)
+        {
+            _logger.LogError("[HumanizeClient] Client is null!");
+            return;
+        }
+
+        var result = _api.ZS_OnClientHumanize(client, force);
+        
+        if(result == HookResult.Handled || result == HookResult.Stop)
+        {
+            _logger.LogInformation("[HumanizeClient] {name} Humanize has been stopped by API", client.PlayerName);
+            return;
+        }
+
         if(PlayerData.ZombiePlayerData == null)
         {
             _logger.LogCritical("[HumanizeClient] ZombiePlayers data is null!");

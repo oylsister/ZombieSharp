@@ -1,11 +1,14 @@
 ﻿using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Core.Capabilities;
 using CounterStrikeSharp.API.Modules.Cvars;
 using CounterStrikeSharp.API.Modules.Cvars.Validators;
 using Microsoft.Extensions.Logging;
+using ZombieSharp.Api;
 using ZombieSharp.Database;
 using ZombieSharp.Models;
 using ZombieSharp.Plugin;
+using ZombieSharpAPI;
 
 namespace ZombieSharp;
 
@@ -32,6 +35,10 @@ public partial class ZombieSharp : BasePlugin
     private HitGroup? _hitgroups;
     private readonly ILogger<ZombieSharp> _logger;
 
+    // API stuff
+    ZombieSharpInterface? api { get; set; }
+    public static PluginCapability<IZombieSharpAPI> APICapability = new("zombiesharp:core");
+
     public ZombieSharp(ILogger<ZombieSharp> logger)
     {
         _logger = logger;
@@ -44,9 +51,13 @@ public partial class ZombieSharp : BasePlugin
         PlayerData.PlayerPurchaseCount = [];
         PlayerData.PlayerBurnData = [];
 
+        api = new ZombieSharpInterface();
+
+        Capabilities.RegisterPluginCapability(APICapability, () => api);
+
         _database = new DatabaseMain(this, _logger);
         _classes = new Classes(this, _database, _logger);
-        _infect = new Infect(this, _logger, _classes);
+        _infect = new Infect(this, _logger, _classes, api);
         _utils = new Utils(this, _logger);
         _settings = new GameSettings(_logger);
         _weapons = new Weapons(this, _logger);
