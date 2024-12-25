@@ -272,12 +272,49 @@ public class Infect(ZombieSharp core, ILogger<ZombieSharp> logger, Classes class
                 continue;
             }
 
+            // if player is not in the dictionary then skip it.
+            if(!PlayerData.ZombiePlayerData.ContainsKey(player))
+            {
+                _logger.LogError("[InfectOnPreRoundStart] Player {name} is not in ZombiePlayersData!", player.PlayerName);
+                continue;
+            }
+
             // set to false.
             PlayerData.ZombiePlayerData[player].Zombie = false;
 
             // switch their team to CT. and make sure they are not spectator or else they will get spawned with another.
             if(player.Team != CsTeam.Spectator && player.Team != CsTeam.None)
                 player.SwitchTeam(CsTeam.CounterTerrorist);
+        }
+    }
+
+    // we need to set mother zombie to last if they are chosen. so when mother zombie candidate run out we bring them to motherzombie cycle again.
+    public void InfectOnRoundEnd()
+    {
+        if(PlayerData.ZombiePlayerData == null)
+        {
+            _logger.LogCritical("[InfectOnRoundEnd] ZombiePlayers data is null!");
+            return;
+        }
+
+        foreach(var player in Utilities.GetPlayers())
+        {
+            if(player == null || !player.IsValid)
+            {
+                _logger.LogError("[InfectOnRoundEnd] Player is not invalid!");
+                continue;
+            }
+
+            // check if player is in dictionary and motherzombie is chosen then we have to set them to last.
+            if(!PlayerData.ZombiePlayerData.ContainsKey(player))
+            {
+                _logger.LogError("[InfectOnRoundEnd] Player {name} is not in ZombiePlayersData!", player.PlayerName);
+                continue;
+            }
+
+            // set mother zombie status to Last.
+            if(PlayerData.ZombiePlayerData[player].MotherZombie == ZombiePlayer.MotherZombieStatus.CHOSEN)
+                PlayerData.ZombiePlayerData[player].MotherZombie = ZombiePlayer.MotherZombieStatus.LAST;
         }
     }
 

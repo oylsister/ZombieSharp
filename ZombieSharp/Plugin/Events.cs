@@ -267,6 +267,7 @@ public class Events(ZombieSharp core, Infect infect, GameSettings settings, Clas
     {
         Infect.InfectStarted = false;
         _infect.InfectKillInfectionTimer();
+        _infect.InfectOnRoundEnd();
         return HookResult.Continue;
     }
 }
