@@ -9,6 +9,8 @@ public class ClassAttribute
     public bool MotherZombie { get; set; } = false;
     public float NapalmTime { get; set; } = 0f;
     public int Health { get; set; } = 100;
+    public float Regen_Interval { get; set; } = 0f; 
+    public int Regen_Amount { get; set; } = 0; 
     public float Knockback { get; set; }
     public float Speed { get; set; } = 250f;
 }

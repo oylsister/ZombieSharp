@@ -7,6 +7,8 @@
         "MotherZombie": false,
         "NapalmTime": 0.0,
         "Health": 100,
+        "Regen_Interval": 0, // Regen_Interval is the time in seconds between each regen tick
+        "Regen_Amount": 0, // Regen_Amount is the amount of health to regen each tick
         "Knockback": 0.0,
         "Speed": 250.0
     },
@@ -18,6 +20,8 @@
         "MotherZombie": false,
         "NapalmTime": 5.0,
         "Health": 8000,
+        "Regen_Interval": 10, // Regen_Interval is the time in seconds between each regen tick
+        "Regen_Amount": 100, // Regen_Amount is the amount of health to regen each tick
         "Knockback": 5.0,
         "Speed": 250.0
     },
@@ -29,6 +33,8 @@
         "MotherZombie": true,
         "NapalmTime": 5.0,
         "Health": 16000,
+        "Regen_Interval": 10, // Regen_Interval is the time in seconds between each regen tick
+        "Regen_Amount": 100, // Regen_Amount is the amount of health to regen each tick
         "Knockback": 5.0,
         "Speed": 250.0
     }

@@ -1,8 +1,6 @@
 ﻿using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Capabilities;
-using CounterStrikeSharp.API.Modules.Cvars;
-using CounterStrikeSharp.API.Modules.Cvars.Validators;
 using Microsoft.Extensions.Logging;
 using ZombieSharp.Api;
 using ZombieSharp.Database;
@@ -15,7 +13,7 @@ namespace ZombieSharp;
 public partial class ZombieSharp : BasePlugin
 {
     public override string ModuleName => "ZombieSharp";
-    public override string ModuleVersion => "2.0.1";
+    public override string ModuleVersion => "2.1.0";
     public override string ModuleAuthor => "Oylsister";
     public override string ModuleDescription => "Infection/survival style gameplay for CS2 in C#";
 
@@ -34,6 +32,7 @@ public partial class ZombieSharp : BasePlugin
     private ConVars? _convar;
     private HitGroup? _hitgroups;
     private RoundEnd? _roundend;
+    private HealthRegen? _healthregen;
     private readonly ILogger<ZombieSharp> _logger;
 
     // API stuff
@@ -51,6 +50,7 @@ public partial class ZombieSharp : BasePlugin
         PlayerData.PlayerClassesData = [];
         PlayerData.PlayerPurchaseCount = [];
         PlayerData.PlayerBurnData = [];
+        PlayerData.PlayerRegenData = [];
 
         api = new ZombieSharpInterface();
 
@@ -71,6 +71,7 @@ public partial class ZombieSharp : BasePlugin
         _roundend = new RoundEnd(this, _logger);
         _event = new Events(this, _infect, _settings, _classes, _weapons, _teleport, _respawn, _napalm, _convar, _hitgroups, _logger);
         _knockback = new Knockback(_logger);
+        _healthregen = new HealthRegen(this, _logger);
 
         if(hotReload)
         {
@@ -105,6 +106,8 @@ public partial class ZombieSharp : BasePlugin
         PlayerData.ZombiePlayerData = null;
         PlayerData.PlayerClassesData = null;
         PlayerData.PlayerPurchaseCount = null;
+        PlayerData.PlayerRegenData = null;
+        PlayerData.PlayerBurnData = null;
 
         _event?.EventOnUnload();
         _hook?.HookOnUnload();

@@ -231,6 +231,8 @@ public class Classes(ZombieSharp core, DatabaseMain database, ILogger<ZombieShar
                 playerPawn.ArmorValue = 0;
                 client.PawnHasHelmet = false;
             }
+
+            HealthRegen.RegenOnApplyClass(client, data);
         });
 
         // set speed 

@@ -69,6 +69,7 @@ public class Events(ZombieSharp core, Infect infect, GameSettings settings, Clas
         PlayerData.PlayerPurchaseCount?.Add(client, new());
         PlayerData.PlayerSpawnData?.Add(client, new());
         PlayerData.PlayerBurnData?.Add(client, null);
+        PlayerData.PlayerRegenData?.Add(client, null);
 
         _classes?.ClassesOnClientPutInServer(client);
     }
@@ -85,6 +86,7 @@ public class Events(ZombieSharp core, Infect infect, GameSettings settings, Clas
         PlayerData.PlayerPurchaseCount?.Remove(client);
         PlayerData.PlayerSpawnData?.Remove(client);
         PlayerData.PlayerBurnData?.Remove(client);
+        HealthRegen.RegenOnClientDisconnect(client);
     }
 
     // if reload a plugin this part won't be executed until you change map;
@@ -156,6 +158,7 @@ public class Events(ZombieSharp core, Infect infect, GameSettings settings, Clas
             Utils.EmitSound(client, "zr.amb.zombie_die");
 
         _respawn.RespawnOnPlayerDeath(client);
+        HealthRegen.RegenOnPlayerDeath(client);
 
         return HookResult.Continue;
     }
