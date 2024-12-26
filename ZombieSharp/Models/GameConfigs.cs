@@ -7,6 +7,7 @@ public class GameConfigs
     public float MotherZombieRatio { get; set; } = 7f;
     public bool MotherZombieTeleport { get; set; } = false;
     public bool CashOnDamage { get; set; } = false;
+    public int TimeoutWinner { get; set; } = 1;
 
     // human default class stuff.
     public string? DefaultHumanBuffer { get; set; }

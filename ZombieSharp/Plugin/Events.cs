@@ -143,7 +143,7 @@ public class Events(ZombieSharp core, Infect infect, GameSettings settings, Clas
     {
         // check the player count if there is any team that all dead.
         if(Infect.InfectHasStarted())
-            Utils.CheckGameStatus();
+            RoundEnd.CheckGameStatus();
 
         // play sound for zombie when killed by human.
         var client = @event.Userid;
@@ -246,6 +246,7 @@ public class Events(ZombieSharp core, Infect infect, GameSettings settings, Clas
     {
         _infect.InfectKillInfectionTimer();
         Utils.RemoveRoundObjective();
+        RoundEnd.RoundEndOnRoundStart();
         Server.PrintToChatAll($" {_core.Localizer["Prefix"]} {_core.Localizer["Infect.GameInfo"]}");
         return HookResult.Continue;
     }
@@ -260,6 +261,7 @@ public class Events(ZombieSharp core, Infect infect, GameSettings settings, Clas
     public HookResult OnRoundFreezeEnd(EventRoundFreezeEnd @event, GameEventInfo info)
     {
         _infect.InfectOnRoundFreezeEnd();
+        RoundEnd.RoundEndOnRoundFreezeEnd();
         return HookResult.Continue;
     }
 
@@ -268,6 +270,7 @@ public class Events(ZombieSharp core, Infect infect, GameSettings settings, Clas
         Infect.InfectStarted = false;
         _infect.InfectKillInfectionTimer();
         _infect.InfectOnRoundEnd();
+        RoundEnd.RoundEndOnRoundEnd();
         return HookResult.Continue;
     }
 }

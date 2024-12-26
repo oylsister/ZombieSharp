@@ -33,6 +33,7 @@ public partial class ZombieSharp : BasePlugin
     private Napalm? _napalm;
     private ConVars? _convar;
     private HitGroup? _hitgroups;
+    private RoundEnd? _roundend;
     private readonly ILogger<ZombieSharp> _logger;
 
     // API stuff
@@ -67,6 +68,7 @@ public partial class ZombieSharp : BasePlugin
         _napalm = new(this, _logger);
         _convar = new ConVars(this, _weapons, _logger);
         _hitgroups = new HitGroup(_logger);
+        _roundend = new RoundEnd(this, _logger);
         _event = new Events(this, _infect, _settings, _classes, _weapons, _teleport, _respawn, _napalm, _convar, _hitgroups, _logger);
         _knockback = new Knockback(_logger);
 

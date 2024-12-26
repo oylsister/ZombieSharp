@@ -37,6 +37,10 @@ public class ConVars(ZombieSharp core, Weapons weapons, ILogger<ZombieSharp> log
             GameSettings.Settings.CashOnDamage = value;
         };
 
+        _core.CVAR_TimeoutWinner.ValueChanged += (sender, value) => {
+            GameSettings.Settings.TimeoutWinner = value;
+        };
+
         // class section
         _core.CVAR_DefaultHuman.ValueChanged += (sender, value) => {
             GameSettings.Settings.DefaultHumanBuffer = value;
@@ -192,6 +196,7 @@ public class ConVars(ZombieSharp core, Weapons weapons, ILogger<ZombieSharp> log
         CreateConVarLine(configFile, _core.CVAR_MotherZombieRatio);
         CreateConVarLine(configFile, _core.CVAR_MotherZombieTeleport);
         CreateConVarLine(configFile, _core.CVAR_CashOnDamage);
+        CreateConVarLine(configFile, _core.CVAR_TimeoutWinner);
 
         CreateConVarLine(configFile, _core.CVAR_DefaultHuman);
         CreateConVarLine(configFile, _core.CVAR_DefaultZombie);

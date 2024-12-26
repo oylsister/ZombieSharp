@@ -34,39 +34,6 @@ public class Utils
         }
     }
 
-    public static void CheckGameStatus()
-    {
-        var ct = Utilities.GetPlayers().Where(player => player.TeamNum == 3 && player.PawnIsAlive).Count();
-        var t = Utilities.GetPlayers().Where(player => player.TeamNum == 2 && player.PawnIsAlive).Count();
-
-        if(ct == 0 && t > 0)
-            TerminateRound(CsTeam.Terrorist);
-
-        else if(t == 0 && ct > 0)
-            TerminateRound(CsTeam.CounterTerrorist);
-    }
-
-    public static void TerminateRound(CsTeam team)
-    {
-        var gameRules = Utilities.FindAllEntitiesByDesignerName<CCSGameRulesProxy>("cs_gamerules").First().GameRules;
-
-        if(gameRules == null)
-        {
-            _logger?.LogError("[TerminateRound] Gamerules is invalid cannot terminated round!");
-            return;
-        }
-
-        RoundEndReason reason;
-
-        if(team == CsTeam.Terrorist)
-            reason = RoundEndReason.TerroristsWin;
-
-        else
-            reason = RoundEndReason.CTsWin;
-
-        gameRules.TerminateRound(5f, reason);
-    }
-
     public static void EmitSound(CBaseEntity entity, string soundPath, int pitch = 100, float volume = 1.0f, float deley = 0.0f)
     {
         if(entity == null || string.IsNullOrEmpty(soundPath))

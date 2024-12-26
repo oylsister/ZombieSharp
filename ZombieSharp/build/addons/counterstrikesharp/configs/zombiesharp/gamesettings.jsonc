@@ -3,6 +3,7 @@
     "MotherZombieRatio": 7.0,
     "MotherZombieTeleport": false,
     "CashOnDamage": false,
+    "TimeoutWinner": 1,
 
     "DefaultHumanBuffer": "human_default",
     "DefaultZombieBuffer": "zombie_default",
