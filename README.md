@@ -20,7 +20,7 @@ Zombie-Sharp is a Zombie Mode plugin for CS2 referencing the features and functi
 ### Requirements
 - [Metamode:Source](https://www.sourcemm.net/downloads.php/?branch=master) Dev build (2.x).
 - [CounterStrikeSharp](https://github.com/roflmuffin/CounterStrikeSharp) 
-- [CSSharpFixes](https://github.com/CharlesBarone/CSSharp-Fixes) or [MovementUnlocker](https://github.com/Source2ZE/MovementUnlocker) plugin for knockback.
+- [CSSharpFixes](https://github.com/CharlesBarone/CSSharp-Fixes) or [MovementUnlocker](https://github.com/Source2ZE/MovementUnlocker) or [CS2-Sigpatcher](https://github.com/oylsister/CS2-SigPatcher) plugin for knockback.
 - [Newtonsoft.Json](https://github.com/JamesNK/Newtonsoft.Json/releases) (This is already included in Release)
 - [MultiAddonManager](https://github.com/Source2ZE/MultiAddonManager) for Custom Content for zombie mod.
 
@@ -45,9 +45,15 @@ dotnet build
 ### Command Setting
 It's recommend to set these Convar before using the plugin to prevent crashed and issues that may occur.
 ```
-mp_limitteams 0 // set in server.cfg
-mp_autoteambalance 0 // set in server.cfg
-mp_disconnect_kills_players 1 // set in gamemode_casual_server.cfg if file is not existed copy gamemode_casual.cfg and rename it.
+// set in server.cfg
+mp_limitteams 0
+mp_autoteambalance 0
+
+// set in gamemode_casual_server.cfg if file is not existed copy gamemode_casual.cfg and rename it.
+mp_disconnect_kills_players 1
+mp_roundtime 3 // set it to round time that you want.
+mp_roundtime_hostage 0 // this will override mp_roundtime in the map "cs_" if value is more than 0.
+mp_roundtime_defuse 0 // this will override mp_roundtime in the map "de_" if value is more than 0.
 ```
 
 ### API Example 
@@ -165,6 +171,8 @@ Example: ``game/csgo/characters/models/nozb1/2b_nier_automata_player_model/2b_ni
         "Model": "characters\\models\\nozb1\\2b_nier_automata_player_model\\2b_nier_player_model.vmdl", // Model path for this class change .vmdl_c to .vmdl in this config
         "MotherZombie": false, // Specify if this class is for mother zombie.
         "Health": 150, // class health
+        "Regen_Interval": 1.0, // Regen_Interval is the time in seconds between each regen tick
+        "Regen_Amount": 3, // Regen_Amount is the amount of health to regen each tick
         "Napalm_Time": 0, // Duration of Napalm grenade, set to 0 meaning no burn.
         "Speed": 250.0, // class speed (not work yet)
         "Knockback": 0.0, // class knockback

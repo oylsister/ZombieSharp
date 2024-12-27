@@ -5,9 +5,14 @@ name: .NET
 
 on:
   push:
+    paths-ignore:
+      - 'README.md'
     branches: [ "main", "dev", "dev2.0" ]
   pull_request:
+    paths-ignore:
+      - 'README.md'
     branches: [ "main" ]
+  
 
 env:
   VERSION: ""
