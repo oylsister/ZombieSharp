@@ -81,7 +81,7 @@ public class RoundEnd
         var ct = Utilities.GetPlayers().Where(player => player.TeamNum == 3 && player.PlayerPawn.Value?.LifeState == (byte)LifeState_t.LIFE_ALIVE).Count();
         var t = Utilities.GetPlayers().Where(player => player.TeamNum == 2 && player.PlayerPawn.Value?.LifeState == (byte)LifeState_t.LIFE_ALIVE).Count();
 
-        Server.PrintToChatAll($"CT = {ct} | T = {t}");
+        // Server.PrintToChatAll($"CT = {ct} | T = {t}");
 
         if(ct == 0 && t > 0)
             TerminateRound(CsTeam.Terrorist);
