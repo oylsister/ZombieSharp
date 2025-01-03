@@ -1,0 +1,24 @@
+{
+    "FirstInfectionTimer": 15.0, // First infection delaying in seconds
+    "MotherZombieRatio": 7.0, // First mother zombie ratio (21 players / 7 ratio = 3 motherzombie will spawned.)
+    "MotherZombieTeleport": false, // Teleport mother zombie back to spawn after infection (Zombie Escape stuff)
+    "CashOnDamage": false, // Turn damage into cash for human.
+    "TimeoutWinner": 1, // When round time end specific team will win (0 = zombie | 1 = human.)
+
+    "DefaultHumanBuffer": "human_default", // human class unique name for default class
+    "DefaultZombieBuffer": "zombie_default", // zombie class unique name for default class
+    "MotherZombieBuffer": "motherzombie", // mother zombie class unique name for default class
+    "RandomClassesOnConnect": false, // random class on join or not.
+    "RandomClassesOnSpawn": true, // random class on every player respawn.
+
+    "WeaponPurchaseEnable": true, // Enable purchase via command or not. This also will toggle weapon purchase limit too.
+    "WeaponRestrictEnable": true, // Restrict specific weapon or not.
+    "WeaponBuyZoneOnly": false, // Only allow player to purchase weapon in buyzone.
+
+    "TeleportAllow": true, // allow using !ztele to teleport back to spawn point.
+
+    "RespawnEnable": true, // allow respawn after death or not
+    "RespawnDelay": 5.0, // respawn delay obviously
+    "AllowRespawnJoinLate": false, // allow player to join during the round and respawn into the game or not.
+    "RespawnTeam": 0 // 1 for human team | 0 for zombie team | 2 for player's they were before death.
+}

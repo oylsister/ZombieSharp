@@ -1,5 +1,4 @@
 # ZombieSharp
-<b>This project is linux focusing as Windows has a lot issues with Virtual Functions. However, if Windows issue is solved, the plugin will mostly work fine.</b>
 
 Zombie-Sharp is a Zombie Mode plugin for CS2 referencing the features and functions from the previous SourcePawn Zombie:Reloaded plugin. You can say this is the Zombie:Reloaded remake but in C#. Here is the list of features.
 
@@ -10,23 +9,20 @@ Zombie-Sharp is a Zombie Mode plugin for CS2 referencing the features and functi
 - [x] Respawn Toggle option
 - [x] Player Class Module
 - [x] Weapon Module with purchase command.
-- [x] Hitgroups Module
+- [x] Hitgroups Module (Will add later)
 - [x] Knockback Module
 - [x] ZTeleport Module
 - [x] Configuration for Infection Settings (ConVar)
-- [x] Repeat Killer Module (Obsolete now)
-- [x] Top Defender
 - [x] Cash on damage zombie
 - [x] API for external plugin
-- [x] Grenade Napalm Effect (NEW! More coming soon.) 
-- [x] Player Stats (Work in progress now.)
+- [x] Grenade Napalm Effect
 
 ### Requirements
 - [Metamode:Source](https://www.sourcemm.net/downloads.php/?branch=master) Dev build (2.x).
 - [CounterStrikeSharp](https://github.com/roflmuffin/CounterStrikeSharp) 
-- [CSSharpFixes](https://github.com/CharlesBarone/CSSharp-Fixes) or [MovementUnlocker](https://github.com/Source2ZE/MovementUnlocker) plugin for knockback.
+- [CSSharpFixes](https://github.com/CharlesBarone/CSSharp-Fixes) or [MovementUnlocker](https://github.com/Source2ZE/MovementUnlocker) or [CS2-Sigpatcher](https://github.com/oylsister/CS2-SigPatcher) plugin for knockback.
 - [Newtonsoft.Json](https://github.com/JamesNK/Newtonsoft.Json/releases) (This is already included in Release)
-- [Dual Mounting](https://github.com/Source2ZE/MultiAddonManager) for Custom Content for zombie mod.
+- [MultiAddonManager](https://github.com/Source2ZE/MultiAddonManager) for Custom Content for zombie mod.
 
 ### Recommend Plugin
 - [NoBlock](https://github.com/ManifestManah/NoBlock) for Zombie Escape mode.
@@ -35,7 +31,7 @@ Zombie-Sharp is a Zombie Mode plugin for CS2 referencing the features and functi
 1. Install [.NET 8.0 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/8.0) and [Git](https://git-scm.com/downloads).
 2. Open up Windows Powershell and follow these command
 ```shell
-git clone https://github.com/Oylneechan/ZombieSharp
+git clone https://github.com/oylsister/ZombieSharp
 cd ZombieSharp
 dotnet build
 ```
@@ -49,9 +45,15 @@ dotnet build
 ### Command Setting
 It's recommend to set these Convar before using the plugin to prevent crashed and issues that may occur.
 ```
-mp_limitteams 0 // set in server.cfg
-mp_autoteambalance 0 // set in server.cfg
-mp_disconnect_kills_players 1 // set in gamemode_casual_server.cfg if file is not existed copy gamemode_casual.cfg and rename it.
+// set in server.cfg
+mp_limitteams 0
+mp_autoteambalance 0
+
+// set in gamemode_casual_server.cfg if file is not existed copy gamemode_casual.cfg and rename it.
+mp_disconnect_kills_players 1
+mp_roundtime 3 // set it to round time that you want.
+mp_roundtime_hostage 0 // this will override mp_roundtime in the map "cs_" if value is more than 0.
+mp_roundtime_defuse 0 // this will override mp_roundtime in the map "de_" if value is more than 0.
 ```
 
 ### API Example 
@@ -70,7 +72,7 @@ namespace ZombieTest
         public override string ModuleVersion => "1.0";
 
         // Declare Capability First.
-        public static PluginCapability<IZombieSharpAPI> ZombieCapability { get; } = new("zombiesharp");
+        public static PluginCapability<IZombieSharpAPI> ZombieCapability { get; } = new("zombiesharp:core");
 
         // Declare API class
         IZombieSharpAPI? API;
@@ -81,11 +83,11 @@ namespace ZombieTest
             API = ZombieCapability.Get()!;
 
             // Excute Hook function 
-            API.Hook_OnInfectClient(ZS_OnInfectClient);
+            API.OnClientInfect += ZS_OnInfectClient;
         }
 
         // Hook function is here.
-        public HookResult ZS_OnInfectClient(ref CCSPlayerController client, ref CCSPlayerController attacker, ref bool motherzombie, ref bool force, ref bool respawn)
+        public HookResult ZS_OnInfectClient(CCSPlayerController client, CCSPlayerController attacker, bool motherzombie, bool force)
         {
             // check which client is infect.
             Server.PrintToChatAll($"{client.PlayerName} is infected");
@@ -112,64 +114,89 @@ namespace ZombieTest
 ### Configuration
 Here is a list of all the config files available and what they do.
 
-weapons.json - Configure specific weapon settings. And purchase settings
+gamesettings.jsonc - Basic Infection timer and more settings you can set. This file existed as to apply game settings in case of ConVar failed to do.
+
 ```jsonc
 {
-    "KnockbackMultiply": 1.0, // Knockback Multiply for all weapon
-    "WeaponDatas":{
-        "glock": { // The weaponname get from event when get fired.
-            "WeaponName": "Glock", // weapon name you wish
-            "WeaponEntity": "weapon_glock", // weapon entity
-            "Knockback": 1.1, // knockback
-            "WeaponSlot": 1, // weaponslot (0 = Primary, 1 = Secondary, 2 = knife, 3 = grenade)
-            "Price": 200, // price you want
-            "MaxPurchase": 0, // Allowing how many time client to purchase in one live.
-            "Restrict": false, // Allow client to use or not.
-            "PurchaseCommand": [ "css_glock", "css_gs" ] // Purchase command. Set whatever you want.
-        }
+    "FirstInfectionTimer": 15.0, // First infection delaying in seconds
+    "MotherZombieRatio": 7.0, // First mother zombie ratio (21 players / 7 ratio = 3 motherzombie will spawned.)
+    "MotherZombieTeleport": false, // Teleport mother zombie back to spawn after infection (Zombie Escape stuff)
+    "CashOnDamage": false, // Turn damage into cash for human.
+    "TimeoutWinner": 1, // When round time end specific team will win (0 = zombie | 1 = human.)
+
+    "DefaultHumanBuffer": "human_default", // human class unique name for default class
+    "DefaultZombieBuffer": "zombie_default", // zombie class unique name for default class
+    "MotherZombieBuffer": "motherzombie", // mother zombie class unique name for default class
+    "RandomClassesOnConnect": false, // random class on join or not.
+    "RandomClassesOnSpawn": true, // random class on every player respawn.
+
+    "WeaponPurchaseEnable": true, // Enable purchase via command or not. This also will toggle weapon purchase limit too.
+    "WeaponRestrictEnable": true, // Restrict specific weapon or not.
+    "WeaponBuyZoneOnly": false, // Only allow player to purchase weapon in buyzone.
+
+    "TeleportAllow": true, // allow using !ztele to teleport back to spawn point.
+
+    "RespawnEnable": true, // allow respawn after death or not
+    "RespawnDelay": 5.0, // respawn delay obviously
+    "AllowRespawnJoinLate": false, // allow player to join during the round and respawn into the game or not.
+    "RespawnTeam": 0 // 1 for human team | 0 for zombie team | 2 for player's they were before death.
+}
+```
+
+weapons.jsonc - Configure specific weapon settings. And purchase settings
+```jsonc
+{
+    "glock": { // The weaponname get from event when get fired.
+        "WeaponName": "Glock", // weapon name you wish
+        "WeaponEntity": "weapon_glock", // weapon entity
+        "Knockback": 1.1, // knockback
+        "WeaponSlot": 1, // weaponslot (0 = Primary, 1 = Secondary, 2 = knife, 3 = grenade)
+        "Price": 200, // price you want
+        "MaxPurchase": 0, // Allowing how many time client to purchase in one live.
+        "Restrict": false, // Allow client to use or not.
+        "PurchaseCommand": [ "css_glock", "css_gs" ] // Purchase command. Set whatever you want.
     }
 }
 ```
-playerclasses.json - Player Classes configuration.
+playerclasses.jsonc - Player Classes configuration.
 <b>Placing Custom model at</b> ``game/csgo`` <b>for both server and client (player)</b>
 
 Example: ``game/csgo/characters/models/nozb1/2b_nier_automata_player_model/2b_nier_player_model.vmdl_c``
 ```jsonc
 {
-    "PlayerClasses":{
-        "human_default": { // Class unique name
-            "Name": "Human Default", // class name
-            "Description": "Default Class for human", // description
-            "Enable": true, // enable it or not
-            "Default_Class": true, // If true then player will automatically be assigned with this class when join server for the first time.
-            "Team": 1, // Team 0 = zombie, Team 1 = human
-            "Model": "characters\\models\\nozb1\\2b_nier_automata_player_model\\2b_nier_player_model.vmdl", // Model path for this class change .vmdl_c to .vmdl in this config
-            "MotherZombie": false, // Specify if this class is for mother zombie.
-            "Health": 150, // class health
-            "Regen_Interval": 0.0, // Specify how much second to regen health
-            "Regen_Amount": 0, // Regen Health amount
-            "Napalm_Time": 0, // Duration of Napalm grenade, set to 0 meaning no burn.
-            "Speed": 250.0, // class speed (not work yet)
-            "Knockback": 0.0, // class knockback
-            "Jump_Height": 3.0, // Jump height
-            "Jump_Distance": 1.0, // Jump Distance
-            "Fall_Damage": false // Disable fall damage or not
-        }
+    "human_default": { // Class unique name
+        "Name": "Human Default", // class name
+        "Enable": true, // enable it or not
+        "Team": 1, // Team 0 = zombie, Team 1 = human
+        "Model": "characters\\models\\nozb1\\2b_nier_automata_player_model\\2b_nier_player_model.vmdl", // Model path for this class change .vmdl_c to .vmdl in this config
+        "MotherZombie": false, // Specify if this class is for mother zombie.
+        "Health": 150, // class health
+        "Regen_Interval": 1.0, // Regen_Interval is the time in seconds between each regen tick
+        "Regen_Amount": 3, // Regen_Amount is the amount of health to regen each tick
+        "Napalm_Time": 0, // Duration of Napalm grenade, set to 0 meaning no burn.
+        "Speed": 250.0, // class speed (not work yet)
+        "Knockback": 0.0, // class knockback
     }
 }
 ```
-hitgroups.json - Hitgroup configuration for knockback.
+hitgroups.jsonc - Hitgroup configuration for knockback.
 ```jsonc
 {
-    "HitGroupDatas": {
-        "Generic": { // name of the part, doesn't affect anything
-            "HitgroupIndex": 0, // hitgroup index DO NOT CHANGE THIS
-            "HitgroupKnockback": 1.0 // knockback multiply when get hit to this hitgroup
-        },
-        "Head": {
-            "HitgroupIndex": 1,
-            "HitgroupKnockback": 1.2
-        }
+    "Generic": { // name doesn't effect anything
+        "Index": 0, // do not edit this part.
+        "Knockback": 1.0 // you can change knockback to whatever you want.
+    },
+    "Head": {
+        "Index": 1,
+        "Knockback": 1.2
+    },
+    "Chest": {
+        "Index": 2,
+        "Knockback": 1.0
+    },
+    "Stomach": {
+        "Index": 3,
+        "Knockback": 1.0
     }
 }
 ```

@@ -1,0 +1,41 @@
+{
+    "human_default": {
+        "Name": "Default Human",
+        "Enable": true,
+        "Team": 1,
+        "Model": "default",
+        "MotherZombie": false,
+        "NapalmTime": 0.0,
+        "Health": 100,
+        "Regen_Interval": 0, // Regen_Interval is the time in seconds between each regen tick
+        "Regen_Amount": 0, // Regen_Amount is the amount of health to regen each tick
+        "Knockback": 0.0,
+        "Speed": 250.0
+    },
+    "zombie_default": {
+        "Name": "Default Zombie",
+        "Enable": true,
+        "Team": 0,
+        "Model": "characters\\models\\s2ze\\zombie_frozen\\zombie_frozen.vmdl",
+        "MotherZombie": false,
+        "NapalmTime": 5.0,
+        "Health": 8000,
+        "Regen_Interval": 10, // Regen_Interval is the time in seconds between each regen tick
+        "Regen_Amount": 100, // Regen_Amount is the amount of health to regen each tick
+        "Knockback": 5.0,
+        "Speed": 250.0
+    },
+    "motherzombie": {
+        "Name": "Mother Zombie",
+        "Enable": true,
+        "Team": 0,
+        "Model": "characters\\models\\s2ze\\bsi_zombie\\zombie_bsi.vmdl",
+        "MotherZombie": true,
+        "NapalmTime": 5.0,
+        "Health": 16000,
+        "Regen_Interval": 10, // Regen_Interval is the time in seconds between each regen tick
+        "Regen_Amount": 100, // Regen_Amount is the amount of health to regen each tick
+        "Knockback": 5.0,
+        "Speed": 250.0
+    }
+}

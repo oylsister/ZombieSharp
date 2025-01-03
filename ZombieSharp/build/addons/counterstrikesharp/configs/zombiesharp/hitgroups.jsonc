@@ -1,0 +1,42 @@
+{
+    "Generic": {
+        "Index": 0,
+        "Knockback": 1.0
+    },
+    "Head": {
+        "Index": 1,
+        "Knockback": 1.2
+    },
+    "Chest": {
+        "Index": 2,
+        "Knockback": 1.0
+    },
+    "Stomach": {
+        "Index": 3,
+        "Knockback": 1.0
+    },
+    "LeftArm": {
+        "Index": 4,
+        "Knockback": 0.9
+    },
+    "RightArm": {
+        "Index": 5,
+        "Knockback": 0.9
+    },
+    "LeftLeg": {
+        "Index": 6,
+        "Knockback": 0.9
+    },
+    "RightLeg": {
+        "Index": 7,
+        "Knockback": 0.9
+    },
+    "Neck": {
+        "Index": 8,
+        "Knockback": 1.0
+    },
+    "Gear": {
+        "Index": 10,
+        "Knockback": 1.0
+    }
+}
