@@ -315,6 +315,7 @@ public class Classes(ZombieSharp core, DatabaseMain database, ILogger<ZombieShar
         var menu = new ChatMenu($" {_core.Localizer["Prefix"]} {_core.Localizer["Classes.MainMenu"]}");
         menu.AddMenuOption(_core.Localizer["Classes.MainMenu.Zombie"], (client, option) => ClassesSelectMenu(client, 0));
         menu.AddMenuOption(_core.Localizer["Classes.MainMenu.Human"], (client, option) => ClassesSelectMenu(client, 1));
+        menu.ExitButton = true;
         MenuManager.OpenChatMenu(client, menu);
     }
 
@@ -380,6 +381,7 @@ public class Classes(ZombieSharp core, DatabaseMain database, ILogger<ZombieShar
         }
 
         selectmenu.AddMenuOption("Back", menuhandle);
+        selectmenu.ExitButton = true;
         MenuManager.OpenChatMenu(client, selectmenu);
     }
 }
