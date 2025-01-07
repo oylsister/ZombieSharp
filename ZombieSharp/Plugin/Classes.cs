@@ -192,7 +192,7 @@ public class Classes(ZombieSharp core, DatabaseMain database, ILogger<ZombieShar
             return;
         }
 
-        Server.NextFrame(() => 
+        Server.NextWorldUpdate(() => 
         {
             // if the model is not empty string and model path is not same as current model we have.
             if(!string.IsNullOrEmpty(data.Model) && playerPawn.IsValid)

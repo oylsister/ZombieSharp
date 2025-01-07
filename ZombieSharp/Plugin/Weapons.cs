@@ -289,7 +289,7 @@ public class Weapons(ZombieSharp core, ILogger<ZombieSharp> logger)
             }
         }
 
-        Server.NextFrame(() => 
+        Server.NextWorldUpdate(() => 
         {
             // we give weapon to them this part can't be null unless server manager fucked it up.
             client.GiveNamedItem(attribute.WeaponEntity!);
