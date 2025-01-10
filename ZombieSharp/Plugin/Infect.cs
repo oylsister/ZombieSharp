@@ -356,13 +356,17 @@ public class Infect(ZombieSharp core, ILogger<ZombieSharp> logger, Classes class
         // set player zombie to true.
         PlayerData.ZombiePlayerData[client].Zombie = true;
 
+        // we get player class for applying attribute here.
         var applyClass = PlayerData.PlayerClassesData?[client].ZombieClass;
 
         // set motherzombie status to chosen
         if(motherzombie)
         {
             PlayerData.ZombiePlayerData[client].MotherZombie = ZombiePlayer.MotherZombieStatus.CHOSEN;
-            applyClass = Classes.MotherZombie;
+            
+            // if mother zombie class is specificed then change it, or else we just use player setting class from above.
+            if(Classes.MotherZombie != null)
+                applyClass = Classes.MotherZombie;
 
             // if teleport zombie back to spawn is enabled then we teleport them back to spawn.
             if(GameSettings.Settings?.MotherZombieTeleport ?? false)
@@ -374,7 +378,7 @@ public class Infect(ZombieSharp core, ILogger<ZombieSharp> logger, Classes class
 
                     if(pos == null || angle == null)
                     {
-                        _logger.LogError("[InfectClient] Position of {0} is null!", client.PlayerName);
+                        _logger.LogError("[InfectClient] Position of {name} is null!", client.PlayerName);
                         return;
                     }
 
