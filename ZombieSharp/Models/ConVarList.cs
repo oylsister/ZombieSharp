@@ -29,4 +29,9 @@ public partial class ZombieSharp
     public FakeConVar<float> CVAR_RespawnDelay = new("zs_respawn_delay", "Respawn Delaying", 5f, default, new RangeValidator<float>(0.1f, 60.0f));
     public FakeConVar<bool> CVAR_AllowRespawnJoinLate = new("zs_respawn_allow_join_late", "Allowing player who join game late to spawn during the round", false, default, new RangeValidator<bool>(false, true));
     public FakeConVar<int> CVAR_RespawnTeam = new("zs_respawn_team", "Specify team to respawn with after death (0 = Zombie | 1 = Human | 2 = Player Team before death)", 0, default, new RangeValidator<int>(0, 2));
+
+    public FakeConVar<string> CVAR_HumanWinOverlayParticle = new("zs_human_overlay_particle", "Human win overlay particle path", string.Empty);
+    public FakeConVar<string> CVAR_HumanWinOverlayMaterial = new("zs_human_overlay_material", "Human win overlay material path", string.Empty);
+    public FakeConVar<string> CVAR_ZombieWinOverlayParticle = new("zs_zombie_overlay_particle", "zombie win overlay particle path", string.Empty);
+    public FakeConVar<string> CVAR_ZombieWinOverlayMaterial = new("zs_zombie_overlay_material", "zombie win overlay material path", string.Empty);
 }

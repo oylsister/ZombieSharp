@@ -148,6 +148,20 @@ public class ConVars(ZombieSharp core, Weapons weapons, ILogger<ZombieSharp> log
             GameSettings.Settings.RespawTeam = value;
         };
 
+        // overlay stuff
+        _core.CVAR_HumanWinOverlayParticle.ValueChanged += (sender, value) => {
+            GameSettings.Settings.HumanWinOverlayParticle = value;
+        };
+        _core.CVAR_HumanWinOverlayMaterial.ValueChanged += (sender, value) => {
+            GameSettings.Settings.HumanWinOverlayMaterial = value;
+        };
+        _core.CVAR_ZombieWinOverlayParticle.ValueChanged += (sender, value) => {
+            GameSettings.Settings.ZombieWinOverlayParticle = value;
+        };
+        _core.CVAR_ZombieWinOverlayMaterial.ValueChanged += (sender, value) => {
+            GameSettings.Settings.ZombieWinOverlayMaterial = value;
+        };
+
         // create convar first.
         _core.RegisterFakeConVars(typeof(ConVar));
     }
@@ -216,6 +230,11 @@ public class ConVars(ZombieSharp core, Weapons weapons, ILogger<ZombieSharp> log
         CreateConVarLine(configFile, _core.CVAR_RespawnDelay);
         CreateConVarLine(configFile, _core.CVAR_AllowRespawnJoinLate);
         CreateConVarLine(configFile, _core.CVAR_RespawnTeam);
+
+        CreateConVarLine(configFile, _core.CVAR_HumanWinOverlayParticle);
+        CreateConVarLine(configFile, _core.CVAR_HumanWinOverlayMaterial);
+        CreateConVarLine(configFile, _core.CVAR_ZombieWinOverlayParticle);
+        CreateConVarLine(configFile, _core.CVAR_ZombieWinOverlayMaterial);
 
         configFile.Close();
     }
