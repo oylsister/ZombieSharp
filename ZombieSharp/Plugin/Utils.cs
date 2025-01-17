@@ -22,6 +22,7 @@ public class Utils
     }
 
     public static MemoryFunctionVoid<CBaseEntity, string, int, float, float> CBaseEntity_EmitSoundParamsFunc = new(GameData.GetSignature("CBaseEntity_EmitSoundParams"));
+    public static MemoryFunctionVoid<CEntityIdentity, string> CEntityIdentity_SetEntityNameFunc = new(GameData.GetSignature("CEntityIdentity_SetEntityName"));
 
     public static void PrintToCenterAll(string message)
     {
@@ -40,6 +41,14 @@ public class Utils
             return;
 
         CBaseEntity_EmitSoundParamsFunc.Invoke(entity, soundPath, pitch, volume, deley);
+    }
+
+    public static void SetEntityName(CEntityInstance entity, string name)
+    {
+        if(entity == null || entity.Entity == null || string.IsNullOrEmpty(name))
+            return;
+
+        CEntityIdentity_SetEntityNameFunc.Invoke(entity.Entity, name);
     }
 
     public static CCSPlayerController? GetCCSPlayerController(CEntityInstance? instance)

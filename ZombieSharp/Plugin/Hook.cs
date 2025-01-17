@@ -16,10 +16,13 @@ public class Hook(ZombieSharp core, Weapons weapons, Respawn respawn, ILogger<Zo
     private readonly Respawn _respawn = respawn;
     private readonly ILogger<ZombieSharp> _logger = logger;
 
+    public static MemoryFunctionVoid<CEntityIdentity, IntPtr, CEntityInstance, CEntityInstance, string, int> CEntityIdentity_AcceptInputFunc = new(GameData.GetSignature("CEntityIdentity_AcceptInput"));
+
     public void HookOnLoad()
     {
         VirtualFunctions.CCSPlayer_ItemServices_CanAcquireFunc.Hook(OnCanAcquire, HookMode.Pre);
         VirtualFunctions.CBaseEntity_TakeDamageOldFunc.Hook(OnTakeDamage, HookMode.Pre);
+        CEntityIdentity_AcceptInputFunc.Hook(OnEntityAcceptInput, HookMode.Post);
 
         _core.AddCommandListener("jointeam", OnClientJoinTeam, HookMode.Pre);
     }
@@ -28,6 +31,7 @@ public class Hook(ZombieSharp core, Weapons weapons, Respawn respawn, ILogger<Zo
     {
         VirtualFunctions.CCSPlayer_ItemServices_CanAcquireFunc.Unhook(OnCanAcquire, HookMode.Pre);
         VirtualFunctions.CBaseEntity_TakeDamageOldFunc.Unhook(OnTakeDamage, HookMode.Pre);
+        CEntityIdentity_AcceptInputFunc.Unhook(OnEntityAcceptInput, HookMode.Post);
 
         _core.RemoveCommandListener("jointeam", OnClientJoinTeam, HookMode.Pre);
     }
@@ -133,6 +137,39 @@ public class Hook(ZombieSharp core, Weapons weapons, Respawn respawn, ILogger<Zo
         // prevent death from backstabing.
         if(Infect.IsClientInfect(attacker) && Infect.IsClientHuman(client))
             info.Damage = 1;
+
+        return HookResult.Continue;
+    }
+
+    private HookResult OnEntityAcceptInput(DynamicHook hook)
+    {
+        var identity = hook.GetParam<CEntityIdentity>(0);
+        var input = hook.GetParam<IntPtr>(1);
+
+        var stringinput = Utilities.ReadStringUtf8(input);
+
+        //Server.PrintToChatAll($"Found: {identity.Name}, input: {stringinput}");
+
+        if(GameSettings.Settings == null)
+        {
+            _logger.LogError("[OnEntityAcceptInput] GameSettings is null!");
+            return HookResult.Continue;
+        }
+
+        if (Respawn.RespawnRelay != null && identity != null)
+        {
+            if (identity.Name == "zr_toggle_respawn")
+            {
+                if (stringinput.Equals("Trigger", StringComparison.OrdinalIgnoreCase))
+                    _respawn.ToggleRespawn(false);
+
+                else if (stringinput.Equals("Enable", StringComparison.OrdinalIgnoreCase) && !GameSettings.Settings.RespawnEnable)
+                    _respawn.ToggleRespawn(true);
+
+                else if (stringinput.Equals("Disable", StringComparison.OrdinalIgnoreCase) && GameSettings.Settings.RespawnEnable)
+                    _respawn.ToggleRespawn(false);
+            }
+        }
 
         return HookResult.Continue;
     }

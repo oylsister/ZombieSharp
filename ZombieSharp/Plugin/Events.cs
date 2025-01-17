@@ -248,6 +248,7 @@ public class Events(ZombieSharp core, Infect infect, GameSettings settings, Clas
     public HookResult OnRoundStart(EventRoundStart @event, GameEventInfo info)
     {
         _infect.InfectKillInfectionTimer();
+        _respawn.RespawnTogglerSetup();
         Utils.RemoveRoundObjective();
         RoundEnd.RoundEndOnRoundStart();
         Server.PrintToChatAll($" {_core.Localizer["Prefix"]} {_core.Localizer["Infect.GameInfo"]}");

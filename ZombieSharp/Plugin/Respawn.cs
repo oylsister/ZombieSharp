@@ -1,3 +1,4 @@
+using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Utils;
@@ -9,10 +10,39 @@ public class Respawn(ZombieSharp core, ILogger<ZombieSharp> logger)
 {
     private readonly ZombieSharp _core = core;
     private readonly ILogger<ZombieSharp> _logger = logger;
+    public static CHandle<CLogicRelay>? RespawnRelay = null;
 
     public void RespawnOnLoad()
     {
         _core.AddCommand("css_zspawn", "Zspawn command obviously", ZSpawnCommand);
+    }
+
+    public void ToggleRespawn(bool value = true)
+    {
+        if(GameSettings.Settings == null)
+        {
+            _logger.LogError("[ToggleRespawn] GameSettings is null!");
+            return;
+        }
+
+        GameSettings.Settings.RespawnEnable = value;
+    }
+
+    public void RespawnTogglerSetup()
+    {
+        var relay = Utilities.CreateEntityByName<CLogicRelay>("logic_relay");
+
+        if(relay == null || relay.Entity == null)
+        {
+            _logger.LogInformation("[RespawnTogglerSetup] Respawn Relay is null!");
+            return;
+        }
+
+        relay.Entity.Name = "zr_toggle_respawn";
+        Utils.SetEntityName(relay, "zr_toggle_respawn");
+        relay.DispatchSpawn();
+
+        RespawnRelay = new CHandle<CLogicRelay>(relay.Handle);
     }
 
     [CommandHelper(0, "", CommandUsage.CLIENT_ONLY)]
