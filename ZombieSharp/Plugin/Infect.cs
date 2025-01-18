@@ -119,6 +119,10 @@ public class Infect(ZombieSharp core, ILogger<ZombieSharp> logger, Classes class
         // kill timer just in case.
         InfectKillInfectionTimer();
 
+        // we disable this for warmup so player can chill.
+        if(Utils.IsWarmup())
+            return;
+
         if(GameSettings.Settings == null)
         {
             _logger.LogCritical("[InfectOnRoundFreezeEnd] Game Settings is null!");

@@ -317,6 +317,11 @@ public class Utils
         client.PlayerPawn.Value.VelocityModifier = stamina / 100f;
     }
 
+    public static bool IsWarmup()
+    {
+        return Utilities.FindAllEntitiesByDesignerName<CCSGameRulesProxy>("cs_gamerules").First().GameRules?.WarmupPeriod ?? false;
+    }
+
     public static List<string> WeaponList = new List<string> 
     { 
         "weapon_deagle", 
