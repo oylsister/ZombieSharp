@@ -249,6 +249,7 @@ public class Events(ZombieSharp core, Infect infect, GameSettings settings, Clas
     {
         _infect.InfectKillInfectionTimer();
         _respawn.RespawnTogglerSetup();
+        _respawn.ToggleRespawn(true);
         Utils.RemoveRoundObjective();
         RoundEnd.RoundEndOnRoundStart();
         Server.PrintToChatAll($" {_core.Localizer["Prefix"]} {_core.Localizer["Infect.GameInfo"]}");
