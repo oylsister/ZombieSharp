@@ -156,8 +156,11 @@ public class Classes(ZombieSharp core, DatabaseMain database, ILogger<ZombieShar
 
                     else
                     {
-                        PlayerData.PlayerClassesData[client].HumanClass = data.HumanClass;
-                        PlayerData.PlayerClassesData[client].ZombieClass = data.ZombieClass;
+                        if(data.HumanClass?.Enable ?? false)
+                            PlayerData.PlayerClassesData[client].HumanClass = data.HumanClass;
+
+                        if(data.ZombieClass?.Enable ?? false)
+                            PlayerData.PlayerClassesData[client].ZombieClass = data.ZombieClass;
                     }
                 });
             }
