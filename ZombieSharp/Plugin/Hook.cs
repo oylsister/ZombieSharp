@@ -123,10 +123,13 @@ public class Hook(ZombieSharp core, Weapons weapons, Respawn respawn, ILogger<Zo
             if(client == inferno.OwnerEntity.Value)
                 return HookResult.Handled;
 
-            if(client.Team == attacker.Team)
+            // if human step on it then we just stop here.
+            if(Infect.IsClientHuman(client))
                 return HookResult.Handled;
 
-            Utils.SetStamina(client, 40.0f);
+            // if zombie step on it then we make them walking slow.
+            else if(Infect.IsClientInfect(client))
+                Utils.SetStamina(client, 40.0f);
         }
 
         if(info.Inflictor.Value?.DesignerName == "hegrenade")
