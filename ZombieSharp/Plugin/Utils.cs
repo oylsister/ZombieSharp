@@ -1,3 +1,4 @@
+using System.Drawing;
 using System.Runtime.InteropServices;
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
@@ -211,6 +212,29 @@ public class Utils
         }
 
         return GetRandomItem(classes);
+    }
+
+    public static void CreateOverlay(string particlePath, string materialPath, float alpha, float radius, float lifeTime)
+    {
+        var particle = Utilities.CreateEntityByName<CEnvParticleGlow>("env_particle_glow");
+
+        if (particle == null)
+            return;
+
+        var kv = new CEntityKeyValues();
+
+        kv.SetString("effect_name", particlePath);
+        kv.SetFloat("alphascale", alpha);
+        kv.SetFloat("scale", radius);
+        kv.SetFloat("selfillumscale", lifeTime);
+        kv.SetColor("colortint", Color.White);
+
+        kv.SetString("effect_textureOverride", materialPath);
+
+        particle.DispatchSpawn(kv);
+        particle.AcceptInput("Start");
+
+        particle.AddEntityIOEvent("Kill", particle, null, "", lifeTime + 1f);
     }
 
     public static T GetRandomItem<T>(List<T> list) 
