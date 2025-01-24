@@ -1,5 +1,7 @@
 # ZombieSharp
 
+### I TESTED RUNNING THIS PLUGIN WITH CS2FIXES. AS LONG AS YOU DON'T ENABLE ZOMBIE:REBORN, YOU CAN USE CS2FIXES ALONG WITH ZOMBIESHARP PLUGIN.
+
 Zombie-Sharp is a Zombie Mode plugin for CS2 referencing the features and functions from the previous SourcePawn Zombie:Reloaded plugin. You can say this is the Zombie:Reloaded remake but in C#. Here is the list of features.
 
 ### Feature of Zombie-Sharp
