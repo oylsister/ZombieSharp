@@ -108,7 +108,7 @@ public class RoundEnd
         if (team == CsTeam.Terrorist)
         {
             if (GameSettings.Settings?.ZombieWinOverlayMaterial != string.Empty && GameSettings.Settings?.ZombieWinOverlayParticle != string.Empty)
-                Utils.CreateOverlay(GameSettings.Settings!.ZombieWinOverlayParticle, GameSettings.Settings!.ZombieWinOverlayMaterial, 1, 120f, 3.4f);
+                Utils.CreateOverlay(GameSettings.Settings!.ZombieWinOverlayParticle, GameSettings.Settings!.ZombieWinOverlayMaterial, 1, 100f, 3.4f);
 
             reason = RoundEndReason.TerroristsWin;
         }
@@ -116,7 +116,7 @@ public class RoundEnd
         else if (team == CsTeam.CounterTerrorist)
         {
             if (GameSettings.Settings?.HumanWinOverlayMaterial != string.Empty && GameSettings.Settings?.HumanWinOverlayParticle != string.Empty)
-                Utils.CreateOverlay(GameSettings.Settings!.HumanWinOverlayParticle, GameSettings.Settings!.HumanWinOverlayMaterial, 1, 120f, 3.4f);
+                Utils.CreateOverlay(GameSettings.Settings!.HumanWinOverlayParticle, GameSettings.Settings!.HumanWinOverlayMaterial, 1, 100f, 3.4f);
 
             reason = RoundEndReason.CTsWin;
         }
@@ -124,7 +124,7 @@ public class RoundEnd
         else
         {
             if (GameSettings.Settings?.HumanWinOverlayMaterial != string.Empty && GameSettings.Settings?.HumanWinOverlayParticle != string.Empty)
-                Utils.CreateOverlay(GameSettings.Settings!.HumanWinOverlayParticle, GameSettings.Settings!.HumanWinOverlayMaterial, 1, 120f, 3.4f);
+                Utils.CreateOverlay(GameSettings.Settings!.HumanWinOverlayParticle, GameSettings.Settings!.HumanWinOverlayMaterial, 1, 100f, 3.4f);
 
             reason = RoundEndReason.RoundDraw;
         }
