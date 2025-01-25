@@ -219,7 +219,10 @@ public class Utils
         var particle = Utilities.CreateEntityByName<CEnvParticleGlow>("env_particle_glow");
 
         if (particle == null)
+        {
+            _logger?.LogError("[CreateOverlay] Particle is null");
             return;
+        }
 
         var kv = new CEntityKeyValues();
 

@@ -122,6 +122,10 @@ public class Events(ZombieSharp core, Infect infect, GameSettings settings, Clas
         }
 
         manifest.AddResource("particles\\oylsister\\env_fire_large.vpcf");
+        manifest.AddResource(GameSettings.Settings!.HumanWinOverlayMaterial);
+        manifest.AddResource(GameSettings.Settings.HumanWinOverlayParticle);
+        manifest.AddResource(GameSettings.Settings.ZombieWinOverlayMaterial);
+        manifest.AddResource(GameSettings.Settings.ZombieWinOverlayParticle);
     }
 
     public HookResult OnPlayerHurt(EventPlayerHurt @event, GameEventInfo info)

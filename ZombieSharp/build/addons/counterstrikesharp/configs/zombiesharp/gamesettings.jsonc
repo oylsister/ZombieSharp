@@ -20,5 +20,11 @@
     "RespawnEnable": true, // allow respawn after death or not
     "RespawnDelay": 5.0, // respawn delay obviously
     "AllowRespawnJoinLate": false, // allow player to join during the round and respawn into the game or not.
-    "RespawnTeam": 0 // 1 for human team | 0 for zombie team | 2 for player's they were before death.
+    "RespawnTeam": 0, // 1 for human team | 0 for zombie team | 2 for player's they were before death.
+
+    "HumanWinOverlayParticle": "particles/cs2fixes/simple_overlay.vpcf",
+    "HumanWinOverlayMaterial": "materials/cs2fixes/humanoverlay.vtex",
+    "ZombieWinOverlayParticle": "particles/cs2fixes/simple_overlay.vpcf",
+    "ZombieWinOverlayMaterial": "materials/cs2fixes/zombieoverlay.vtex"
+
 }
