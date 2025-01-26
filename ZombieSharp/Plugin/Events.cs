@@ -37,6 +37,7 @@ public class Events(ZombieSharp core, Infect infect, GameSettings settings, Clas
         _core.RegisterEventHandler<EventWarmupEnd>(OnWarmupEnd);
         _core.RegisterEventHandler<EventRoundEnd>(OnRoundEnd);
         _core.RegisterEventHandler<EventPlayerTeam>(OnPlayerTeam);
+        _core.RegisterEventHandler<EventCsPreRestart>(OnPreRestart);
     }
 
     public void EventOnUnload()
@@ -273,6 +274,15 @@ public class Events(ZombieSharp core, Infect infect, GameSettings settings, Clas
         Infect.InfectStarted = false;
         _infect.InfectKillInfectionTimer();
         _infect.InfectOnRoundEnd();
+        RoundEnd.RoundEndOnRoundEnd();
+        return HookResult.Continue;
+    }
+
+    public HookResult OnPreRestart(EventCsPreRestart @event, GameEventInfo info)
+    {
+        Infect.InfectStarted = false;
+        _infect.InfectOnPreRoundStart(false);
+        _infect.InfectKillInfectionTimer();
         RoundEnd.RoundEndOnRoundEnd();
         return HookResult.Continue;
     }
