@@ -260,7 +260,7 @@ public class Infect(ZombieSharp core, ILogger<ZombieSharp> logger, Classes class
             InfectClient(client, attacker);
     }
 
-    public void InfectOnPreRoundStart()
+    public void InfectOnPreRoundStart(bool switchTeam = true)
     {
         if(PlayerData.ZombiePlayerData == null)
         {
@@ -287,7 +287,7 @@ public class Infect(ZombieSharp core, ILogger<ZombieSharp> logger, Classes class
             PlayerData.ZombiePlayerData[player].Zombie = false;
 
             // switch their team to CT. and make sure they are not spectator or else they will get spawned with another.
-            if(player.Team != CsTeam.Spectator && player.Team != CsTeam.None)
+            if(player.Team != CsTeam.Spectator && player.Team != CsTeam.None && switchTeam)
                 player.SwitchTeam(CsTeam.CounterTerrorist);
         }
     }
