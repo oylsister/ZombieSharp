@@ -127,6 +127,7 @@ public class Events(ZombieSharp core, Infect infect, GameSettings settings, Clas
         manifest.AddResource(GameSettings.Settings.HumanWinOverlayParticle);
         manifest.AddResource(GameSettings.Settings.ZombieWinOverlayMaterial);
         manifest.AddResource(GameSettings.Settings.ZombieWinOverlayParticle);
+        manifest.AddResource("soundevents\\soundevents_zsharp.vsndevts");
     }
 
     public HookResult OnPlayerHurt(EventPlayerHurt @event, GameEventInfo info)
