@@ -138,6 +138,8 @@ public class Events(ZombieSharp core, Infect infect, GameSettings settings, Clas
         var dmgHealth = @event.DmgHealth;
         var hitgroups = @event.Hitgroup;
 
+        //Server.PrintToChatAll($"[OnPlayerHurt] {client?.PlayerName} hurt by {attacker?.PlayerName} with {weapon} for {dmgHealth} hitgroup {hitgroups}.");
+
         _infect.InfectOnPlayerHurt(client, attacker);
         Knockback.KnockbackClient(client, attacker, weapon, dmgHealth, hitgroups);
         Utils.UpdatedPlayerCash(attacker, dmgHealth);
@@ -165,6 +167,7 @@ public class Events(ZombieSharp core, Infect infect, GameSettings settings, Clas
 
         _respawn.RespawnOnPlayerDeath(client);
         HealthRegen.RegenOnPlayerDeath(client);
+        RepeatKiller.OnPlayerDeath(client, @event.Weapon);
 
         return HookResult.Continue;
     }

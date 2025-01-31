@@ -7,6 +7,7 @@
     "Core.MustBeInTeam": "You must join team to use this feature",
     "Core.FeatureDisbled": "This feature has been disabled by server.",
     "Core.TargetInvalid": "The target is invalid",
+    "Core.RepeatKiller": "Repeat Killer has been activated! You will not be respawn again in this round!",
 
     "Infect.BecomeZombie": "You have been infected! Go pass it on to as many other players as you can.",
     "Infect.BecomeHuman": "The merciful gods (known as admins) have resurrected your soul, find some cover!",

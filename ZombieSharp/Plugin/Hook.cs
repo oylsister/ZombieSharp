@@ -16,13 +16,13 @@ public class Hook(ZombieSharp core, Weapons weapons, Respawn respawn, ILogger<Zo
     private readonly Respawn _respawn = respawn;
     private readonly ILogger<ZombieSharp> _logger = logger;
 
-    public static MemoryFunctionVoid<CEntityIdentity, IntPtr, CEntityInstance, CEntityInstance, string, int> CEntityIdentity_AcceptInputFunc = new(GameData.GetSignature("CEntityIdentity_AcceptInput"));
+    //public static MemoryFunctionVoid<CEntityIdentity, CUtlSymbolLarge, CEntityInstance, CEntityInstance, CVariant, int> CEntityIdentity_AcceptInputFunc = new(GameData.GetSignature("CEntityIdentity_AcceptInput"));
 
     public void HookOnLoad()
     {
         VirtualFunctions.CCSPlayer_ItemServices_CanAcquireFunc.Hook(OnCanAcquire, HookMode.Pre);
         VirtualFunctions.CBaseEntity_TakeDamageOldFunc.Hook(OnTakeDamage, HookMode.Pre);
-        CEntityIdentity_AcceptInputFunc.Hook(OnEntityAcceptInput, HookMode.Post);
+        //CEntityIdentity_AcceptInputFunc.Hook(OnEntityAcceptInput, HookMode.Post);
 
         _core.AddCommandListener("jointeam", OnClientJoinTeam, HookMode.Pre);
     }
@@ -31,7 +31,7 @@ public class Hook(ZombieSharp core, Weapons weapons, Respawn respawn, ILogger<Zo
     {
         VirtualFunctions.CCSPlayer_ItemServices_CanAcquireFunc.Unhook(OnCanAcquire, HookMode.Pre);
         VirtualFunctions.CBaseEntity_TakeDamageOldFunc.Unhook(OnTakeDamage, HookMode.Pre);
-        CEntityIdentity_AcceptInputFunc.Unhook(OnEntityAcceptInput, HookMode.Post);
+        //CEntityIdentity_AcceptInputFunc.Unhook(OnEntityAcceptInput, HookMode.Post);
 
         _core.RemoveCommandListener("jointeam", OnClientJoinTeam, HookMode.Pre);
     }
@@ -110,6 +110,12 @@ public class Hook(ZombieSharp core, Weapons weapons, Respawn respawn, ILogger<Zo
         var victim = hook.GetParam<CEntityInstance>(0);
         var info = hook.GetParam<CTakeDamageInfo>(1);
 
+        if(victim.DesignerName != "player" || info.Attacker.Value?.DesignerName != "player")
+        {
+            //Server.PrintToChatAll($"[OnTakeDamage] Victim: {victim.DesignerName}, Attacker: {info.Attacker.Value?.DesignerName}");
+            return HookResult.Continue;
+        }
+
         var client = Utils.GetCCSPlayerController(victim);
         var attacker = Utils.GetCCSPlayerController(info.Attacker.Value);
 
@@ -147,9 +153,7 @@ public class Hook(ZombieSharp core, Weapons weapons, Respawn respawn, ILogger<Zo
     private HookResult OnEntityAcceptInput(DynamicHook hook)
     {
         var identity = hook.GetParam<CEntityIdentity>(0);
-        var input = hook.GetParam<IntPtr>(1);
-
-        var stringinput = Utilities.ReadStringUtf8(input);
+        var input = hook.GetParam<CUtlSymbolLarge>(1);
 
         //Server.PrintToChatAll($"Found: {identity.Name}, input: {stringinput}");
 
@@ -163,13 +167,13 @@ public class Hook(ZombieSharp core, Weapons weapons, Respawn respawn, ILogger<Zo
         {
             if (identity.Name == "zr_toggle_respawn")
             {
-                if (stringinput.Equals("Trigger", StringComparison.OrdinalIgnoreCase))
+                if (input.KeyValue.Equals("Trigger", StringComparison.OrdinalIgnoreCase))
                     _respawn.ToggleRespawn(false);
 
-                else if (stringinput.Equals("Enable", StringComparison.OrdinalIgnoreCase) && !GameSettings.Settings.RespawnEnable)
+                else if (input.KeyValue.Equals("Enable", StringComparison.OrdinalIgnoreCase) && !GameSettings.Settings.RespawnEnable)
                     _respawn.ToggleRespawn(true);
 
-                else if (stringinput.Equals("Disable", StringComparison.OrdinalIgnoreCase) && GameSettings.Settings.RespawnEnable)
+                else if (input.KeyValue.Equals("Disable", StringComparison.OrdinalIgnoreCase) && GameSettings.Settings.RespawnEnable)
                     _respawn.ToggleRespawn(false);
             }
         }
@@ -215,4 +219,9 @@ public class Hook(ZombieSharp core, Weapons weapons, Respawn respawn, ILogger<Zo
 
         return HookResult.Continue;
     }
+}
+
+public class CUtlSymbolLarge(IntPtr pointer) : NativeObject(pointer)
+{
+    public string KeyValue => Utilities.ReadStringUtf8(Handle + 0);
 }

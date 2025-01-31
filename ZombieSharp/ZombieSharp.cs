@@ -33,6 +33,7 @@ public partial class ZombieSharp : BasePlugin
     private HitGroup? _hitgroups;
     private RoundEnd? _roundend;
     private HealthRegen? _healthregen;
+    private RepeatKiller? _repeatKiller;
     private readonly ILogger<ZombieSharp> _logger;
 
     // API stuff
@@ -72,6 +73,7 @@ public partial class ZombieSharp : BasePlugin
         _event = new Events(this, _infect, _settings, _classes, _weapons, _teleport, _respawn, _napalm, _convar, _hitgroups, _logger);
         _knockback = new Knockback(_logger);
         _healthregen = new HealthRegen(this, _logger);
+        _repeatKiller = new RepeatKiller(this, _respawn);
 
         if(hotReload)
         {
