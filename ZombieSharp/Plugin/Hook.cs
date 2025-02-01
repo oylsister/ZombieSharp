@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Commands;
@@ -153,6 +154,10 @@ public class Hook(ZombieSharp core, Weapons weapons, Respawn respawn, ILogger<Zo
     private HookResult OnEntityAcceptInput(DynamicHook hook)
     {
         var identity = hook.GetParam<CEntityIdentity>(0);
+
+        if (identity.Name != "zr_toggle_respawn")
+            return HookResult.Continue;
+
         var input = hook.GetParam<CUtlSymbolLarge>(1);
 
         //Server.PrintToChatAll($"Found: {identity.Name}, input: {stringinput}");
@@ -167,13 +172,13 @@ public class Hook(ZombieSharp core, Weapons weapons, Respawn respawn, ILogger<Zo
         {
             if (identity.Name == "zr_toggle_respawn")
             {
-                if (input.KeyValue.Equals("Trigger", StringComparison.OrdinalIgnoreCase))
+                if (input.KeyValue?.Equals("Trigger", StringComparison.OrdinalIgnoreCase) ?? false)
                     _respawn.ToggleRespawn(false);
 
-                else if (input.KeyValue.Equals("Enable", StringComparison.OrdinalIgnoreCase) && !GameSettings.Settings.RespawnEnable)
+                else if (input.KeyValue?.Equals("Enable", StringComparison.OrdinalIgnoreCase) ?? false && !GameSettings.Settings.RespawnEnable)
                     _respawn.ToggleRespawn(true);
 
-                else if (input.KeyValue.Equals("Disable", StringComparison.OrdinalIgnoreCase) && GameSettings.Settings.RespawnEnable)
+                else if (input.KeyValue?.Equals("Disable", StringComparison.OrdinalIgnoreCase) ?? false && GameSettings.Settings.RespawnEnable)
                     _respawn.ToggleRespawn(false);
             }
         }
@@ -221,7 +226,14 @@ public class Hook(ZombieSharp core, Weapons weapons, Respawn respawn, ILogger<Zo
     }
 }
 
-public class CUtlSymbolLarge(IntPtr pointer) : NativeObject(pointer)
+public class CUtlSymbolLarge : NativeObject
 {
-    public string KeyValue => Utilities.ReadStringUtf8(Handle + 0);
+    public CUtlSymbolLarge(IntPtr pointer) : base(pointer)
+    {
+        IntPtr ptr = Marshal.ReadIntPtr(pointer);
+        //KeyValue = ptr.ToString();
+        if (ptr == IntPtr.Zero || ptr < 200000000000) return;
+        KeyValue = Marshal.PtrToStringUTF8(ptr);
+    }
+    public string? KeyValue;
 }
