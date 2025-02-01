@@ -44,9 +44,9 @@ public class Respawn(ZombieSharp core, ILogger<ZombieSharp> logger)
 
     public void RespawnOnPlayerDeath(CCSPlayerController? client)
     {
-        if(client == null || !Utils.IsPlayerAlive(client))
+        if(client == null || Utils.IsPlayerAlive(client))
         {
-            _logger.LogCritical("[RespawnOnPlayerDeath] client {0} is null or not alive", client?.PlayerName ?? "Unnamed");
+            _logger.LogCritical("[RespawnOnPlayerDeath] client {0} is null or alive", client?.PlayerName ?? "Unnamed");
             return;
         }
 
