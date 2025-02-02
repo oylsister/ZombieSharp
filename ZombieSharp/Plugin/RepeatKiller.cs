@@ -15,8 +15,11 @@ public class RepeatKiller
     }
 
     private static Dictionary<CCSPlayerController, float> _repeatKiller = [];
-    public static void OnPlayerDeath(CCSPlayerController client, string weapon)
+    public static void OnPlayerDeath(CCSPlayerController? client, string weapon)
     {
+        if(client == null)
+            return;
+
         if(weapon != "trigger_hurt")
             return;
 

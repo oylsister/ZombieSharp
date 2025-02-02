@@ -157,12 +157,11 @@ public class Events(ZombieSharp core, Infect infect, GameSettings settings, Clas
 
         // play sound for zombie when killed by human.
         var client = @event.Userid;
-        var attacker = @event.Attacker;
 
-        if(client == null || attacker == null)
+        if(client == null)
             return HookResult.Continue;
 
-        if(Infect.IsClientHuman(attacker) && Infect.IsClientInfect(client))
+        if(Infect.IsClientInfect(client))
             Utils.EmitSound(client, "zr.amb.zombie_die");
 
         _respawn.RespawnOnPlayerDeath(client);
