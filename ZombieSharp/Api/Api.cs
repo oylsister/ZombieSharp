@@ -1,4 +1,5 @@
 using CounterStrikeSharp.API.Core;
+using ZombieSharp.Models;
 using ZombieSharp.Plugin;
 using ZombieSharpAPI;
 
@@ -32,5 +33,15 @@ public class ZombieSharpInterface : IZombieSharpAPI
     public void ZS_RespawnClient(CCSPlayerController client)
     {
         Respawn.RespawnClient(client);
+    }
+
+    public string? ZS_GetClientClassString(CCSPlayerController client, int team)
+    {
+        return Classes.ClassesConfig?.Where(p => p.Value == PlayerData.PlayerClassesData?[client].HumanClass).FirstOrDefault().Key;
+    }
+
+    public string? ZS_GetClassModel(string className)
+    {
+        return Classes.ClassesConfig?.Where(p => p.Key == className).FirstOrDefault().Value.Model;
     }
 }
