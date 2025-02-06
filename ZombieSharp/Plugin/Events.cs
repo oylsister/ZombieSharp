@@ -184,6 +184,12 @@ public class Events(ZombieSharp core, Infect infect, GameSettings settings, Clas
 
         _classes.ClassesOnPlayerSpawn(client);
 
+        if(Infect.IsTestMode)
+        {
+            _infect.HumanizeClient(client);
+            return HookResult.Continue;
+        }
+
         if(Infect.InfectHasStarted())
         {
             var team = GameSettings.Settings?.RespawTeam ?? 0;

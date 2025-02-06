@@ -146,7 +146,12 @@ public class Hook(ZombieSharp core, Weapons weapons, Respawn respawn, ILogger<Zo
 
         // prevent death from backstabing.
         if(Infect.IsClientInfect(attacker) && Infect.IsClientHuman(client))
+        {
+            if(Infect.IsTestMode)
+                return HookResult.Handled;
+                
             info.Damage = 1;
+        }
 
         return HookResult.Continue;
     }

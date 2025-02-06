@@ -20,11 +20,13 @@ public class Infect(ZombieSharp core, ILogger<ZombieSharp> logger, Classes class
     private CounterStrikeSharp.API.Modules.Timers.Timer? _firstInfection = null;
     private CounterStrikeSharp.API.Modules.Timers.Timer? _infectCountTimer = null;
     private int _infectCountNumber = 0;
+    public static bool IsTestMode = false;
 
     public void InfectOnLoad()
     {
         _core.AddCommand("zs_infect", "Infection Command", InfectClientCommand);
         _core.AddCommand("zs_human", "Humanize Command", HumanizeClientCommand);
+        _core.AddCommand("zs_testmode", "TestMode Command", TestModeCommand);
     }
 
     [CommandHelper(1, "zs_infect <targetname>")]
@@ -114,6 +116,35 @@ public class Infect(ZombieSharp core, ILogger<ZombieSharp> logger, Classes class
             info.ReplyToCommand($" {_core.Localizer["Prefix"]} {_core.Localizer["Human.Success", target.FirstOrDefault()!.PlayerName]}");
     }
 
+    [CommandHelper(1, "zs_testmode <0-1>")]
+    [RequiresPermissions("@css/slay")]
+    public void TestModeCommand(CCSPlayerController? client, CommandInfo info)
+    {
+        var mode = int.TryParse(info.ArgByIndex(1), out var number);
+
+        if(!mode)
+        {
+            info.ReplyToCommand($" {_core.Localizer["Prefix"]} invalid value.");
+            return;
+        }
+
+        var result = Convert.ToBoolean(number);
+
+        if(result)
+        {
+            IsTestMode = true;
+            info.ReplyToCommand($" {_core.Localizer["Prefix"]} Test mode has been activated.");
+            return;
+        }
+
+        else
+        {
+            IsTestMode = false;
+            info.ReplyToCommand($" {_core.Localizer["Prefix"]} Test mode has been deactivated.");
+            return;
+        }
+    }
+
     public void InfectOnRoundFreezeEnd()
     {
         // kill timer just in case.
@@ -165,6 +196,9 @@ public class Infect(ZombieSharp core, ILogger<ZombieSharp> logger, Classes class
 
     public void InfectMotherZombie()
     {
+        if(IsTestMode)
+            return;
+
         // if infection already started then stop it.
         if(InfectHasStarted())
             return;
@@ -324,6 +358,9 @@ public class Infect(ZombieSharp core, ILogger<ZombieSharp> logger, Classes class
 
     public void InfectClient(CCSPlayerController client, CCSPlayerController? attacker = null, bool motherzombie = false, bool force = false)
     {
+        if(IsTestMode)
+            return;
+            
         if(client == null)
         {
             _logger.LogError("[InfectClient] Client is null!");

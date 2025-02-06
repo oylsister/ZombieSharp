@@ -78,6 +78,9 @@ public class RoundEnd
 
     public static void CheckGameStatus()
     {
+        if(Infect.IsTestMode)
+            return;
+
         var ct = Utilities.GetPlayers().Where(player => player.TeamNum == 3 && player.PlayerPawn.Value?.LifeState == (byte)LifeState_t.LIFE_ALIVE).Count();
         var t = Utilities.GetPlayers().Where(player => player.TeamNum == 2 && player.PlayerPawn.Value?.LifeState == (byte)LifeState_t.LIFE_ALIVE).Count();
 
