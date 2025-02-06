@@ -31,4 +31,10 @@ public class GameConfigs
     public float RespawnDelay { get; set; } = 5.0f;
     public bool AllowRespawnJoinLate { get; set; } = false;
     public int RespawTeam { get; set; } = 0;
+
+    // win overlay stuff
+    public string HumanWinOverlayParticle { get; set; } = string.Empty;
+    public string HumanWinOverlayMaterial { get; set; } = string.Empty;
+    public string ZombieWinOverlayParticle { get; set; } = string.Empty;
+    public string ZombieWinOverlayMaterial { get; set; } = string.Empty;
 }

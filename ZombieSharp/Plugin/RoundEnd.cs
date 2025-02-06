@@ -88,6 +88,9 @@ public class RoundEnd
 
         else if(t == 0 && ct > 0)
             TerminateRound(CsTeam.CounterTerrorist);
+
+        else if(t == 0 && ct == 0)
+            TerminateRound();
     }
 
     public static void TerminateRound(CsTeam team = CsTeam.None)

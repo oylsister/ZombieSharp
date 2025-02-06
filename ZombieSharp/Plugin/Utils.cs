@@ -170,13 +170,18 @@ public class Utils
         if(client == null)
             return false;
 
-        if(client.Handle == IntPtr.Zero)
+        if(!client.IsValid)
         {
             _logger?.LogError("[IsPlayerAlive] Client is invalid pointer!");
             return false;
         }
 
-        return client.PawnIsAlive;
+        var clientPawn = client.PlayerPawn.Value;
+        
+        if(clientPawn == null || !clientPawn.IsValid)
+            return false;
+
+        return (LifeState_t)clientPawn.LifeState == LifeState_t.LIFE_ALIVE;
     }
 
     public static ClassAttribute? GetRandomPlayerClasses(int team)

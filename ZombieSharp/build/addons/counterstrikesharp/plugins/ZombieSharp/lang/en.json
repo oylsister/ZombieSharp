@@ -6,6 +6,7 @@
     "Core.MustBeDead": "You must be dead to use this feature",
     "Core.MustBeInTeam": "You must join team to use this feature",
     "Core.FeatureDisbled": "This feature has been disabled by server.",
+    "Core.TargetInvalid": "The target is invalid",
 
     "Infect.BecomeZombie": "You have been infected! Go pass it on to as many other players as you can.",
     "Infect.BecomeHuman": "The merciful gods (known as admins) have resurrected your soul, find some cover!",

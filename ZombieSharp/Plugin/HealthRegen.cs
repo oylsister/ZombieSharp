@@ -103,7 +103,7 @@ public class HealthRegen
             // if client health plus with regen amount is greater than class health then we set the health to class health.
             if(playerPawn.Health + classData.Regen_Amount >= classData.Health)
             {
-                Server.NextFrame(() => {
+                Server.NextWorldUpdate(() => {
                     playerPawn.Health = classData.Health;
                     Utilities.SetStateChanged(playerPawn, "CBaseEntity", "m_iHealth");
                 });
@@ -117,7 +117,7 @@ public class HealthRegen
             }
 
             // else we add the regen amount to the health.
-            Server.NextFrame(() => {
+            Server.NextWorldUpdate(() => {
                 playerPawn.Health += classData.Regen_Amount;
                 Utilities.SetStateChanged(playerPawn, "CBaseEntity", "m_iHealth");
             });

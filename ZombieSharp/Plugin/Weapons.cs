@@ -289,10 +289,17 @@ public class Weapons(ZombieSharp core, ILogger<ZombieSharp> logger)
             }
         }
 
-        Server.NextFrame(() => 
+        Server.NextWorldUpdate(() => 
         {
             // we give weapon to them this part can't be null unless server manager fucked it up.
-            client.GiveNamedItem(attribute.WeaponEntity!);
+            if(attribute.WeaponEntity == "item_kevlar")
+            {
+                client.PlayerPawn.Value!.ArmorValue = 100;
+                Utilities.SetStateChanged(client.PlayerPawn.Value, "CCSPlayerPawn", "m_ArmorValue");
+            }
+            
+            else
+                client.GiveNamedItem(attribute.WeaponEntity!);
 
             // update purchase history
             if(PlayerData.PlayerPurchaseCount![client].WeaponCount!.ContainsKey(attribute.WeaponEntity!))

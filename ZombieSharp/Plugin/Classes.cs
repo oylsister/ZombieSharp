@@ -156,8 +156,11 @@ public class Classes(ZombieSharp core, DatabaseMain database, ILogger<ZombieShar
 
                     else
                     {
-                        PlayerData.PlayerClassesData[client].HumanClass = data.HumanClass;
-                        PlayerData.PlayerClassesData[client].ZombieClass = data.ZombieClass;
+                        if(data.HumanClass?.Enable ?? false)
+                            PlayerData.PlayerClassesData[client].HumanClass = data.HumanClass;
+
+                        if(data.ZombieClass?.Enable ?? false)
+                            PlayerData.PlayerClassesData[client].ZombieClass = data.ZombieClass;
                     }
                 });
             }
@@ -192,7 +195,7 @@ public class Classes(ZombieSharp core, DatabaseMain database, ILogger<ZombieShar
             return;
         }
 
-        Server.NextFrame(() => 
+        Server.NextWorldUpdate(() => 
         {
             // if the model is not empty string and model path is not same as current model we have.
             if(!string.IsNullOrEmpty(data.Model) && playerPawn.IsValid)
@@ -315,6 +318,7 @@ public class Classes(ZombieSharp core, DatabaseMain database, ILogger<ZombieShar
         var menu = new ChatMenu($" {_core.Localizer["Prefix"]} {_core.Localizer["Classes.MainMenu"]}");
         menu.AddMenuOption(_core.Localizer["Classes.MainMenu.Zombie"], (client, option) => ClassesSelectMenu(client, 0));
         menu.AddMenuOption(_core.Localizer["Classes.MainMenu.Human"], (client, option) => ClassesSelectMenu(client, 1));
+        menu.ExitButton = true;
         MenuManager.OpenChatMenu(client, menu);
     }
 
@@ -380,6 +384,7 @@ public class Classes(ZombieSharp core, DatabaseMain database, ILogger<ZombieShar
         }
 
         selectmenu.AddMenuOption("Back", menuhandle);
+        selectmenu.ExitButton = true;
         MenuManager.OpenChatMenu(client, selectmenu);
     }
 }

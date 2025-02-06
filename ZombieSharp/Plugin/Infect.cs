@@ -256,7 +256,7 @@ public class Infect(ZombieSharp core, ILogger<ZombieSharp> logger, Classes class
             InfectClient(client, attacker);
     }
 
-    public void InfectOnPreRoundStart()
+    public void InfectOnPreRoundStart(bool switchTeam = true)
     {
         if(PlayerData.ZombiePlayerData == null)
         {
@@ -283,7 +283,7 @@ public class Infect(ZombieSharp core, ILogger<ZombieSharp> logger, Classes class
             PlayerData.ZombiePlayerData[player].Zombie = false;
 
             // switch their team to CT. and make sure they are not spectator or else they will get spawned with another.
-            if(player.Team != CsTeam.Spectator && player.Team != CsTeam.None)
+            if(player.Team != CsTeam.Spectator && player.Team != CsTeam.None && switchTeam)
                 player.SwitchTeam(CsTeam.CounterTerrorist);
         }
     }
@@ -356,25 +356,29 @@ public class Infect(ZombieSharp core, ILogger<ZombieSharp> logger, Classes class
         // set player zombie to true.
         PlayerData.ZombiePlayerData[client].Zombie = true;
 
+        // we get player class for applying attribute here.
         var applyClass = PlayerData.PlayerClassesData?[client].ZombieClass;
 
         // set motherzombie status to chosen
         if(motherzombie)
         {
             PlayerData.ZombiePlayerData[client].MotherZombie = ZombiePlayer.MotherZombieStatus.CHOSEN;
-            applyClass = Classes.MotherZombie;
+            
+            // if mother zombie class is specificed then change it, or else we just use player setting class from above.
+            if(Classes.MotherZombie != null)
+                applyClass = Classes.MotherZombie;
 
             // if teleport zombie back to spawn is enabled then we teleport them back to spawn.
             if(GameSettings.Settings?.MotherZombieTeleport ?? false)
             {
-                Server.NextFrame(() => 
+                Server.NextWorldUpdate(() => 
                 {
                     var pos = PlayerData.PlayerSpawnData?[client].PlayerPosition;
                     var angle = PlayerData.PlayerSpawnData?[client].PlayerAngle;
 
                     if(pos == null || angle == null)
                     {
-                        _logger.LogError("[InfectClient] Position of {0} is null!", client.PlayerName);
+                        _logger.LogError("[InfectClient] Position of {name} is null!", client.PlayerName);
                         return;
                     }
 

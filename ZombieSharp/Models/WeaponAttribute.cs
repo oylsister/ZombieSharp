@@ -9,7 +9,7 @@ public class WeaponAttribute
     public int Price { get; set; }
     public int MaxPurchase { get; set; } = 0;
     public bool Restrict { get; set; } = false;
-    public List<string>? PurchaseCommand { get; set; }
+    public List<string>? PurchaseCommand { get; set; } = [];
 }
 
 public class PurchaseCount

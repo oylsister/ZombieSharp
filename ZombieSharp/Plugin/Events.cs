@@ -37,6 +37,7 @@ public class Events(ZombieSharp core, Infect infect, GameSettings settings, Clas
         _core.RegisterEventHandler<EventWarmupEnd>(OnWarmupEnd);
         _core.RegisterEventHandler<EventRoundEnd>(OnRoundEnd);
         _core.RegisterEventHandler<EventPlayerTeam>(OnPlayerTeam);
+        _core.RegisterEventHandler<EventCsPreRestart>(OnPreRestart);
     }
 
     public void EventOnUnload()
@@ -122,6 +123,7 @@ public class Events(ZombieSharp core, Infect infect, GameSettings settings, Clas
         }
 
         manifest.AddResource("particles\\oylsister\\env_fire_large.vpcf");
+        manifest.AddResource("soundevents\\soundevents_zsharp.vsndevts");
     }
 
     public HookResult OnPlayerHurt(EventPlayerHurt @event, GameEventInfo info)
@@ -149,12 +151,11 @@ public class Events(ZombieSharp core, Infect infect, GameSettings settings, Clas
 
         // play sound for zombie when killed by human.
         var client = @event.Userid;
-        var attacker = @event.Attacker;
 
-        if(client == null || attacker == null)
+        if(client == null)
             return HookResult.Continue;
 
-        if(Infect.IsClientHuman(attacker) && Infect.IsClientInfect(client))
+        if(Infect.IsClientInfect(client))
             Utils.EmitSound(client, "zr.amb.zombie_die");
 
         _respawn.RespawnOnPlayerDeath(client);
@@ -273,6 +274,15 @@ public class Events(ZombieSharp core, Infect infect, GameSettings settings, Clas
         Infect.InfectStarted = false;
         _infect.InfectKillInfectionTimer();
         _infect.InfectOnRoundEnd();
+        RoundEnd.RoundEndOnRoundEnd();
+        return HookResult.Continue;
+    }
+
+    public HookResult OnPreRestart(EventCsPreRestart @event, GameEventInfo info)
+    {
+        Infect.InfectStarted = false;
+        _infect.InfectOnPreRoundStart(false);
+        _infect.InfectKillInfectionTimer();
         RoundEnd.RoundEndOnRoundEnd();
         return HookResult.Continue;
     }

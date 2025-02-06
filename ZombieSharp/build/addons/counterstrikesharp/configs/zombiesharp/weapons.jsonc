@@ -373,5 +373,25 @@
         "MaxPurchase": 0,
         "Restrict": true,
         "PurchaseCommand": [ "css_smoke" ]
+    },
+    "kevlar": {
+        "WeaponName": "Kevlar",
+        "WeaponEntity": "item_kevlar",
+        "Knockback": 0.0,
+        "WeaponSlot": 4,
+        "Price": 1000,
+        "MaxPurchase": 0,
+        "Restrict": false,
+        "PurchaseCommand": [ "css_kev", "css_kevlar"]
+    },
+    "taser": {
+        "WeaponName": "Zeus",
+        "WeaponEntity": "weapon_taser",
+        "Knockback": 0.0,
+        "WeaponSlot": 2,
+        "Price": 0,
+        "MaxPurchase": 0,
+        "Restrict": true,
+        "PurchaseCommand": []
     }
 }
