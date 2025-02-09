@@ -31,14 +31,13 @@ public class Knockback
         if (!Infect.IsClientHuman(attacker) || !Infect.IsClientInfect(client))
             return;
 
-        var clientPos = client.PlayerPawn.Value?.AbsOrigin;
-        var attackerPos = attacker.PlayerPawn.Value?.AbsOrigin;
+        var attackerEye = attacker.PlayerPawn.Value?.EyeAngles;
 
-        if(clientPos == null || attackerPos == null)
+        if(attackerEye == null)
             return;
-
-        var direction = clientPos - attackerPos;
-        var normalizedDir = NormalizeVector(direction);
+        
+        Vector vecKnockback = new(), right = new(), up = new();
+        NativeAPI.AngleVectors(attackerEye.Handle, vecKnockback.Handle, right.Handle, up.Handle);
 
         // Class Data section.
         if(PlayerData.PlayerClassesData == null)
@@ -89,7 +88,7 @@ public class Knockback
 
         var hitgroupsKnockback = HitGroup.GetHitGroupKnockback(hitgroups);
 
-        var pushVelocity = normalizedDir * dmgHealth * PlayerData.PlayerClassesData[client].ActiveClass!.Knockback * weaponknockback * hitgroupsKnockback;
+        var pushVelocity = vecKnockback * dmgHealth * PlayerData.PlayerClassesData[client].ActiveClass!.Knockback * weaponknockback * hitgroupsKnockback;
         client.PlayerPawn.Value?.AbsVelocity.Add(pushVelocity);
     }
 
