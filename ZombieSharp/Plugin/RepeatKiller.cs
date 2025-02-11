@@ -14,7 +14,7 @@ public class RepeatKiller
         _respawn = respawn;
     }
 
-    private static Dictionary<CCSPlayerController, float> _repeatKiller = [];
+    public static Dictionary<CCSPlayerController, float> RepeatKillerList = [];
     public static void OnPlayerDeath(CCSPlayerController? client, string weapon)
     {
         if(client == null)
@@ -28,15 +28,18 @@ public class RepeatKiller
         if(GameSettings.Settings == null)
             return;
 
-        if(!_repeatKiller.ContainsKey(client))
-            _repeatKiller.Add(client, 0);
+        if(!GameSettings.Settings.RespawnEnable)
+            return;
 
-        if(time - _repeatKiller[client] - GameSettings.Settings.RespawnDelay < 3.0)
+        if(!RepeatKillerList.ContainsKey(client))
+            RepeatKillerList.Add(client, 0);
+
+        if(time - RepeatKillerList[client] - GameSettings.Settings.RespawnDelay < 3.0)
         {
             Server.PrintToChatAll($" {_core?.Localizer["Prefix"]} {_core?.Localizer["Core.RepeatKiller"]}");
             _respawn?.ToggleRespawn(false);
         }
 
-        _repeatKiller[client] = time;
+        RepeatKillerList[client] = time;
     }
 }
