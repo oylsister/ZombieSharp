@@ -431,7 +431,7 @@ public class Infect(ZombieSharp core, ILogger<ZombieSharp> logger, Classes class
         client.SwitchTeam(CsTeam.Terrorist);
 
         // remove all player weapon
-        Utils.DropAllWeapon(client);
+        Server.NextWorldUpdate(() => Utils.DropAllWeapon(client));
 
         //scream sound.
         Utils.EmitSound(client, "zr.amb.scream");
