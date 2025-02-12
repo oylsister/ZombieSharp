@@ -120,10 +120,28 @@ public class Utils
         if(client == null)
             return;
 
-        foreach(var weapon in WeaponList)
+        var weapons = client.PlayerPawn.Value?.WeaponServices?.MyWeapons;
+
+        if(weapons == null)
         {
-            DropWeaponByDesignName(client, weapon, remove);
+            _logger?.LogError("[DropAllWeapn] Client weapon service is null!");
+            return;
         }
+
+        foreach(var weapon in weapons)
+        {
+            if(weapon.Value == null)
+                continue;
+
+            if(!weapon.Value.DesignerName.Contains("knife"))
+                DropWeapon(weapon.Value);
+        }
+    }
+
+    public static void DropWeapon(CBasePlayerWeapon weapon)
+    {
+        Guard.IsValidEntity(weapon);
+        VirtualFunction.CreateVoid<nint, Vector?, Vector?>(weapon.Handle, GameData.GetOffset("CCSPlayer_WeaponServices_DropWeapon"))(weapon.Handle, null, null);
     }
 
     public static void DropWeaponByDesignName(CCSPlayerController client, string weaponName, bool remove = false)
