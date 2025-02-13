@@ -374,6 +374,36 @@
         "Restrict": true,
         "PurchaseCommand": [ "css_smoke" ]
     },
+    "decoy": {
+        "WeaponName": "Decoy",
+        "WeaponEntity": "weapon_decoy",
+        "Knockback": 0.0,
+        "WeaponSlot": 3,
+        "Price": 1500,
+        "MaxPurchase": 0,
+        "Restrict": true,
+        "PurchaseCommand": [ ]
+    },
+    "incendery": {
+        "WeaponName": "Incendery",
+        "WeaponEntity": "weapon_incgrenade",
+        "Knockback": 1.0,
+        "WeaponSlot": 3,
+        "Price": 1500,
+        "MaxPurchase": 1,
+        "Restrict": true,
+        "PurchaseCommand": [ "css_mol", "css_molly", "css_inc" ]
+    },
+    "molotov": {
+        "WeaponName": "Molotov",
+        "WeaponEntity": "weapon_molotov",
+        "Knockback": 1.0,
+        "WeaponSlot": 3,
+        "Price": 1500,
+        "MaxPurchase": 1,
+        "Restrict": true,
+        "PurchaseCommand": [ ]
+    },
     "kevlar": {
         "WeaponName": "Kevlar",
         "WeaponEntity": "item_kevlar",
