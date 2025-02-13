@@ -120,28 +120,25 @@ public class Utils
         if(client == null)
             return;
 
+        var service = client.PlayerPawn.Value?.WeaponServices;
         var weapons = client.PlayerPawn.Value?.WeaponServices?.MyWeapons;
 
-        if(weapons == null)
+        if(weapons == null || service == null)
         {
             _logger?.LogError("[DropAllWeapn] Client weapon service is null!");
             return;
         }
 
-        foreach(var weapon in weapons)
+        foreach(var weapon in WeaponList)
         {
-            if(weapon.Value == null)
-                continue;
-
-            if(!weapon.Value.DesignerName.Contains("knife"))
-                DropWeapon(weapon.Value);
+            DropWeaponByDesignName(client, weapon);
         }
     }
 
-    public static void DropWeapon(CBasePlayerWeapon weapon)
+    public static void DropWeapon(CCSPlayer_WeaponServices services ,CBasePlayerWeapon weapon)
     {
         Guard.IsValidEntity(weapon);
-        VirtualFunction.CreateVoid<nint, Vector?, Vector?>(weapon.Handle, GameData.GetOffset("CCSPlayer_WeaponServices_DropWeapon"))(weapon.Handle, null, null);
+        VirtualFunction.CreateVoid<nint, CBasePlayerWeapon, Vector?, Vector?>(services.Handle, GameData.GetOffset("CCSPlayer_WeaponServices_DropWeapon"))(services.Handle, weapon, null, null);
     }
 
     public static void DropWeaponByDesignName(CCSPlayerController client, string weaponName, bool remove = false)
@@ -149,11 +146,15 @@ public class Utils
         if(client == null)
             return;
             
+        var service = client.PlayerPawn.Value?.WeaponServices;
         var matchedWeapon = client.PlayerPawn.Value?.WeaponServices?.MyWeapons.Where(x => x.Value?.DesignerName == weaponName).FirstOrDefault();
 
-        if (matchedWeapon != null && matchedWeapon.IsValid)
+        if (matchedWeapon != null && matchedWeapon.IsValid && service != null)
         {
-            client.PlayerPawn.Value!.WeaponServices!.ActiveWeapon.Raw = matchedWeapon.Raw;
+            if(matchedWeapon.Value == null)
+                return;
+
+            DropWeapon(service.As<CCSPlayer_WeaponServices>(), matchedWeapon.Value);
 
             // set timer to remove if remove is true.
             if(remove)
@@ -162,8 +163,6 @@ public class Utils
                     matchedWeapon.Value?.AddEntityIOEvent("Kill", matchedWeapon.Value, null, "", 0.1f);
                 });
             }
-
-            client.DropActiveWeapon();
         }
     }
 
