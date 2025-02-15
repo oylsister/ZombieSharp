@@ -1,5 +1,6 @@
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Modules.Cvars;
+using CounterStrikeSharp.API.Modules.Timers;
 using CounterStrikeSharp.API.Modules.Utils;
 using Microsoft.Extensions.Logging;
 using ZombieSharp.Models;
@@ -135,7 +136,7 @@ public class ConVars(ZombieSharp core, Weapons weapons, ILogger<ZombieSharp> log
 
                     Respawn.RespawnClient(player);
                 }
-            });
+            }, TimerFlags.STOP_ON_MAPCHANGE);
 
         };
         _core.CVAR_RespawnDelay.ValueChanged += (sender, value) => {

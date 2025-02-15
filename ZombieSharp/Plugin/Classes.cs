@@ -2,6 +2,7 @@ using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Menu;
+using CounterStrikeSharp.API.Modules.Timers;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using ZombieSharp.Database;
@@ -236,7 +237,7 @@ public class Classes(ZombieSharp core, DatabaseMain database, ILogger<ZombieShar
             }
 
             HealthRegen.RegenOnApplyClass(client, data);
-        });
+        }, TimerFlags.STOP_ON_MAPCHANGE);
 
         // set speed 
         playerPawn.VelocityModifier = data.Speed / 250f;
@@ -293,7 +294,7 @@ public class Classes(ZombieSharp core, DatabaseMain database, ILogger<ZombieShar
 
             // set speed back to velomodify
             client.PlayerPawn.Value!.VelocityModifier = PlayerData.PlayerClassesData![client].ActiveClass!.Speed / 250f;
-        });
+        }, TimerFlags.STOP_ON_MAPCHANGE);
     }
 
     // CLASSES MENU

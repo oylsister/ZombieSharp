@@ -80,7 +80,7 @@ public class Teleport(ZombieSharp core, ILogger<ZombieSharp> logger)
         {
             TeleportClientToSpawn(client, pos, angle);
             client.PrintToChat($" {_core.Localizer["Prefix"]} {_core.Localizer["Teleport.Success", timer]}");
-        });
+        }, TimerFlags.STOP_ON_MAPCHANGE);
     }
 
     public static void TeleportClientToSpawn(CCSPlayerController client, Vector pos, QAngle angle)

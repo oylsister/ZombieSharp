@@ -1,5 +1,6 @@
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Commands;
+using CounterStrikeSharp.API.Modules.Timers;
 using CounterStrikeSharp.API.Modules.Utils;
 using Microsoft.Extensions.Logging;
 
@@ -54,7 +55,7 @@ public class Respawn(ZombieSharp core, ILogger<ZombieSharp> logger)
         if(!GameSettings.Settings?.RespawnEnable ?? true)
             return;
         
-        _core.AddTimer(GameSettings.Settings?.RespawnDelay ?? 5.0f, () => RespawnClient(client));
+        _core.AddTimer(GameSettings.Settings?.RespawnDelay ?? 5.0f, () => RespawnClient(client), TimerFlags.STOP_ON_MAPCHANGE);
     }
 
     public static void RespawnClient(CCSPlayerController? client)
