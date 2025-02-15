@@ -73,7 +73,7 @@ public class RoundEnd
                 winner = CsTeam.CounterTerrorist;
 
             TerminateRound(winner);
-        });
+        }, TimerFlags.STOP_ON_MAPCHANGE);
     }
 
     public static void CheckGameStatus()

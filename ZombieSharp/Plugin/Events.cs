@@ -1,5 +1,6 @@
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Modules.Timers;
 using CounterStrikeSharp.API.Modules.Utils;
 using Microsoft.Extensions.Logging;
 using ZombieSharp.Models;
@@ -218,7 +219,7 @@ public class Events(ZombieSharp core, Infect infect, GameSettings settings, Clas
 
         // refresh purchase count here.
         Utils.RefreshPurchaseCount(client);
-        _core.AddTimer(0.2f, () => _teleport.TeleportOnPlayerSpawn(client));
+        _core.AddTimer(0.2f, () => _teleport.TeleportOnPlayerSpawn(client), TimerFlags.STOP_ON_MAPCHANGE);
 
         return HookResult.Continue;
     }
