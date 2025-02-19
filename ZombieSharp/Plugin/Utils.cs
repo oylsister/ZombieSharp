@@ -302,7 +302,7 @@ public class Utils
         else
             attackerInfo = new CAttackerInfo(attacker);
 
-        Marshal.StructureToPtr(attackerInfo, new IntPtr(ptr.ToInt64() + 0x80), false);
+        Marshal.StructureToPtr(attackerInfo, new IntPtr(ptr.ToInt64() + 0x98), false);
 
         if(attacker == null)
         {
