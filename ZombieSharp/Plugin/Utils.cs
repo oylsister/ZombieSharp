@@ -332,6 +332,9 @@ public class Utils
 
     public static unsafe void EmitSoundToClient(CCSPlayerController client, CBaseEntity entity, string soundName)
     {
+        if(client == null || entity == null || !client.IsValid || !entity.IsValid || string.IsNullOrEmpty(soundName))
+            return;
+
         CRecipientFilter filter = new();
         filter.AddPlayers(client);
 
