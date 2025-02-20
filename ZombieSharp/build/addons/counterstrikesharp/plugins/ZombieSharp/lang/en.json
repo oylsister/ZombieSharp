@@ -43,5 +43,8 @@
     "Classes.MainMenu.Human": "Human Classes",
     "Classes.Select.Zombie": "Zombie Classes Menu",
     "Classes.Select.Human": "Human Classes Menu",
-    "Classes.SelectSuccess": "You have selected a new player classes, this will be updated on next round."
+    "Classes.SelectSuccess": "You have selected a new player classes, this will be updated on next round.",
+
+    "ZSound.Enable": "You have {Olive}Enabled {Default}Zombie Voice.",
+    "ZSound.Disable": "You have {Red}Disabled {Default}Zombie Voice."
 }
