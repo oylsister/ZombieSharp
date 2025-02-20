@@ -308,14 +308,22 @@ public class Utils
 
         if(attacker == null)
         {
-            Schema.SetSchemaValue(damageInfo.Handle, "CTakeDamageInfo", "m_hInflictor", client.Pawn.Raw);
-            Schema.SetSchemaValue(damageInfo.Handle, "CTakeDamageInfo", "m_hAttacker", client.Pawn.Raw);
+            Schema.SetSchemaValue(damageInfo.Handle, "CTakeDamageInfo", "m_hInflictor", client.PlayerPawn.Raw);
+            Schema.SetSchemaValue(damageInfo.Handle, "CTakeDamageInfo", "m_hAttacker", client.PlayerPawn.Raw);
         }
 
         else
         {
-            Schema.SetSchemaValue(damageInfo.Handle, "CTakeDamageInfo", "m_hInflictor", attacker.Pawn.Raw);
-            Schema.SetSchemaValue(damageInfo.Handle, "CTakeDamageInfo", "m_hAttacker", attacker.Pawn.Raw);
+            if(attacker.PlayerPawn != null)
+            {
+                Schema.SetSchemaValue(damageInfo.Handle, "CTakeDamageInfo", "m_hInflictor", attacker.PlayerPawn.Raw);
+                Schema.SetSchemaValue(damageInfo.Handle, "CTakeDamageInfo", "m_hAttacker", attacker.PlayerPawn.Raw);
+            }
+            else
+            {
+                Schema.SetSchemaValue(damageInfo.Handle, "CTakeDamageInfo", "m_hInflictor", client.PlayerPawn.Raw);
+                Schema.SetSchemaValue(damageInfo.Handle, "CTakeDamageInfo", "m_hAttacker", client.PlayerPawn.Raw);
+            }
         }
 
         damageInfo.Damage = damage;
@@ -335,12 +343,14 @@ public class Utils
         if(client == null || entity == null || !client.IsValid || !entity.IsValid || string.IsNullOrEmpty(soundName))
             return;
 
-        CRecipientFilter filter = new();
-        filter.AddPlayers(client);
-
-        fixed (byte* soundNamePtr = Encoding.UTF8.GetBytes(soundName + "\0"))
+        using (CRecipientFilter filter = new())
         {
-            CBaseEntity_EmitSoundWithFilter.Invoke(filter.Handle, entity.Index, (nint) soundNamePtr, 0, 0, 0, 1.0f);
+            filter.AddPlayers(client);
+
+            fixed (byte* soundNamePtr = Encoding.UTF8.GetBytes(soundName + "\0"))
+            {
+                CBaseEntity_EmitSoundWithFilter.Invoke(filter.Handle, entity.Index, (nint) soundNamePtr, 0, 0, 0, 1.0f);
+            }
         }
     }
 
