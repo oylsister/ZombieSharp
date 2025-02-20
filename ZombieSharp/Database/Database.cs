@@ -14,12 +14,23 @@ public class DatabaseMain(ZombieSharp core, ILogger<ZombieSharp> logger)
 
     public async Task DatabaseOnLoad()
     {
-        _connection = new SqliteConnection($"Data Source={Path.Join(_core.ModuleDirectory, "zsharpdatabase.db")}");
+        var path = Path.Join(_core.ModuleDirectory, "zsharpdatabase.db");
+        var found = File.Exists(path);
+
+        _connection = new SqliteConnection($"Data Source={path}");
         _connection.Open();
 
-        _logger.LogInformation("[DatabaseOnLoad] Database has been created. to {0}", Path.Join(_core.ModuleDirectory, "zsharpdatabase.db"));
+        if(!found)
+            _logger.LogInformation("[DatabaseOnLoad] Database has been created. to {0}", path);
+
+        else
+            _logger.LogInformation("[DatabaseOnLoad] Database is Loaded");
 
         await _connection.ExecuteAsync(@"CREATE TABLE IF NOT EXISTS player_classes (player_auth TEXT PRIMARY KEY, zombie_class VARCHAR(64), human_class VARCHAR(64));");
+        _logger.LogInformation("[DatabaseOnLoad] Initialize Player Class settings Table.");
+
+        await _connection.ExecuteAsync(@"CREATE TABLE IF NOT EXISTS player_sound (player_auth TEXT PRIMARY KEY, zombie_voice INT, zombie_countdown INT);");
+        _logger.LogInformation("[DatabaseOnLoad] Initialize Player Sound settings Table.");
     }
 
     public void DatabaseOnUnload()
@@ -109,6 +120,56 @@ public class DatabaseMain(ZombieSharp core, ILogger<ZombieSharp> logger)
             Auth = steamid.ToString(),
             ZombieClass = zombieClass,
             HumanClass = humanClass
+        });
+    }
+
+    public async Task<ZombieSound?> GetPlayerSoundData(ulong steamid)
+    {
+        if(_connection == null)
+        {
+            _logger.LogError("[GetPlayerSoundData] SqlConnection is null!");
+            return null;
+        }
+
+        var query = @"SELECT * FROM player_sound WHERE player_auth = @Auth;";
+        var reader = await _connection.ExecuteReaderAsync(query, new {
+            Auth = steamid.ToString()
+        });
+
+        //_logger.LogInformation("[GetPlayerClassData] Getting Player Data start here.");
+
+        if(await reader.ReadAsync())
+        {
+            var zombieVoice = Convert.ToBoolean(reader["zombie_voice"]);
+            var zombieCountdown = Convert.ToBoolean(reader["zombie_countdown"]);
+
+            ZombieSound sound = new()
+            {
+                ZombieVoice = zombieVoice,
+                Countdown = zombieCountdown
+            };
+
+            //_logger.LogInformation("[GetPlayerClassData] We done here.");
+            return sound;
+        }
+        
+        return null;
+    } 
+
+    public async Task InsertPlayerSoundData(ulong steamid, ZombieSound sound)
+    {
+        if(_connection == null)
+        {
+            _logger.LogError("[GetPlayerClassData] SqlConnection is null!");
+            return;
+        }
+
+        var query = @"INSERT INTO player_sound (player_auth, zombie_voice, zombie_countdown) VALUES(@Auth, @ZombieVoice, @Countdown) ON CONFLICT(player_auth) DO UPDATE SET zombie_voice = @ZombieVoice, zombie_countdown = @Countdown";
+
+        await _connection.ExecuteAsync(query, new {
+            Auth = steamid.ToString(),
+            ZombieVoice = sound.ZombieVoice,
+            Countdown = sound.Countdown
         });
     }
 }   

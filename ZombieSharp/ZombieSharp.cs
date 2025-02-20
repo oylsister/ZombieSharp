@@ -34,6 +34,7 @@ public partial class ZombieSharp : BasePlugin
     private RoundEnd? _roundend;
     private HealthRegen? _healthregen;
     private RepeatKiller? _repeatKiller;
+    private PlayerSound? _playerSound;
     private readonly ILogger<ZombieSharp> _logger;
 
     // API stuff
@@ -52,6 +53,7 @@ public partial class ZombieSharp : BasePlugin
         PlayerData.PlayerPurchaseCount = [];
         PlayerData.PlayerBurnData = [];
         PlayerData.PlayerRegenData = [];
+        PlayerData.PlayerSoundData = [];
 
         api = new ZombieSharpInterface();
 
@@ -74,6 +76,7 @@ public partial class ZombieSharp : BasePlugin
         _knockback = new Knockback(_logger);
         _healthregen = new HealthRegen(this, _logger);
         _repeatKiller = new RepeatKiller(this, _respawn);
+        _playerSound = new PlayerSound(this, _database, _logger);
 
         if(hotReload)
         {
@@ -99,6 +102,7 @@ public partial class ZombieSharp : BasePlugin
         _respawn.RespawnOnLoad();
         _classes.ClassesOnLoad();
         _napalm.NapalmOnLoad();
+        _playerSound.OnLoad();
 
         _database.DatabaseOnLoad().Wait();
     }

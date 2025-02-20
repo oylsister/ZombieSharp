@@ -434,7 +434,7 @@ public class Infect(ZombieSharp core, ILogger<ZombieSharp> logger, Classes class
         Server.NextWorldUpdate(() => Utils.DropAllWeapon(client));
 
         //scream sound.
-        Utils.EmitSound(client, "zr.amb.scream");
+        ZombieSound.ZombieEmitSound(client, "zr.amb.scream");
 
         // apply class attribute.
         _classes?.ClassesApplyToPlayer(client, applyClass);
