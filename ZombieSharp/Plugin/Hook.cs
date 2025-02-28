@@ -22,6 +22,8 @@ public class Hook(ZombieSharp core, Weapons weapons, Respawn respawn, ILogger<Zo
         VirtualFunctions.CBaseEntity_TakeDamageOldFunc.Hook(OnTakeDamage, HookMode.Pre);
 
         _core.AddCommandListener("jointeam", OnClientJoinTeam, HookMode.Pre);
+        _core.AddCommandListener("say", OnPlayerSay, HookMode.Post);
+        _core.AddCommandListener("say_team", OnPlayerSayTeam, HookMode.Post);
     }
 
     public void HookOnUnload()
@@ -30,6 +32,8 @@ public class Hook(ZombieSharp core, Weapons weapons, Respawn respawn, ILogger<Zo
         VirtualFunctions.CBaseEntity_TakeDamageOldFunc.Unhook(OnTakeDamage, HookMode.Pre);
 
         _core.RemoveCommandListener("jointeam", OnClientJoinTeam, HookMode.Pre);
+        _core.AddCommandListener("say", OnPlayerSay, HookMode.Post);
+        _core.AddCommandListener("say_team", OnPlayerSayTeam, HookMode.Post);
     }
 
     public HookResult OnCanAcquire(DynamicHook hook)
@@ -178,4 +182,36 @@ public class Hook(ZombieSharp core, Weapons weapons, Respawn respawn, ILogger<Zo
 
         return HookResult.Continue;
     }
+
+    public HookResult OnPlayerSay(CCSPlayerController? client, CommandInfo info)
+    {
+        // check for client null again.
+        if(client == null)
+            return HookResult.Continue;
+
+        _weapons.WeaponPurchaseChat(client, info.ArgString);
+        return HookResult.Continue;
+    }
+
+    public HookResult OnPlayerSayTeam(CCSPlayerController? client, CommandInfo info)
+    {
+        // check for client null again.
+        if(client == null)
+            return HookResult.Continue;
+
+        _weapons.WeaponPurchaseChat(client, info.ArgString);
+        return HookResult.Continue;
+    }
+}
+
+public class CUtlSymbolLarge : NativeObject
+{
+    public CUtlSymbolLarge(IntPtr pointer) : base(pointer)
+    {
+        IntPtr ptr = Marshal.ReadIntPtr(pointer);
+        //KeyValue = ptr.ToString();
+        if (ptr == IntPtr.Zero || ptr < 200000000000) return;
+        KeyValue = Marshal.PtrToStringUTF8(ptr);
+    }
+    public string? KeyValue;
 }
