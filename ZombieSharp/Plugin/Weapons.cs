@@ -184,6 +184,17 @@ public class Weapons(ZombieSharp core, ILogger<ZombieSharp> logger)
             PurchaseWeapon(client, weaponAttribute);
     }
 
+    public void WeaponPurchaseChat(CCSPlayerController client, string message)
+    {
+        if(message.StartsWith("!"))
+            message = string.Concat("css_", message.AsSpan(1));
+
+        var weaponAttribute = WeaponsConfig?.Where(weapon => weapon.Value.PurchaseCommand?.Contains(message) ?? false).FirstOrDefault().Value;
+
+        if(weaponAttribute != null && client != null)
+            PurchaseWeapon(client, weaponAttribute);
+    }
+
     public void PurchaseWeapon(CCSPlayerController client, WeaponAttribute attribute)
     {
         // if not enable then we don't have to proceed any further.

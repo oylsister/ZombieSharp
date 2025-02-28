@@ -26,6 +26,8 @@ public class Hook(ZombieSharp core, Weapons weapons, Respawn respawn, ILogger<Zo
         //CEntityIdentity_AcceptInputFunc.Hook(OnEntityAcceptInput, HookMode.Post);
 
         _core.AddCommandListener("jointeam", OnClientJoinTeam, HookMode.Pre);
+        _core.AddCommandListener("say", OnPlayerSay, HookMode.Post);
+        _core.AddCommandListener("say_team", OnPlayerSayTeam, HookMode.Post);
     }
 
     public void HookOnUnload()
@@ -35,6 +37,8 @@ public class Hook(ZombieSharp core, Weapons weapons, Respawn respawn, ILogger<Zo
         //CEntityIdentity_AcceptInputFunc.Unhook(OnEntityAcceptInput, HookMode.Post);
 
         _core.RemoveCommandListener("jointeam", OnClientJoinTeam, HookMode.Pre);
+        _core.AddCommandListener("say", OnPlayerSay, HookMode.Post);
+        _core.AddCommandListener("say_team", OnPlayerSayTeam, HookMode.Post);
     }
 
     public HookResult OnCanAcquire(DynamicHook hook)
@@ -227,6 +231,26 @@ public class Hook(ZombieSharp core, Weapons weapons, Respawn respawn, ILogger<Zo
             }
         }
 
+        return HookResult.Continue;
+    }
+
+    public HookResult OnPlayerSay(CCSPlayerController? client, CommandInfo info)
+    {
+        // check for client null again.
+        if(client == null)
+            return HookResult.Continue;
+
+        _weapons.WeaponPurchaseChat(client, info.ArgString);
+        return HookResult.Continue;
+    }
+
+    public HookResult OnPlayerSayTeam(CCSPlayerController? client, CommandInfo info)
+    {
+        // check for client null again.
+        if(client == null)
+            return HookResult.Continue;
+
+        _weapons.WeaponPurchaseChat(client, info.ArgString);
         return HookResult.Continue;
     }
 }
