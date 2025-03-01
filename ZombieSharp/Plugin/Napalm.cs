@@ -141,7 +141,7 @@ public class Napalm(ZombieSharp core, ILogger<ZombieSharp> logger)
             }
             
             if(damage > 0)
-                Utils.TakeDamage(client, attacker, damage);
+                Utils.TakeDamage(client, null, damage);
 
             Utils.SetStamina(client, 40.0f);
 
