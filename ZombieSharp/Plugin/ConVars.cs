@@ -42,6 +42,10 @@ public class ConVars(ZombieSharp core, Weapons weapons, ILogger<ZombieSharp> log
             GameSettings.Settings.TimeoutWinner = value;
         };
 
+        _core.CVAR_MaxKnifeRange.ValueChanged += (sender, value) => {
+            GameSettings.Settings.MaxKnifeRange = value;
+        };
+
         // class section
         _core.CVAR_DefaultHuman.ValueChanged += (sender, value) => {
             GameSettings.Settings.DefaultHumanBuffer = value;

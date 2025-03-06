@@ -357,6 +357,25 @@ public class Utils
         client.PlayerPawn.Value.VelocityModifier = stamina / 100f;
     }
 
+    public static float? GetPlayerDistance(CCSPlayerController? client, CCSPlayerController? attacker)
+    {
+        if(client == null || attacker == null || !attacker.IsValid || !client.IsValid || !IsPlayerAlive(client) || !IsPlayerAlive(attacker))
+            return null;
+
+        var clientPos = client.PlayerPawn.Value?.AbsOrigin;
+        var attackerPos = attacker.PlayerPawn.Value?.AbsOrigin;
+
+        if(clientPos == null || attackerPos == null)
+            return null;
+
+        return (float)Math.Sqrt(Math.Pow(clientPos.X - attackerPos.X, 2) + Math.Pow(clientPos.Y - attackerPos.Y, 2) + Math.Pow(clientPos.Z - attackerPos.Z, 2));
+    }
+
+    public static bool IsWarmup()
+    {
+        return Utilities.FindAllEntitiesByDesignerName<CCSGameRulesProxy>("cs_gamerules").First().GameRules?.WarmupPeriod ?? false;
+    }
+
     public static List<string> WeaponList = new List<string> 
     { 
         "weapon_deagle", 
