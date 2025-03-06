@@ -242,7 +242,7 @@ public class Events(ZombieSharp core, Infect infect, GameSettings settings, Clas
 
         if(team > 1)
         {
-            _core.AddTimer(1.0f, () => {
+            _core.AddTimer(5.0f, () => {
                 if(client == null)
                 {
                     //Server.PrintToChatAll("Client is fucking null!");
