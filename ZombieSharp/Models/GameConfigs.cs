@@ -8,6 +8,7 @@ public class GameConfigs
     public bool MotherZombieTeleport { get; set; } = false;
     public bool CashOnDamage { get; set; } = false;
     public int TimeoutWinner { get; set; } = 1;
+    public float MaxKnifeRange { get; set; } = 75f;
 
     // human default class stuff.
     public string? DefaultHumanBuffer { get; set; }
