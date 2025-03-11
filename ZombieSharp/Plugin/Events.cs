@@ -249,6 +249,7 @@ public class Events(ZombieSharp core, Infect infect, GameSettings settings, Clas
                     return;
                 }
 
+                // client.PlayerPawn.Value!.TeamNum = (byte)team;
                 Respawn.RespawnClient(client);
             });
         }
