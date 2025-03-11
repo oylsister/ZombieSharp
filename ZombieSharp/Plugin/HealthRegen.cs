@@ -100,8 +100,8 @@ public class HealthRegen
                 return;
             }
 
-            // if client health plus with regen amount is greater than class health then we set the health to class health.
-            if(playerPawn.Health + classData.Regen_Amount >= classData.Health)
+            // if client health is lower than max health and health plus with regen amount is greater than class health then we set the health to class health.
+            if(playerPawn.Health < classData.Health && (playerPawn.Health + classData.Regen_Amount >= classData.Health))
             {
                 Server.NextWorldUpdate(() => {
                     playerPawn.Health = classData.Health;
