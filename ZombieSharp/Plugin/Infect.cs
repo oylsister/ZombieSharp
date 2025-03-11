@@ -3,7 +3,6 @@ using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Timers;
-using Timer = CounterStrikeSharp.API.Modules.Timers.Timer;
 using CounterStrikeSharp.API.Modules.Utils;
 using Microsoft.Extensions.Logging;
 using ZombieSharp.Api;
@@ -500,25 +499,6 @@ public class Infect(ZombieSharp core, ILogger<ZombieSharp> logger, Classes class
 
         // apply class attribute.
         _classes?.ClassesApplyToPlayer(client, PlayerData.PlayerClassesData?[client].HumanClass!);
-    }
-
-    public static void SpawnPlayer(CCSPlayerController client)
-    {
-        if(client == null || !client.IsValid)
-            return;
-
-        client.ChangeTeam(InfectHasStarted() ? CsTeam.Terrorist : CsTeam.CounterTerrorist);
-
-        var ct = Utilities.GetPlayers().Where(player => player.TeamNum == 3 && player.PlayerPawn.Value?.LifeState == (byte)LifeState_t.LIFE_ALIVE).Count();
-        var t = Utilities.GetPlayers().Where(player => player.TeamNum == 2 && player.PlayerPawn.Value?.LifeState == (byte)LifeState_t.LIFE_ALIVE).Count();
-
-        // if server is empty
-        if(ct == 0 && t == 0 && !RoundEnd.RoundEnded)   
-        {
-            RoundEnd.TerminateRound(CsTeam.None, 3f);
-        }
-
-        Timer timer = new(2.0f, () => Respawn.RespawnClient(client), TimerFlags.STOP_ON_MAPCHANGE);
     }
 
     public static bool InfectHasStarted()

@@ -207,22 +207,34 @@ public class Hook(ZombieSharp core, Weapons weapons, Respawn respawn, ILogger<Zo
         if(client == null)
             return HookResult.Continue;
 
-        if(Utils.IsPlayerAlive(client))
-            client.CommitSuicide(false, true);
-
         //Server.PrintToChatAll($"{client.PlayerName} is doing {info.GetArg(0)} {info.GetArg(1)}");
 
         var team = (CsTeam)int.Parse(info.GetArg(1));
 
         // for spectator case we allow this 
         if(team == CsTeam.Spectator || team == CsTeam.None)
-            client.SwitchTeam(CsTeam.Spectator);
-
-        else if(client.Team == CsTeam.Spectator || client.Team == CsTeam.None)
         {
-            // we spawn a player here.
-            if(GameSettings.Settings?.AllowRespawnJoinLate ?? false)
-                Infect.SpawnPlayer(client);
+            if(Utils.IsPlayerAlive(client))
+                client.CommitSuicide(false, true);
+
+            client.SwitchTeam(CsTeam.Spectator);
+        }
+
+        else
+        {
+            if((GameSettings.Settings?.RespawnEnable ?? true) && (GameSettings.Settings?.AllowRespawnJoinLate ?? true))
+            {
+                if(team == client.Team)
+                {
+                    client.PrintToChat("You're choosing the same team!");
+                    return HookResult.Continue;
+                }
+
+                if(Utils.IsPlayerAlive(client))
+                    client.CommitSuicide(false, true);
+
+                client.SwitchTeam(team);
+            }
         }
 
         return HookResult.Continue;
