@@ -139,6 +139,9 @@ public class Respawn(ZombieSharp core, ILogger<ZombieSharp> logger)
         if(!GameSettings.Settings?.RespawnEnable ?? true)
             return;
 
+        if(!RoundEnd.RoundEnded)
+            return;
+
         client.Respawn();
     }
 }

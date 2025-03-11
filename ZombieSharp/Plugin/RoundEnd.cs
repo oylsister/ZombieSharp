@@ -20,6 +20,7 @@ public class RoundEnd
     }
 
     public static CounterStrikeSharp.API.Modules.Timers.Timer? TerminateRoundTimer;
+    public static bool RoundEnded = false;
 
     public static void RoundEndKillTimer()
     {
@@ -33,11 +34,13 @@ public class RoundEnd
     public static void RoundEndOnRoundStart()
     {
         RoundEndKillTimer();
+        RoundEnded = false;
     }
 
     public static void RoundEndOnRoundEnd()
     {
         RoundEndKillTimer();
+        RoundEnded = true;
     }
 
     public static void RoundEndOnRoundFreezeEnd()
@@ -96,7 +99,7 @@ public class RoundEnd
             TerminateRound();
     }
 
-    public static void TerminateRound(CsTeam team = CsTeam.None)
+    public static void TerminateRound(CsTeam team = CsTeam.None, float duration = 5f)
     {
         var gameRules = Utilities.FindAllEntitiesByDesignerName<CCSGameRulesProxy>("cs_gamerules").First().GameRules;
 
@@ -131,7 +134,7 @@ public class RoundEnd
 
             reason = RoundEndReason.RoundDraw;
         }
-        gameRules.TerminateRound(5f, reason);
+        gameRules.TerminateRound(duration, reason);
 
         if(team != CsTeam.None && team != CsTeam.Spectator)
             UpdateTeamScore(team);
