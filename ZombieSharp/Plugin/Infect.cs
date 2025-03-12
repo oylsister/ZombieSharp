@@ -359,6 +359,9 @@ public class Infect(ZombieSharp core, ILogger<ZombieSharp> logger, Classes class
         // we get player class for applying attribute here.
         var applyClass = PlayerData.PlayerClassesData?[client].ZombieClass;
 
+        // remove all player weapon
+        Utils.DropAllWeapon(client);
+
         // set motherzombie status to chosen
         if(motherzombie)
         {
@@ -388,9 +391,6 @@ public class Infect(ZombieSharp core, ILogger<ZombieSharp> logger, Classes class
         }
         // switch team to terrorist
         client.SwitchTeam(CsTeam.Terrorist);
-
-        // remove all player weapon
-        Server.NextWorldUpdate(() => Utils.DropAllWeapon(client));
 
         //scream sound.
         ZombieSound.ZombieEmitSound(client, "zr.amb.scream");
