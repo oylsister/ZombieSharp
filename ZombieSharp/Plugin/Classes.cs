@@ -28,6 +28,8 @@ public class Classes(ZombieSharp core, DatabaseMain database, ILogger<ZombieShar
 
     public void ClassesOnMapStart()
     {
+        ClassesConfig?.Clear();
+        
         // make sure this one is null.
         ClassesConfig = null;
 

@@ -26,13 +26,6 @@ public class HealthRegen
             return;
         }
 
-        // search for the player in the dictionary
-        if (!PlayerData.PlayerRegenData.ContainsKey(client))
-        {
-            _logger?.LogError("[RegenOnClientDisconnect] Player not found in PlayerRegenData");
-            return;
-        }
-
         // we stop the timer first.
         RegenKillTimer(client);
 

@@ -102,6 +102,14 @@ public class Events(ZombieSharp core, Infect infect, GameSettings settings, Clas
         _hitgroup.HitGroupOnMapStart();
         _convar.ConVarOnLoad();
         _convar.ConVarExecuteOnMapStart(mapname);
+
+        PlayerData.ZombiePlayerData?.Clear();
+        PlayerData.PlayerClassesData?.Clear();
+        PlayerData.PlayerPurchaseCount?.Clear();
+        PlayerData.PlayerSpawnData?.Clear();
+        PlayerData.PlayerBurnData?.Clear();
+        PlayerData.PlayerRegenData?.Clear();
+        PlayerData.PlayerSoundData?.Clear();
         
         Server.ExecuteCommand("sv_predictable_damage_tag_ticks 0");
         Server.ExecuteCommand("mp_ignore_round_win_conditions 1");
