@@ -11,6 +11,8 @@ public class HitGroup(ILogger<ZombieSharp> logger)
 
     public void HitGroupOnMapStart()
     {
+        HitGroupConfigs?.Clear();
+        
         // make sure this one is null.
         HitGroupConfigs = null;
 

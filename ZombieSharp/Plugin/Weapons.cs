@@ -24,6 +24,8 @@ public class Weapons(ZombieSharp core, ILogger<ZombieSharp> logger)
 
     public void WeaponsOnMapStart()
     {
+        WeaponsConfig?.Clear();
+        
         // make sure this one is null.
         WeaponsConfig = null;
 
