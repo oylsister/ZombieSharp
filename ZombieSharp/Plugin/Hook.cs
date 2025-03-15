@@ -231,7 +231,7 @@ public class Hook(ZombieSharp core, Weapons weapons, Respawn respawn, ILogger<Zo
             if(Utils.IsPlayerAlive(client))
                 client.CommitSuicide(false, true);
 
-            //client.SwitchTeam(team);
+            client.SwitchTeam(team);
         }
 
         return HookResult.Continue;
