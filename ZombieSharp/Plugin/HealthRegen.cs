@@ -103,7 +103,8 @@ public class HealthRegen
                 return;
             }
 
-            if(playerPawn.Health > classData.Health)
+            // opposite.
+            if(playerPawn.Health >= classData.Health)
             {
                 // just return if the health is greater than class health.
                 return;
