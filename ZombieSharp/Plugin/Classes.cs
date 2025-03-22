@@ -225,7 +225,7 @@ public class Classes(ZombieSharp core, DatabaseMain database, ILogger<ZombieShar
             }
         });
 
-        _core.AddTimer(0.3f, () => 
+        _core.AddTimer(0.05f, () => 
         {
             if(!Utils.IsPlayerAlive(client))
                 return;
