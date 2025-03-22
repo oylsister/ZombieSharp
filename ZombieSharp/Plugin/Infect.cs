@@ -205,6 +205,15 @@ public class Infect(ZombieSharp core, ILogger<ZombieSharp> logger, Classes class
 
         // we get how much zombie we need.
         var currentPlayer = Utilities.GetPlayers();
+
+        // if player is alone then let them play alone as human.
+        if(currentPlayer.Where(p => p.TeamNum > 1).Count() <= 1)
+        {
+            // set infect to true so when player die they restart the round.
+            InfectStarted = true;
+            return;
+        }
+
         var ratio = 7f;
 
         if(GameSettings.Settings == null)
