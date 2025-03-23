@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Commands;
@@ -140,9 +141,6 @@ public class Hook(ZombieSharp core, Weapons weapons, Respawn respawn, ILogger<Zo
         // prevent death from backstabing.
         if(Infect.IsClientInfect(attacker) && Infect.IsClientHuman(client))
         {
-            if(Infect.IsTestMode)
-                return HookResult.Handled;
-
             var distance = Utils.GetPlayerDistance(client, attacker);
 
             // if distance is not null but player is too far for knife range, then we blocked it.
@@ -150,7 +148,7 @@ public class Hook(ZombieSharp core, Weapons weapons, Respawn respawn, ILogger<Zo
                 return HookResult.Handled;
                 
             info.Damage = 1;
-
+        }
         return HookResult.Continue;
     }
 

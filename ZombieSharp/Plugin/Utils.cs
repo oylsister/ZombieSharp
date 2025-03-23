@@ -24,7 +24,7 @@ public class Utils
     }
 
     public static MemoryFunctionVoid<CBaseEntity, string, int, float, float> CBaseEntity_EmitSoundParamsFunc = new(GameData.GetSignature("CBaseEntity_EmitSoundParams"));
-    public static MemoryFunctionWithReturn<nint, uint, nint, nint, nint, float, float, nint> CBaseEntity_EmitSoundWithFilter = new("55 48 89 E5 41 57 41 56 41 55 41 54 53 48 81 EC ? ? ? ? 48 89 8D ? ? ? ? F3 0F 11");
+    public static MemoryFunctionVoid<CEntityIdentity, string> CEntityIdentity_SetEntityNameFunc = new(GameData.GetSignature("CEntityIdentity_SetEntityName"));
 
     public static void PrintToCenterAll(string message)
     {
@@ -307,15 +307,8 @@ public class Utils
         if(client == null || entity == null || !client.IsValid || !entity.IsValid || string.IsNullOrEmpty(soundName))
             return;
 
-        using (CRecipientFilter filter = new())
-        {
-            filter.AddPlayers(client);
-
-            fixed (byte* soundNamePtr = Encoding.UTF8.GetBytes(soundName + "\0"))
-            {
-                CBaseEntity_EmitSoundWithFilter.Invoke(filter.Handle, entity.Index, (nint) soundNamePtr, 0, 0, 0, 1.0f);
-            }
-        }
+        RecipientFilter filter = [client];
+        entity.EmitSound(soundName, filter, 1f, 1);
     }
 
     public static void UpdatedPlayerCash(CCSPlayerController? client, int damage)

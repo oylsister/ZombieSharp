@@ -1,3 +1,4 @@
+using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Commands;
@@ -16,6 +17,18 @@ public class Respawn(ZombieSharp core, ILogger<ZombieSharp> logger)
     {
         _core.AddCommand("css_zspawn", "Zspawn command obviously", ZSpawnCommand);
         _core.AddCommand("zs_respawn", "Toggle Respawn Command", ToggleRespawnCommand);
+    }
+
+    public void ToggleRespawn(bool value = true)
+    {
+        if(GameSettings.Settings == null)
+        {
+            _logger.LogError("[ToggleRespawn] GameSettings is null!");
+            return;
+        }
+
+        GameSettings.Settings.RespawnEnable = value;
+        Server.PrintToChatAll($" {_core.Localizer["Prefix"]} " + (value ? _core.Localizer["Respawn.Enabled"] : _core.Localizer["Respawn.Disabled"]));
     }
 
     [CommandHelper(0, "", CommandUsage.CLIENT_ONLY)]
