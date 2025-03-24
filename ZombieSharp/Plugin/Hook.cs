@@ -22,6 +22,7 @@ public class Hook(ZombieSharp core, Weapons weapons, Respawn respawn, ILogger<Zo
     public void HookOnLoad()
     {
         VirtualFunctions.CCSPlayer_ItemServices_CanAcquireFunc.Hook(OnCanAcquire, HookMode.Pre);
+        VirtualFunctions.CCSPlayer_WeaponServices_CanUseFunc.Hook(OnCanUse, HookMode.Pre);
         VirtualFunctions.CBaseEntity_TakeDamageOldFunc.Hook(OnTakeDamage, HookMode.Pre);
         //CEntityIdentity_AcceptInputFunc.Hook(OnEntityAcceptInput, HookMode.Post);
 
@@ -33,12 +34,33 @@ public class Hook(ZombieSharp core, Weapons weapons, Respawn respawn, ILogger<Zo
     public void HookOnUnload()
     {
         VirtualFunctions.CCSPlayer_ItemServices_CanAcquireFunc.Unhook(OnCanAcquire, HookMode.Pre);
+        VirtualFunctions.CCSPlayer_WeaponServices_CanUseFunc.Unhook(OnCanUse, HookMode.Pre);
         VirtualFunctions.CBaseEntity_TakeDamageOldFunc.Unhook(OnTakeDamage, HookMode.Pre);
         //CEntityIdentity_AcceptInputFunc.Unhook(OnEntityAcceptInput, HookMode.Post);
 
         _core.RemoveCommandListener("jointeam", OnClientJoinTeam, HookMode.Pre);
         _core.AddCommandListener("say", OnPlayerSay, HookMode.Post);
         _core.AddCommandListener("say_team", OnPlayerSayTeam, HookMode.Post);
+    }
+
+    public HookResult OnCanUse(DynamicHook hook)
+    {
+        var itemService = hook.GetParam<CCSPlayer_WeaponServices>(0);
+        var weapon = hook.GetParam<CBasePlayerWeapon>(1);
+
+        var client = itemService.Pawn.Value.Controller.Value?.As<CCSPlayerController>();
+
+        if(client == null)
+            return HookResult.Continue;
+
+        // if client is infect and weapon is not a knife.
+        if(Infect.IsClientInfect(client) && !weapon.DesignerName.Contains("knife"))
+        {
+            hook.SetReturn(false);
+            return HookResult.Handled;
+        }
+
+        return HookResult.Continue;
     }
 
     public HookResult OnCanAcquire(DynamicHook hook)
@@ -50,13 +72,6 @@ public class Hook(ZombieSharp core, Weapons weapons, Respawn respawn, ILogger<Zo
 
         if(client == null)
             return HookResult.Continue;
-
-        // if client is infect and weapon is not a knife.
-        if(Infect.IsClientInfect(client) && !weapon.Name.Contains("knife"))
-        {
-            hook.SetReturn(AcquireResult.NotAllowedByProhibition);
-            return HookResult.Handled;
-        }
 
         var restirctEnable = GameSettings.Settings?.WeaponRestrictEnable ?? false;
         var purchaseEnable = GameSettings.Settings?.WeaponPurchaseEnable ?? false;
