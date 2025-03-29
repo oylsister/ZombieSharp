@@ -144,4 +144,17 @@ public class Respawn(ZombieSharp core, ILogger<ZombieSharp> logger)
 
         client.Respawn();
     }
+
+    public static void SpawnPlayer(CCSPlayerController client)
+    {
+        if(client == null || !client.IsValid)
+            return;
+
+        // no hltv spawn here.
+        if(client.IsHLTV)
+            return;
+
+        Utils.ChangeTeam(client, Infect.InfectHasStarted() ? 2 : 3);
+        var respawn = new CounterStrikeSharp.API.Modules.Timers.Timer(GameSettings.Settings?.RespawnDelay ?? 2.0f, () => RespawnClient(client), TimerFlags.STOP_ON_MAPCHANGE);
+    }
 }

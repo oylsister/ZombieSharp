@@ -404,6 +404,18 @@ public class Utils
         return Utilities.FindAllEntitiesByDesignerName<CCSGameRulesProxy>("cs_gamerules").First().GameRules?.WarmupPeriod ?? false;
     }
 
+    public static void ChangeTeam(CCSPlayerController client, int team)
+    {
+        if(client == null || !client.IsValid)
+            return;
+
+        if(client.Team == (CsTeam)team)
+            return;
+
+        Guard.IsValidEntity(client);
+        VirtualFunction.CreateVoid<nint, int>(client.Handle, GameData.GetOffset("CCSPlayerController_ChangeTeam"))(client.Handle, team);
+    }
+
     public static List<string> WeaponList = new List<string> 
     { 
         "weapon_deagle", 

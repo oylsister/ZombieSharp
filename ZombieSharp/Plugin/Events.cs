@@ -75,6 +75,8 @@ public class Events(ZombieSharp core, Infect infect, GameSettings settings, Clas
 
         _classes?.ClassesOnClientPutInServer(client);
         PlayerSound.PlayerSoundOnClientPutInServer(client);
+
+        Respawn.SpawnPlayer(client);
     }
 
     public void OnClientDisconnect(int playerslot)
@@ -186,6 +188,8 @@ public class Events(ZombieSharp core, Infect infect, GameSettings settings, Clas
     {
         var client = @event.Userid;
 
+
+
         if(client == null)
             return HookResult.Continue;
 
@@ -197,7 +201,7 @@ public class Events(ZombieSharp core, Infect infect, GameSettings settings, Clas
 
         if(Infect.IsTestMode)
         {
-            _infect.HumanizeClient(client);
+            _core.AddTimer(0.05f, () => _infect.HumanizeClient(client));
             return HookResult.Continue;
         }
 
@@ -205,23 +209,25 @@ public class Events(ZombieSharp core, Infect infect, GameSettings settings, Clas
         {
             var team = GameSettings.Settings?.RespawTeam ?? 0;
 
-            if(team == 0)
-                _infect.InfectClient(client);
+             _core.AddTimer(0.05f, () =>  {
+                if(team == 0)
+                    _infect.InfectClient(client);
 
-            else if(team == 1)
-                _infect.HumanizeClient(client);
-
-            // get the player team
-            else
-            {
-                // not zombie
-                if(!PlayerData.ZombiePlayerData?[client].Zombie ?? false)
+                else if(team == 1)
                     _infect.HumanizeClient(client);
 
-                // human
+                // get the player team
                 else
-                    _infect.InfectClient(client);
-            }
+                {
+                    // not zombie
+                    if(!PlayerData.ZombiePlayerData?[client].Zombie ?? false)
+                        _infect.HumanizeClient(client);
+
+                    // human
+                    else
+                        _infect.InfectClient(client);
+                }
+            }, TimerFlags.STOP_ON_MAPCHANGE);
         }
 
         else
@@ -245,6 +251,7 @@ public class Events(ZombieSharp core, Infect infect, GameSettings settings, Clas
 
         //Server.PrintToChatAll($"{client?.PlayerName} join team {team}.");
 
+        /*
         if(!GameSettings.Settings?.AllowRespawnJoinLate ?? false)
             return HookResult.Continue;
 
@@ -261,6 +268,7 @@ public class Events(ZombieSharp core, Infect infect, GameSettings settings, Clas
                 Respawn.RespawnClient(client);
             });
         }
+        */
 
         return HookResult.Continue;
     }
