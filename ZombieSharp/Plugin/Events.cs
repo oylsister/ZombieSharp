@@ -76,7 +76,7 @@ public class Events(ZombieSharp core, Infect infect, GameSettings settings, Clas
         _classes?.ClassesOnClientPutInServer(client);
         PlayerSound.PlayerSoundOnClientPutInServer(client);
 
-        Respawn.SpawnPlayer(client);
+        // Respawn.SpawnPlayer(client);
     }
 
     public void OnClientDisconnect(int playerslot)
@@ -251,7 +251,6 @@ public class Events(ZombieSharp core, Infect infect, GameSettings settings, Clas
 
         //Server.PrintToChatAll($"{client?.PlayerName} join team {team}.");
 
-        /*
         if(!GameSettings.Settings?.AllowRespawnJoinLate ?? false)
             return HookResult.Continue;
 
@@ -268,7 +267,6 @@ public class Events(ZombieSharp core, Infect infect, GameSettings settings, Clas
                 Respawn.RespawnClient(client);
             });
         }
-        */
 
         return HookResult.Continue;
     }

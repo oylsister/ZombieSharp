@@ -227,14 +227,13 @@ public class Hook(ZombieSharp core, Weapons weapons, Respawn respawn, ILogger<Zo
         var team = (CsTeam)int.Parse(info.GetArg(1));
 
         // stable
-        /*
         // for spectator case we allow this 
         if(team == CsTeam.Spectator || team == CsTeam.None)
         {
             if(Utils.IsPlayerAlive(client))
                 client.CommitSuicide(false, true);
 
-            client.SwitchTeam(CsTeam.Spectator);
+            Utils.ChangeTeam(client, 1);
         }
 
         else
@@ -250,16 +249,17 @@ public class Hook(ZombieSharp core, Weapons weapons, Respawn respawn, ILogger<Zo
 
             client.SwitchTeam(team);
         }
-        */
-
+        
+        /*
         if(Utils.IsPlayerAlive(client))
             client.CommitSuicide(false, true);
 
         if(info.ArgCount >= 2 && (CsTeam)int.Parse(info.GetArg(1)) == CsTeam.Spectator || (CsTeam)int.Parse(info.GetArg(1)) == CsTeam.None)
-            client.SwitchTeam(CsTeam.Spectator);
+            Utils.ChangeTeam(client, 1);
 
-        else if(client.TeamNum == 1)
+        else if(info.ArgCount >= 2 && client.TeamNum <= 1 && (CsTeam)int.Parse(info.GetArg(1)) == CsTeam.CounterTerrorist || (CsTeam)int.Parse(info.GetArg(1)) == CsTeam.Terrorist)
             Respawn.SpawnPlayer(client);
+        */
 
         return HookResult.Continue;
     }

@@ -2,6 +2,7 @@ using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Commands;
+using CounterStrikeSharp.API.Modules.Memory;
 using CounterStrikeSharp.API.Modules.Timers;
 using CounterStrikeSharp.API.Modules.Utils;
 using Microsoft.Extensions.Logging;
@@ -133,13 +134,18 @@ public class Respawn(ZombieSharp core, ILogger<ZombieSharp> logger)
         if(Utils.IsPlayerAlive(client))
             return;
 
-        if(client.Team == CsTeam.Spectator || client.Team == CsTeam.None)
+        if(client.TeamNum < 2)
             return;
 
         if(!GameSettings.Settings?.RespawnEnable ?? true)
             return;
 
         if(RoundEnd.RoundEnded)
+            return;
+
+        var pawn = client.PlayerPawn.Value;
+
+        if(pawn == null || pawn.Handle == IntPtr.Zero)
             return;
 
         client.Respawn();
@@ -155,6 +161,11 @@ public class Respawn(ZombieSharp core, ILogger<ZombieSharp> logger)
             return;
 
         Utils.ChangeTeam(client, Infect.InfectHasStarted() ? 2 : 3);
-        var respawn = new CounterStrikeSharp.API.Modules.Timers.Timer(GameSettings.Settings?.RespawnDelay ?? 2.0f, () => RespawnClient(client), TimerFlags.STOP_ON_MAPCHANGE);
+        var respawn = new CounterStrikeSharp.API.Modules.Timers.Timer(GameSettings.Settings?.RespawnDelay ?? 2.0f, () => 
+        {
+            if(client.TeamNum >= 2)
+                RespawnClient(client); 
+        }
+        , TimerFlags.STOP_ON_MAPCHANGE);
     }
 }

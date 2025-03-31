@@ -412,6 +412,21 @@ public class Infect(ZombieSharp core, ILogger<ZombieSharp> logger, Classes class
         // remove all player weapon
         Utils.DropAllWeapon(client);
 
+        // give them knife
+        _core.AddTimer(0.2f, () => {
+            if(client == null || client.Handle == IntPtr.Zero)
+                return;
+
+            if(!Utils.IsPlayerAlive(client))
+                return;
+
+            var knife = client.PlayerPawn.Value?.WeaponServices?.MyWeapons.Where(w => w.Value?.DesignerName == "weapon_knife").FirstOrDefault();
+
+            if(knife == null)
+                client.GiveNamedItem("weapon_knife");
+                
+        }, TimerFlags.STOP_ON_MAPCHANGE);
+
         // set motherzombie status to chosen
         if(motherzombie)
         {

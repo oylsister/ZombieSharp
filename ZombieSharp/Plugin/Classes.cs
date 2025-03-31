@@ -199,22 +199,24 @@ public class Classes(ZombieSharp core, DatabaseMain database, ILogger<ZombieShar
         }
         
         // if the model is not empty string and model path is not same as current model we have.
-        if(!string.IsNullOrEmpty(data.Model) && playerPawn.IsValid)
-        {
-            // set it.
-            if(data.Model != "default")
-                playerPawn.SetModel(data.Model);
-
-            // change to cs2 default model blyat
-            else
+        Server.NextWorldUpdate(() => {
+            if(!string.IsNullOrEmpty(data.Model) && playerPawn.IsValid)
             {
-                if(data.Team == 0)
-                    playerPawn.SetModel("characters/models/tm_phoenix/tm_phoenix.vmdl");
-                
+                // set it.
+                if(data.Model != "default")
+                    playerPawn.SetModel(data.Model);
+
+                // change to cs2 default model blyat
                 else
-                    playerPawn.SetModel("characters/models/ctm_sas/ctm_sas.vmdl");
+                {
+                    if(data.Team == 0)
+                        playerPawn.SetModel("characters/models/tm_phoenix/tm_phoenix.vmdl");
+                    
+                    else
+                        playerPawn.SetModel("characters/models/ctm_sas/ctm_sas.vmdl");
+                }
             }
-        }
+        });
 
         if(data.Team == 0)
         {
