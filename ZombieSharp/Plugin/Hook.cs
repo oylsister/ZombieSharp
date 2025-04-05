@@ -230,10 +230,14 @@ public class Hook(ZombieSharp core, Weapons weapons, Respawn respawn, ILogger<Zo
         // for spectator case we allow this 
         if(team == CsTeam.Spectator || team == CsTeam.None)
         {
+            /*
             if(Utils.IsPlayerAlive(client))
                 client.CommitSuicide(false, true);
 
             Utils.ChangeTeam(client, 1);
+            */
+            info.ReplyToCommand($"Joining spectator team has been blocked!");
+            return HookResult.Handled;
         }
 
         else
