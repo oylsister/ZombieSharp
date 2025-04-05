@@ -21,6 +21,7 @@ public class Infect(ZombieSharp core, ILogger<ZombieSharp> logger, Classes class
     private CounterStrikeSharp.API.Modules.Timers.Timer? _infectCountTimer = null;
     private int _infectCountNumber = 0;
     public static bool IsTestMode = false;
+    private List<SpawnPoint>? _spawnPoint = [];
 
     public void InfectOnLoad()
     {
@@ -153,6 +154,8 @@ public class Infect(ZombieSharp core, ILogger<ZombieSharp> logger, Classes class
         // we disable this for warmup so player can chill.
         if(Utils.IsWarmup())
             return;
+
+        _spawnPoint = Teleport.GetAllSpawnPoint();
 
         if(GameSettings.Settings == null)
         {
@@ -338,6 +341,8 @@ public class Infect(ZombieSharp core, ILogger<ZombieSharp> logger, Classes class
     // we need to set mother zombie to last if they are chosen. so when mother zombie candidate run out we bring them to motherzombie cycle again.
     public void InfectOnRoundEnd()
     {
+        _spawnPoint?.Clear();
+
         if(PlayerData.ZombiePlayerData == null)
         {
             _logger.LogCritical("[InfectOnRoundEnd] ZombiePlayers data is null!");
@@ -481,6 +486,44 @@ public class Infect(ZombieSharp core, ILogger<ZombieSharp> logger, Classes class
 
         // tell them you have been infect
         client.PrintToChat($" {_core.Localizer["Prefix"]} {_core.Localizer["Infect.BecomeZombie"]}");
+    }
+
+    public void InfectRespawn(CCSPlayerController client)
+    {
+        if(client == null)
+            return;
+
+        // Ensure _spawnPoint is not null or empty
+        if (_spawnPoint != null && _spawnPoint.Count > 0)
+        {
+            // Create a Random instance
+            Random random = new Random();
+
+            // Get a random index
+            int randomIndex = random.Next(0, _spawnPoint.Count);
+
+            // Retrieve the random spawn point
+            var randomSpawnPoint = _spawnPoint[randomIndex];
+
+            // Use the randomSpawnPoint as needed
+            //_logger.LogInformation($"Random spawn point selected: {randomSpawnPoint}");
+
+            if(randomSpawnPoint == null || !randomSpawnPoint.IsValid)
+            {
+                return;
+            }
+
+            if(Utils.IsPlayerAlive(client))
+            {
+                Teleport.TeleportClientToSpawn(client, randomSpawnPoint.AbsOrigin!, randomSpawnPoint.AbsRotation!);
+                client.PrintToChat($"{ChatColors.Green}[Safety Spawn]{ChatColors.White} You have been teleported to Spawn Point!");
+            }
+        }
+        else
+        {
+            _logger.LogWarning("No spawn points available to select from.");
+            return;
+        }
     }
 
     public void HumanizeClient(CCSPlayerController client, bool force = false)

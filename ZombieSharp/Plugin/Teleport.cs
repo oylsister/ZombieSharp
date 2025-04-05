@@ -1,3 +1,4 @@
+using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Attributes.Registration;
 using CounterStrikeSharp.API.Modules.Commands;
@@ -16,6 +17,36 @@ public class Teleport(ZombieSharp core, ILogger<ZombieSharp> logger)
     public void TeleportOnLoad()
     {
         _core.AddCommand("css_ztele", "ZTele Command", TeleportCommand);
+    }
+
+    public static List<SpawnPoint>? GetAllSpawnPoint()
+    {
+        List<SpawnPoint> SpawnPoints = [];
+
+        var gameRules = Utilities.FindAllEntitiesByDesignerName<CCSGameRulesProxy>("cs_gamerules").First().GameRules;
+
+        if(gameRules == null)
+        {
+            return null;
+        }
+
+        foreach(var spawn in gameRules.CTSpawnPoints)
+        {
+            if(spawn == null || !spawn.IsValid)
+                continue;
+
+            SpawnPoints.Add(spawn);
+        }
+
+        foreach(var spawn in gameRules.TerroristSpawnPoints)
+        {
+            if(spawn == null || !spawn.IsValid)
+                continue;
+                
+            SpawnPoints.Add(spawn);
+        }
+
+        return SpawnPoints;
     }
 
     public void TeleportOnPlayerSpawn(CCSPlayerController client)

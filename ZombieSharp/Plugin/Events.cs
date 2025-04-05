@@ -188,8 +188,6 @@ public class Events(ZombieSharp core, Infect infect, GameSettings settings, Clas
     {
         var client = @event.Userid;
 
-
-
         if(client == null)
             return HookResult.Continue;
 
@@ -211,7 +209,10 @@ public class Events(ZombieSharp core, Infect infect, GameSettings settings, Clas
 
              _core.AddTimer(0.05f, () =>  {
                 if(team == 0)
+                {
                     _infect.InfectClient(client);
+                    _infect.InfectRespawn(client);
+                }
 
                 else if(team == 1)
                     _infect.HumanizeClient(client);
@@ -225,7 +226,10 @@ public class Events(ZombieSharp core, Infect infect, GameSettings settings, Clas
 
                     // human
                     else
+                    {
                         _infect.InfectClient(client);
+                        _infect.InfectRespawn(client);
+                    }
                 }
             }, TimerFlags.STOP_ON_MAPCHANGE);
         }
