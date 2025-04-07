@@ -23,28 +23,33 @@ public class Teleport(ZombieSharp core, ILogger<ZombieSharp> logger)
     {
         List<SpawnPoint> SpawnPoints = [];
 
-        var gameRules = Utilities.FindAllEntitiesByDesignerName<CCSGameRulesProxy>("cs_gamerules").First().GameRules;
+        var ctSpawn = Utilities.FindAllEntitiesByDesignerName<SpawnPoint>("info_player_counterterrorist");
+        var tSpawn = Utilities.FindAllEntitiesByDesignerName<SpawnPoint>("info_player_terrorist");
 
-        if(gameRules == null)
+        if(ctSpawn.Any())
         {
+            foreach(var spawn in ctSpawn)
+            {
+                if(spawn == null || !spawn.IsValid)
+                    continue;
+
+                SpawnPoints.Add(spawn);
+            }
+        }
+
+        if(tSpawn.Any())
+        {
+            foreach(var spawn in tSpawn)
+            {
+                if(spawn == null || !spawn.IsValid)
+                    continue;
+                    
+                SpawnPoints.Add(spawn);
+            }
+        }
+
+        if(SpawnPoints.Count <= 0)
             return null;
-        }
-
-        foreach(var spawn in gameRules.CTSpawnPoints)
-        {
-            if(spawn == null || !spawn.IsValid)
-                continue;
-
-            SpawnPoints.Add(spawn);
-        }
-
-        foreach(var spawn in gameRules.TerroristSpawnPoints)
-        {
-            if(spawn == null || !spawn.IsValid)
-                continue;
-                
-            SpawnPoints.Add(spawn);
-        }
 
         return SpawnPoints;
     }
