@@ -151,6 +151,9 @@ public class Events(ZombieSharp core, Infect infect, GameSettings settings, Clas
         var dmgHealth = @event.DmgHealth;
         var hitgroups = @event.Hitgroup;
 
+        if(client == null || attacker == null)
+            return HookResult.Continue;
+
         //Server.PrintToChatAll($"[OnPlayerHurt] {client?.PlayerName} hurt by {attacker?.PlayerName} with {weapon} for {dmgHealth} hitgroup {hitgroups}.");
 
         _infect.InfectOnPlayerHurt(client, attacker);

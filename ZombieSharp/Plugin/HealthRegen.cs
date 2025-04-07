@@ -93,16 +93,6 @@ public class HealthRegen
                 return;
             }
 
-            // if client health is lower than max health and health plus with regen amount is greater than class health then we set the health to class health.
-            if(playerPawn.Health < classData.Health && (playerPawn.Health + classData.Regen_Amount >= classData.Health))
-            {
-                Server.NextWorldUpdate(() => {
-                    playerPawn.Health = classData.Health;
-                    Utilities.SetStateChanged(playerPawn, "CBaseEntity", "m_iHealth");
-                });
-                return;
-            }
-
             // opposite.
             if(playerPawn.Health >= classData.Health)
             {
@@ -110,11 +100,17 @@ public class HealthRegen
                 return;
             }
 
+            // if client health is lower than max health and health plus with regen amount is greater than class health then we set the health to class health.
+            if(playerPawn.Health < classData.Health && (playerPawn.Health + classData.Regen_Amount >= classData.Health))
+            {
+                playerPawn.Health = classData.Health;
+                //Utilities.SetStateChanged(playerPawn, "CBaseEntity", "m_iHealth");
+                return;
+            }
+
             // else we add the regen amount to the health.
-            Server.NextWorldUpdate(() => {
-                playerPawn.Health += classData.Regen_Amount;
-                Utilities.SetStateChanged(playerPawn, "CBaseEntity", "m_iHealth");
-            });
+            playerPawn.Health += classData.Regen_Amount;
+            //Utilities.SetStateChanged(playerPawn, "CBaseEntity", "m_iHealth");
             
         }, TimerFlags.REPEAT|TimerFlags.STOP_ON_MAPCHANGE);
     }

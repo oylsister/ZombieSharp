@@ -302,7 +302,7 @@ public class Weapons(ZombieSharp core, ILogger<ZombieSharp> logger)
             }
         }
 
-        Server.NextWorldUpdate(() => 
+        Server.NextFrame(() => 
         {
             // we give weapon to them this part can't be null unless server manager fucked it up.
             if(attribute.WeaponEntity == "item_kevlar")

@@ -444,7 +444,7 @@ public class Infect(ZombieSharp core, ILogger<ZombieSharp> logger, Classes class
             // if teleport zombie back to spawn is enabled then we teleport them back to spawn.
             if(GameSettings.Settings?.MotherZombieTeleport ?? false)
             {
-                Server.NextWorldUpdate(() => 
+                Server.NextFrame(() => 
                 {
                     var pos = PlayerData.PlayerSpawnData?[client].PlayerPosition;
                     var angle = PlayerData.PlayerSpawnData?[client].PlayerAngle;
