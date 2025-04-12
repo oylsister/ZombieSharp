@@ -30,6 +30,7 @@ public class Respawn(ZombieSharp core, ILogger<ZombieSharp> logger)
         }
 
         GameSettings.Settings.RespawnEnable = value;
+        Server.PrintToChatAll($" {_core.Localizer["Prefix"]} " + (value ? _core.Localizer["Respawn.Enabled"] : _core.Localizer["Respawn.Disabled"]));
     }
 
     public void RespawnTogglerSetup()

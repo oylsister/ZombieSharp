@@ -7,6 +7,7 @@ using CounterStrikeSharp.API.Modules.Memory;
 using CounterStrikeSharp.API.Modules.Memory.DynamicFunctions;
 using CounterStrikeSharp.API.Modules.Utils;
 using Microsoft.Extensions.Logging;
+using static CounterStrikeSharp.API.Core.Listeners;
 
 namespace ZombieSharp.Plugin;
 
@@ -29,6 +30,8 @@ public class Hook(ZombieSharp core, Weapons weapons, Respawn respawn, ILogger<Zo
         _core.AddCommandListener("jointeam", OnClientJoinTeam, HookMode.Pre);
         _core.AddCommandListener("say", OnPlayerSay, HookMode.Post);
         _core.AddCommandListener("say_team", OnPlayerSayTeam, HookMode.Post);
+
+        _core.RegisterListener<OnEntityInput>(OnEntityInput);
     }
 
     public void HookOnUnload()
@@ -214,6 +217,40 @@ public class Hook(ZombieSharp core, Weapons weapons, Respawn respawn, ILogger<Zo
         }
 
         return HookResult.Continue;
+    }
+
+    public void OnEntityInput(CEntityIdentity entity, string input, CEntityInstance activator, CEntityInstance caller, int output)
+    {
+        /*
+        if(input != null)
+            Server.PrintToChatAll($"[OnEntityInput] Found: {entity.Name}, input: {input}");
+        */
+
+        if (entity.Name != "zr_toggle_respawn")
+            return;
+
+        //Server.PrintToChatAll($"Found: {identity.Name}, input: {stringinput}");
+
+        if(GameSettings.Settings == null)
+        {
+            _logger.LogError("[OnEntityAcceptInput] GameSettings is null!");
+            return;
+        }
+
+        if (Respawn.RespawnRelay != null && entity != null && input != null)
+        {
+            if (entity.Name == "zr_toggle_respawn")
+            {
+                if (input.Equals("Trigger", StringComparison.OrdinalIgnoreCase))
+                    _respawn.ToggleRespawn(false);
+
+                else if (input.Equals("Enable", StringComparison.OrdinalIgnoreCase) && !GameSettings.Settings.RespawnEnable)
+                    _respawn.ToggleRespawn(true);
+
+                else if (input.Equals("Disable", StringComparison.OrdinalIgnoreCase) && GameSettings.Settings.RespawnEnable)
+                    _respawn.ToggleRespawn(false);
+            }
+        }
     }
 
     public HookResult OnClientJoinTeam(CCSPlayerController? client, CommandInfo info)

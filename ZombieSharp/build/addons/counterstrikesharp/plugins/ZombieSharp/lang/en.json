@@ -37,6 +37,7 @@
     "Teleport.Countdown": "Teleport in {0} seconds",
     "Teleport.Success": "You have been teleported back to spawn.",
 
+    "Respawn.Enabled": "Respawn has been enabled!",
     "Respawn.Disabled": "Currently respawn has been disabled. You will be respawned again next round.",
 
     "Classes.MainMenu": "Player Classes Menu",
