@@ -279,7 +279,7 @@ public class Hook(ZombieSharp core, Weapons weapons, Respawn respawn, ILogger<Zo
 
         else
         {
-            if(team == client.Team)
+            if(team == client.Team || client.Connected != PlayerConnectedState.PlayerConnected)
             {
                 //client.PrintToChat("You're choosing the same team!");
                 return HookResult.Continue;

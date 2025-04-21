@@ -132,6 +132,12 @@ public class Respawn(ZombieSharp core, ILogger<ZombieSharp> logger)
         if(client == null || client.Handle == IntPtr.Zero)
             return;
 
+        if(client.Connected != PlayerConnectedState.PlayerConnected)
+        {
+            client.PrintToChat("You currently not in connected state, please try changing team again.");
+            return;
+        }
+
         if(Utils.IsPlayerAlive(client))
             return;
 
