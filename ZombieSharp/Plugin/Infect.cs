@@ -477,6 +477,7 @@ public class Infect(ZombieSharp core, ILogger<ZombieSharp> logger, Classes class
             @event.Userid = client;
             @event.Attacker = attacker;
             @event.Weapon = "knife";
+            @event.Assister = null;
             @event.FireEvent(false);
 
             // update player score
