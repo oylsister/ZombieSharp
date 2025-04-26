@@ -274,6 +274,18 @@ public class Infect(ZombieSharp core, ILogger<ZombieSharp> logger, Classes class
             }
         }
 
+        // Shuffle all candidate in list before make them a zombie so "xiaodi" stop complaining.
+        var n = candidate.Count;
+        Random rng = new();
+        while (n > 1)
+        {
+            n--;
+            int k = rng.Next(n + 1);
+            var temp = candidate[k];
+            candidate[k] = candidate[n];
+            candidate[n] = temp;
+        }
+
         // we will infect motherzombie here.
         // we have to loop all candidate in order to ensure we get all required zombie as we want.
         // variable check total zombie made.
