@@ -175,19 +175,16 @@ public class Hook(ZombieSharp core, Weapons weapons, Respawn respawn, ILogger<Zo
 
         else
         {
-            if((GameSettings.Settings?.RespawnEnable ?? true) && (GameSettings.Settings?.AllowRespawnJoinLate ?? true))
+            if(team == client.Team)
             {
-                if(team == client.Team)
-                {
-                    client.PrintToChat("You're choosing the same team!");
-                    return HookResult.Continue;
-                }
-
-                if(Utils.IsPlayerAlive(client))
-                    client.CommitSuicide(false, true);
-
-                client.SwitchTeam(team);
+                //client.PrintToChat("You're choosing the same team!");
+                return HookResult.Continue;
             }
+
+            if(Utils.IsPlayerAlive(client))
+                client.CommitSuicide(false, true);
+
+            client.SwitchTeam(team);
         }
 
         return HookResult.Continue;
