@@ -28,8 +28,8 @@ public class Hook(ZombieSharp core, Weapons weapons, Respawn respawn, ILogger<Zo
         //CEntityIdentity_AcceptInputFunc.Hook(OnEntityAcceptInput, HookMode.Post);
 
         _core.AddCommandListener("jointeam", OnClientJoinTeam, HookMode.Pre);
-        _core.AddCommandListener("say", OnPlayerSay, HookMode.Post);
-        _core.AddCommandListener("say_team", OnPlayerSayTeam, HookMode.Post);
+        //_core.AddCommandListener("say", OnPlayerSay, HookMode.Post);
+        //_core.AddCommandListener("say_team", OnPlayerSayTeam, HookMode.Post);
 
         _core.RegisterListener<OnEntityInput>(OnEntityInput);
     }
@@ -42,8 +42,8 @@ public class Hook(ZombieSharp core, Weapons weapons, Respawn respawn, ILogger<Zo
         //CEntityIdentity_AcceptInputFunc.Unhook(OnEntityAcceptInput, HookMode.Post);
 
         _core.RemoveCommandListener("jointeam", OnClientJoinTeam, HookMode.Pre);
-        _core.AddCommandListener("say", OnPlayerSay, HookMode.Post);
-        _core.AddCommandListener("say_team", OnPlayerSayTeam, HookMode.Post);
+        //_core.AddCommandListener("say", OnPlayerSay, HookMode.Post);
+        //_core.AddCommandListener("say_team", OnPlayerSayTeam, HookMode.Post);
     }
 
     public HookResult OnCanUse(DynamicHook hook)
