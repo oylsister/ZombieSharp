@@ -182,7 +182,7 @@ public class Events(ZombieSharp core, Infect infect, GameSettings settings, Clas
 
         _respawn.RespawnOnPlayerDeath(client);
         HealthRegen.RegenOnPlayerDeath(client);
-        RepeatKiller.OnPlayerDeath(client, @event.Weapon);
+        // RepeatKiller.OnPlayerDeath(client, @event.Weapon);
 
         return HookResult.Continue;
     }
