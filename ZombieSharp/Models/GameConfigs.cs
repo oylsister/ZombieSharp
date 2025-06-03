@@ -21,7 +21,7 @@ public class GameConfigs
 
     // weapons section
     public bool WeaponPurchaseEnable { get; set; } = false;
-    public bool WeaponRestrictEnable { get; set; } = true; 
+    public bool WeaponRestrictEnable { get; set; } = true;
     public bool WeaponBuyZoneOnly { get; set; } = false;
 
     // teleport section
@@ -38,4 +38,7 @@ public class GameConfigs
     public string HumanWinOverlayMaterial { get; set; } = string.Empty;
     public string ZombieWinOverlayParticle { get; set; } = string.Empty;
     public string ZombieWinOverlayMaterial { get; set; } = string.Empty;
+
+    // config path
+    public string WeaponPath { get; set; } = "weapons.jsonc";
 }

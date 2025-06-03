@@ -35,4 +35,6 @@ public partial class ZombieSharp
     public FakeConVar<string> CVAR_HumanWinOverlayMaterial = new("zs_human_overlay_material", "Human win overlay material path", string.Empty);
     public FakeConVar<string> CVAR_ZombieWinOverlayParticle = new("zs_zombie_overlay_particle", "Zombie win overlay particle path", string.Empty);
     public FakeConVar<string> CVAR_ZombieWinOverlayMaterial = new("zs_zombie_overlay_material", "Zombie win overlay material path", string.Empty);
+
+    public FakeConVar<string> CVAR_WeaponConfigPath = new("zs_weapon_config_path", "Weapon Config path to load", "weapons.jsonc");
 }

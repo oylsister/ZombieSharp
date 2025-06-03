@@ -167,6 +167,11 @@ public class ConVars(ZombieSharp core, Weapons weapons, ILogger<ZombieSharp> log
             GameSettings.Settings.ZombieWinOverlayMaterial = value;
         };
 
+        _core.CVAR_WeaponConfigPath.ValueChanged += (sender, value) =>
+        {
+            GameSettings.Settings.WeaponPath = value;
+        };
+
         // create convar first.
         _core.RegisterFakeConVars(typeof(ConVar));
     }
@@ -241,6 +246,7 @@ public class ConVars(ZombieSharp core, Weapons weapons, ILogger<ZombieSharp> log
         CreateConVarLine(configFile, _core.CVAR_ZombieWinOverlayParticle);
         CreateConVarLine(configFile, _core.CVAR_ZombieWinOverlayMaterial);
 
+        CreateConVarLine(configFile, _core.CVAR_WeaponConfigPath);
         configFile.Close();
     }
     

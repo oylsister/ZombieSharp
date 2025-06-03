@@ -25,6 +25,7 @@
     "HumanWinOverlayParticle": "particles/cs2fixes/simple_overlay.vpcf",
     "HumanWinOverlayMaterial": "materials/cs2fixes/humanoverlay.vtex",
     "ZombieWinOverlayParticle": "particles/cs2fixes/simple_overlay.vpcf",
-    "ZombieWinOverlayMaterial": "materials/cs2fixes/zombieoverlay.vtex"
+    "ZombieWinOverlayMaterial": "materials/cs2fixes/zombieoverlay.vtex",
 
+    "WeaponPath": "weapons.jsonc"
 }

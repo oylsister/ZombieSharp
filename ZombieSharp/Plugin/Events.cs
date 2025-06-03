@@ -99,11 +99,11 @@ public class Events(ZombieSharp core, Infect infect, GameSettings settings, Clas
     public void OnMapStart(string mapname)
     {
         _settings.GameSettingsOnMapStart();
-        _weapons.WeaponsOnMapStart();
         _classes.ClassesOnMapStart();
         _hitgroup.HitGroupOnMapStart();
         _convar.ConVarOnLoad();
         _convar.ConVarExecuteOnMapStart(mapname);
+        _weapons.WeaponsOnMapStart();
 
         PlayerData.ZombiePlayerData?.Clear();
         PlayerData.PlayerClassesData?.Clear();

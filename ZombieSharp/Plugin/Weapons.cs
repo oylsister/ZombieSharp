@@ -31,12 +31,11 @@ public class Weapons(ZombieSharp core, ILogger<ZombieSharp> logger)
 
         // initial weapon config data
         WeaponsConfig = new Dictionary<string, WeaponAttribute>();
-
-        var configPath = Path.Combine(ZombieSharp.ConfigPath, "weapons.jsonc");
+        var configPath = Path.Combine(ZombieSharp.ConfigPath, GameSettings.Settings?.WeaponPath ?? "weapons.jsonc");
 
         if(!File.Exists(configPath))
         {
-            _logger.LogCritical("[WeaponsOnMapStart] Couldn't find a weapons.jsonc file!");
+            _logger.LogCritical("[WeaponsOnMapStart] Couldn't find a {path} file!", configPath);
             return;
         }
 
