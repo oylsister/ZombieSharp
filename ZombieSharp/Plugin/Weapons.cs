@@ -285,36 +285,58 @@ public class Weapons(ZombieSharp core, ILogger<ZombieSharp> logger)
             return;
         }
 
-        foreach(var weapon in weapons)
+        var weapondrop = string.Empty;
+
+        foreach (var weapon in weapons)
         {
             var slot = (int)weapon.Value!.GetVData<CCSWeaponBaseVData>()!.GearSlot;
 
             // for primary and secondary only.
-            if(slot > 2)
+            if (slot > 2)
                 continue;
 
-            if(slot == attribute.WeaponSlot)
+            if (slot == attribute.WeaponSlot)
             {
                 // drop this weapon then break
-                Utils.DropWeaponByDesignName(client, weapon.Value.DesignerName);
+                weapondrop = weapon.Value.DesignerName;
                 break;
             }
         }
 
-        if(attribute.WeaponEntity == "item_kevlar")
+        // this can cause message overflow so we try on next frame.
+        /*
+        if (attribute.WeaponEntity == "item_kevlar")
         {
             client.PlayerPawn.Value!.ArmorValue = 100;
             Utilities.SetStateChanged(client.PlayerPawn.Value, "CCSPlayerPawn", "m_ArmorValue");
         }
-        
+
         else
             client.GiveNamedItem(attribute.WeaponEntity!);
+        */
 
         Server.NextFrame(() => 
         {
             // we give weapon to them this part can't be null unless server manager fucked it up.
+            if (attribute.WeaponEntity == "item_kevlar")
+            {
+                client.PlayerPawn.Value!.ArmorValue = 100;
+                Utilities.SetStateChanged(client.PlayerPawn.Value, "CCSPlayerPawn", "m_ArmorValue");
+            }
+
+            else
+            {
+                if (!string.IsNullOrEmpty(weapondrop))
+                {
+                    // we drop the weapon first.
+                    Utils.DropWeaponByDesignName(client, weapondrop);
+                }
+
+                client.GiveNamedItem(attribute.WeaponEntity!);
+            }
+            
             // update purchase history
-            if(PlayerData.PlayerPurchaseCount![client].WeaponCount!.ContainsKey(attribute.WeaponEntity!))
+            if (PlayerData.PlayerPurchaseCount![client].WeaponCount!.ContainsKey(attribute.WeaponEntity!))
                 PlayerData.PlayerPurchaseCount![client].WeaponCount![attribute.WeaponEntity!]++;
 
             else
