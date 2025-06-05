@@ -268,31 +268,33 @@ public class Classes(ZombieSharp core, DatabaseMain database, ILogger<ZombieShar
 
     public void ClassesOnPlayerHurt(CCSPlayerController? client)
     {
-        _core?.AddTimer(0.5f, () => 
+        /*
+        _core?.AddTimer(0.5f, () =>
         {
             // need to be alive
-            if(client == null || client.Handle == IntPtr.Zero)
+            if (client == null || client.Handle == IntPtr.Zero)
                 return;
 
-            if(!Utils.IsPlayerAlive(client))
+            if (!Utils.IsPlayerAlive(client))
                 return;
 
             // prevent error obviously.
-            if(!PlayerData.PlayerClassesData!.ContainsKey(client))
+            if (!PlayerData.PlayerClassesData!.ContainsKey(client))
             {
                 return;
             }
 
-            if(PlayerData.PlayerClassesData?[client].ActiveClass == null)
+            if (PlayerData.PlayerClassesData?[client].ActiveClass == null)
                 return;
 
             // if speed is equal to 250 then we don't need this.
-            if(PlayerData.PlayerClassesData?[client].ActiveClass?.Speed == 250f)
+            if (PlayerData.PlayerClassesData?[client].ActiveClass?.Speed == 250f)
                 return;
 
             // set speed back to velomodify
             client.PlayerPawn.Value!.VelocityModifier = PlayerData.PlayerClassesData![client].ActiveClass!.Speed / 250f;
         }, TimerFlags.STOP_ON_MAPCHANGE);
+        */
     }
 
     // CLASSES MENU

@@ -7,6 +7,7 @@ using CounterStrikeSharp.API.Modules.Memory;
 using CounterStrikeSharp.API.Modules.Memory.DynamicFunctions;
 using CounterStrikeSharp.API.Modules.Utils;
 using Microsoft.Extensions.Logging;
+using ZombieSharp.Models;
 using static CounterStrikeSharp.API.Core.Listeners;
 
 namespace ZombieSharp.Plugin;
@@ -19,6 +20,7 @@ public class Hook(ZombieSharp core, Weapons weapons, Respawn respawn, ILogger<Zo
     private readonly ILogger<ZombieSharp> _logger = logger;
 
     //public static MemoryFunctionVoid<CEntityIdentity, CUtlSymbolLarge, CEntityInstance, CEntityInstance, CVariant, int> CEntityIdentity_AcceptInputFunc = new(GameData.GetSignature("CEntityIdentity_AcceptInput"));
+    // public static MemoryFunctionWithReturn<CCSPlayerPawn, float> CCSPlayerPawn_GetMaxSpeed = new(GameData.GetSignature("CCSPlayerPawn_GetMaxSpeed"));
 
     public void HookOnLoad()
     {
@@ -26,6 +28,7 @@ public class Hook(ZombieSharp core, Weapons weapons, Respawn respawn, ILogger<Zo
         VirtualFunctions.CCSPlayer_WeaponServices_CanUseFunc.Hook(OnCanUse, HookMode.Pre);
         VirtualFunctions.CBaseEntity_TakeDamageOldFunc.Hook(OnTakeDamage, HookMode.Pre);
         //CEntityIdentity_AcceptInputFunc.Hook(OnEntityAcceptInput, HookMode.Post);
+        // CCSPlayerPawn_GetMaxSpeed.Hook(OnPlayerMaxSpeed, HookMode.Pre);
 
         _core.AddCommandListener("jointeam", OnClientJoinTeam, HookMode.Pre);
         //_core.AddCommandListener("say", OnPlayerSay, HookMode.Post);
@@ -40,6 +43,7 @@ public class Hook(ZombieSharp core, Weapons weapons, Respawn respawn, ILogger<Zo
         VirtualFunctions.CCSPlayer_WeaponServices_CanUseFunc.Unhook(OnCanUse, HookMode.Pre);
         VirtualFunctions.CBaseEntity_TakeDamageOldFunc.Unhook(OnTakeDamage, HookMode.Pre);
         //CEntityIdentity_AcceptInputFunc.Unhook(OnEntityAcceptInput, HookMode.Post);
+        // CCSPlayerPawn_GetMaxSpeed.Unhook(OnPlayerMaxSpeed, HookMode.Pre);
 
         _core.RemoveCommandListener("jointeam", OnClientJoinTeam, HookMode.Pre);
         //_core.AddCommandListener("say", OnPlayerSay, HookMode.Post);
@@ -252,11 +256,30 @@ public class Hook(ZombieSharp core, Weapons weapons, Respawn respawn, ILogger<Zo
             }
         }
     }
+    
+    public HookResult OnPlayerMaxSpeed(DynamicHook hook)
+    {
+        var player = hook.GetParam<CCSPlayerPawn>(0);
+
+        if(player == null || player.Controller.Value == null)
+            return HookResult.Continue;
+
+        var client = player.Controller.Value.As<CCSPlayerController>();
+
+        if(client == null)
+            return HookResult.Continue;
+
+        //var speed = CCSPlayerPawn_GetMaxSpeed.Invoke(player);
+        var newSpeed = PlayerData.PlayerClassesData![client].ActiveClass?.Speed / 250f ?? 1f;
+
+        //hook.SetReturn(newSpeed * speed);
+        return HookResult.Continue;
+    }
 
     public HookResult OnClientJoinTeam(CCSPlayerController? client, CommandInfo info)
     {
         // check for client null again.
-        if(client == null)
+        if (client == null)
             return HookResult.Continue;
 
         //Server.PrintToChatAll($"{client.PlayerName} is doing {info.GetArg(0)} {info.GetArg(1)}");
@@ -265,7 +288,7 @@ public class Hook(ZombieSharp core, Weapons weapons, Respawn respawn, ILogger<Zo
 
         // stable
         // for spectator case we allow this 
-        if(team == CsTeam.Spectator || team == CsTeam.None)
+        if (team == CsTeam.Spectator || team == CsTeam.None)
         {
             /*
             if(Utils.IsPlayerAlive(client))
@@ -279,18 +302,18 @@ public class Hook(ZombieSharp core, Weapons weapons, Respawn respawn, ILogger<Zo
 
         else
         {
-            if(team == client.Team || client.Connected != PlayerConnectedState.PlayerConnected)
+            if (team == client.Team || client.Connected != PlayerConnectedState.PlayerConnected)
             {
                 //client.PrintToChat("You're choosing the same team!");
                 return HookResult.Continue;
             }
 
-            if(Utils.IsPlayerAlive(client))
+            if (Utils.IsPlayerAlive(client))
                 client.CommitSuicide(false, true);
 
             client.SwitchTeam(team);
         }
-        
+
         /*
         if(Utils.IsPlayerAlive(client))
             client.CommitSuicide(false, true);
