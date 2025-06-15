@@ -169,6 +169,7 @@ public class ConVars(ZombieSharp core, Weapons weapons, ILogger<ZombieSharp> log
 
         _core.CVAR_WeaponConfigPath.ValueChanged += (sender, value) =>
         {
+            _logger.LogInformation("[ConVarChanged] weapon configuration path has been changed.");
             GameSettings.Settings.WeaponPath = value;
         };
 
@@ -230,6 +231,7 @@ public class ConVars(ZombieSharp core, Weapons weapons, ILogger<ZombieSharp> log
         CreateConVarLine(configFile, _core.CVAR_AllowSavingClass);
         CreateConVarLine(configFile, _core.CVAR_AllowChangeClass);
 
+        CreateConVarLine(configFile, _core.CVAR_WeaponConfigPath);
         CreateConVarLine(configFile, _core.CVAR_WeaponPurchaseEnable);
         CreateConVarLine(configFile, _core.CVAR_WeaponRestrictEnable);
         CreateConVarLine(configFile, _core.CVAR_WeaponBuyZoneOnly);
@@ -246,7 +248,6 @@ public class ConVars(ZombieSharp core, Weapons weapons, ILogger<ZombieSharp> log
         CreateConVarLine(configFile, _core.CVAR_ZombieWinOverlayParticle);
         CreateConVarLine(configFile, _core.CVAR_ZombieWinOverlayMaterial);
 
-        CreateConVarLine(configFile, _core.CVAR_WeaponConfigPath);
         configFile.Close();
     }
     

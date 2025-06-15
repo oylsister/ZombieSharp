@@ -11,6 +11,7 @@
     "RandomClassesOnConnect": false, // random class on join or not.
     "RandomClassesOnSpawn": true, // random class on every player respawn.
 
+    "WeaponPath": "weapons.jsonc",
     "WeaponPurchaseEnable": true, // Enable purchase via command or not. This also will toggle weapon purchase limit too.
     "WeaponRestrictEnable": true, // Restrict specific weapon or not.
     "WeaponBuyZoneOnly": false, // Only allow player to purchase weapon in buyzone.
@@ -25,7 +26,5 @@
     "HumanWinOverlayParticle": "particles/cs2fixes/simple_overlay.vpcf",
     "HumanWinOverlayMaterial": "materials/cs2fixes/humanoverlay.vtex",
     "ZombieWinOverlayParticle": "particles/cs2fixes/simple_overlay.vpcf",
-    "ZombieWinOverlayMaterial": "materials/cs2fixes/zombieoverlay.vtex",
-
-    "WeaponPath": "weapons.jsonc"
+    "ZombieWinOverlayMaterial": "materials/cs2fixes/zombieoverlay.vtex"
 }

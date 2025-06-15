@@ -20,6 +20,7 @@ public class GameConfigs
     public bool AllowChangeClass { get; set; } = true;
 
     // weapons section
+    public string WeaponPath { get; set; } = "weapons.jsonc";
     public bool WeaponPurchaseEnable { get; set; } = false;
     public bool WeaponRestrictEnable { get; set; } = true;
     public bool WeaponBuyZoneOnly { get; set; } = false;
@@ -38,7 +39,4 @@ public class GameConfigs
     public string HumanWinOverlayMaterial { get; set; } = string.Empty;
     public string ZombieWinOverlayParticle { get; set; } = string.Empty;
     public string ZombieWinOverlayMaterial { get; set; } = string.Empty;
-
-    // config path
-    public string WeaponPath { get; set; } = "weapons.jsonc";
 }

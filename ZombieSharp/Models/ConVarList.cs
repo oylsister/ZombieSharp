@@ -20,6 +20,7 @@ public partial class ZombieSharp
     public FakeConVar<bool> CVAR_AllowSavingClass = new("zs_classes_allow_save", "Allowing player to save their classes", true, default, new RangeValidator<bool>(false, true));
     public FakeConVar<bool> CVAR_AllowChangeClass = new("zs_classes_allow_change", "Allowing player to change their classes", true, default, new RangeValidator<bool>(false, true));
 
+    public FakeConVar<string> CVAR_WeaponConfigPath = new("zs_weapon_config_path", "Weapon Config Path", "weapons.jsonc", CounterStrikeSharp.API.ConVarFlags.FCVAR_NONE);
     public FakeConVar<bool> CVAR_WeaponPurchaseEnable = new("zs_weapon_purchase_enable", "Enable Weapon purchase via command", true, default, new RangeValidator<bool>(false, true));
     public FakeConVar<bool> CVAR_WeaponRestrictEnable = new("zs_weapon_restrict_enable", "Enable Weapon restriction", true, default, new RangeValidator<bool>(false, true));
     public FakeConVar<bool> CVAR_WeaponBuyZoneOnly = new("zs_weapon_purchase_buyzone", "Only allowing weapon purchase in buyzone only", false, default, new RangeValidator<bool>(false, true));
@@ -35,6 +36,4 @@ public partial class ZombieSharp
     public FakeConVar<string> CVAR_HumanWinOverlayMaterial = new("zs_human_overlay_material", "Human win overlay material path", string.Empty);
     public FakeConVar<string> CVAR_ZombieWinOverlayParticle = new("zs_zombie_overlay_particle", "Zombie win overlay particle path", string.Empty);
     public FakeConVar<string> CVAR_ZombieWinOverlayMaterial = new("zs_zombie_overlay_material", "Zombie win overlay material path", string.Empty);
-
-    public FakeConVar<string> CVAR_WeaponConfigPath = new("zs_weapon_config_path", "Weapon Config path to load", "weapons.jsonc");
 }
