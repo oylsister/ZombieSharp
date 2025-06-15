@@ -171,6 +171,7 @@ public class ConVars(ZombieSharp core, Weapons weapons, ILogger<ZombieSharp> log
         {
             _logger.LogInformation("[ConVarChanged] weapon configuration path has been changed.");
             GameSettings.Settings.WeaponPath = value;
+            _weapon.WeaponsOnMapStart();
         };
 
         // create convar first.

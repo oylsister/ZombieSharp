@@ -39,7 +39,7 @@ public class Weapons(ZombieSharp core, ILogger<ZombieSharp> logger)
             return;
         }
 
-        _logger.LogInformation("[WeaponsOnMapStart] Load Weapon Config file.");
+        _logger.LogInformation("[WeaponsOnMapStart] Load Weapon Config file {path}.", configPath);
 
         // we get data from jsonc file.
         WeaponsConfig = JsonConvert.DeserializeObject<Dictionary<string, WeaponAttribute>>(File.ReadAllText(configPath));
