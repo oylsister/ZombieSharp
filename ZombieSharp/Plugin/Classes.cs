@@ -124,49 +124,46 @@ public class Classes(ZombieSharp core, DatabaseMain database, ILogger<ZombieShar
             return;
         }
 
+        PlayerData.PlayerClassesData[client].HumanClass = DefaultHuman;
+        PlayerData.PlayerClassesData[client].ZombieClass = DefaultZombie;
+        
         if(GameSettings.Settings?.RandomClassesOnConnect ?? false)
         {
             PlayerData.PlayerClassesData[client].HumanClass = Utils.GetRandomPlayerClasses(1);
             PlayerData.PlayerClassesData[client].ZombieClass = Utils.GetRandomPlayerClasses(0);
         }
 
-        else
+        if (!client.IsBot)
         {
-            PlayerData.PlayerClassesData[client].HumanClass = DefaultHuman;
-            PlayerData.PlayerClassesData[client].ZombieClass = DefaultZombie;
+            var steamid = client.AuthorizedSteamID?.SteamId64;
+            //_logger.LogInformation("[ClassesOnClientPutInServer] client {0} join with steamid: {1}", client.PlayerName, steamid);
 
-            if(!client.IsBot)
+            if (steamid == null || !steamid.HasValue)
             {
-                var steamid = client.AuthorizedSteamID?.SteamId64;
-                //_logger.LogInformation("[ClassesOnClientPutInServer] client {0} join with steamid: {1}", client.PlayerName, steamid);
+                _logger.LogError("[ClassesOnClientPutInServer] client {0} steam id is null!", client.PlayerName);
+                return;
+            }
 
-                if(steamid == null || !steamid.HasValue)
+            Task.Run(async () =>
+            {
+                _logger.LogInformation("[ClassesOnClientPutInServer] Getting data of {0}", steamid.Value);
+                var data = await _database.GetPlayerClassData(steamid.Value);
+
+                if (data == null)
                 {
-                    _logger.LogError("[ClassesOnClientPutInServer] client {0} steam id is null!", client.PlayerName);
-                    return;
+                    await _database.InsertPlayerClassData(steamid.Value, PlayerData.PlayerClassesData[client]);
+                    _logger.LogInformation("[ClassesOnClientPutInServer] Client {0} data is null, initialize a new one.", steamid.Value);
                 }
 
-                Task.Run(async () => 
-                { 
-                    _logger.LogInformation("[ClassesOnClientPutInServer] Getting data of {0}", steamid.Value);
-                    var data = await _database.GetPlayerClassData(steamid.Value);
+                else
+                {
+                    if (data.HumanClass?.Enable ?? false)
+                        PlayerData.PlayerClassesData[client].HumanClass = data.HumanClass;
 
-                    if(data == null)
-                    {
-                        await _database.InsertPlayerClassData(steamid.Value, PlayerData.PlayerClassesData[client]);
-                        _logger.LogInformation("[ClassesOnClientPutInServer] Client {0} data is null, initialize a new one.", steamid.Value);
-                    }
-
-                    else
-                    {
-                        if(data.HumanClass?.Enable ?? false)
-                            PlayerData.PlayerClassesData[client].HumanClass = data.HumanClass;
-
-                        if(data.ZombieClass?.Enable ?? false)
-                            PlayerData.PlayerClassesData[client].ZombieClass = data.ZombieClass;
-                    }
-                });
-            }
+                    if (data.ZombieClass?.Enable ?? false)
+                        PlayerData.PlayerClassesData[client].ZombieClass = data.ZombieClass;
+                }
+            });
         }
 
         if(PlayerData.PlayerClassesData?[client].HumanClass == null)
