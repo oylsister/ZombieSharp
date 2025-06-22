@@ -5,6 +5,7 @@ using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Timers;
 using CounterStrikeSharp.API.Modules.Utils;
 using Microsoft.Extensions.Logging;
+using ZombieSharp.Extensions;
 using ZombieSharp.Models;
 
 namespace ZombieSharp.Plugin;
@@ -121,9 +122,10 @@ public class Teleport(ZombieSharp core, ILogger<ZombieSharp> logger)
 
     public static void TeleportClientToSpawn(CCSPlayerController client, Vector pos, QAngle angle)
     {
-        if(client == null || !Utils.IsPlayerAlive(client))
+        if (client == null || !Utils.IsPlayerAlive(client))
             return;
 
-        client.PlayerPawn.Value?.Teleport(pos, angle);
+        //client.PlayerPawn.Value?.Teleport(pos.ToVector_t(), angle);
+        client.PlayerPawn.Value?.Teleport(position: pos.ToVector_t(), angles: angle.ToQAngle_t());
     }
 }

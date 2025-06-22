@@ -4,6 +4,7 @@ using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Timers;
 using Microsoft.Extensions.Logging;
+using ZombieSharp.Extensions;
 using ZombieSharp.Models;
 
 namespace ZombieSharp.Plugin;
@@ -86,7 +87,7 @@ public class Napalm(ZombieSharp core, ILogger<ZombieSharp> logger)
 
         particle.DispatchSpawn();
 
-        particle.Teleport(position, null, null);
+        particle.Teleport(position.ToVector_t(), null, null);
         particle.AcceptInput("SetParent", playerPawn, null, "!activator");
 
         PlayerData.PlayerBurnData[client] = particle;
