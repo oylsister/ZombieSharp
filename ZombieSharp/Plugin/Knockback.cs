@@ -104,12 +104,11 @@ public class Knockback
         if (playerPawn == null)
             return;
 
-        var vel = playerPawn.AbsVelocity.ToVector_t() with
-        {
-            X = pushVelocity.X,
-            Y = pushVelocity.Y,
-            Z = pushVelocity.Z
-        };
+        var vel = playerPawn.AbsVelocity.ToVector_t();
+
+        vel.X += pushVelocity.X;
+        vel.Y += pushVelocity.Y;
+        vel.Z += pushVelocity.Z;
 
         playerPawn.Teleport(velocity: vel);
     }
