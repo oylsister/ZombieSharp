@@ -1,5 +1,13 @@
 # ZombieSharp
 
+### Notice 07/13/2025
+
+I decided to discontinue this project due to serveral reason.
+1. CounterStrikeSharp's capability lacking a feature that I want to expand the feature.
+2. Performanace issues, I take a measure after testing with 64 players comparing with CS2Fixes zombie reborn, ZombieSharp is worse.
+3. In real life stuff, I'm hunting for a job right now lol.
+4. Incoming of ModSharp (even it could take to 2035).
+
 ### I TESTED RUNNING THIS PLUGIN WITH CS2FIXES. AS LONG AS YOU DON'T ENABLE ZOMBIE:REBORN, YOU CAN USE CS2FIXES ALONG WITH ZOMBIESHARP PLUGIN.
 
 Zombie-Sharp is a Zombie Mode plugin for CS2 referencing the features and functions from the previous SourcePawn Zombie:Reloaded plugin. You can say this is the Zombie:Reloaded remake but in C#. Here is the list of features.
