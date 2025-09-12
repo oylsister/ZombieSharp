@@ -28,7 +28,7 @@ public class Knockback
             return;
 
         // knockback is for zombie only.
-        if (!Infect.IsClientHuman(attacker) || !Infect.IsClientInfect(client))
+        if (!Infect.IsClientHuman(attacker) || !Infect.IsClientZombie(client))
             return;
 
         var clientPos = client.PlayerPawn.Value?.AbsOrigin;
@@ -99,7 +99,7 @@ public class Knockback
             return;
 
         // knockback is for zombie only.
-        if (!Infect.IsClientInfect(client))
+        if (!Infect.IsClientZombie(client))
             return;
 
         var clientPos = client.PlayerPawn.Value?.AbsOrigin;

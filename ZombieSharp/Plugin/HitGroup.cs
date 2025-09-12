@@ -25,7 +25,7 @@ public class HitGroup(ILogger<ZombieSharp> logger)
             return;
         }
 
-        _logger.LogInformation("[HitGroupOnMapStart] Load Player Classes file.");
+        _logger.LogInformation("[HitGroupOnMapStart] Loading Player Classes file.");
 
         // we get data from jsonc file.
         HitGroupConfigs = JsonConvert.DeserializeObject<Dictionary<string, HitGroupData>>(File.ReadAllText(configPath));

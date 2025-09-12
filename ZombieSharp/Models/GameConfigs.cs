@@ -32,6 +32,9 @@ public class GameConfigs
     public bool AllowRespawnJoinLate { get; set; } = false;
     public int RespawTeam { get; set; } = 0;
 
+    // infection settings
+    public float MaxKnifeRange { get; set; } = 100.0f;
+
     // win overlay stuff
     public string HumanWinOverlayParticle { get; set; } = string.Empty;
     public string HumanWinOverlayMaterial { get; set; } = string.Empty;

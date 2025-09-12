@@ -41,7 +41,7 @@ public class Classes(ZombieSharp core, DatabaseMain database, ILogger<ZombieShar
             return;
         }
 
-        _logger.LogInformation("[ClassesOnMapStart] Load Player Classes file.");
+        _logger.LogInformation("[ClassesOnMapStart] Loading Player Classes file.");
 
         // we get data from jsonc file.
         ClassesConfig = JsonConvert.DeserializeObject<Dictionary<string, ClassAttribute>>(File.ReadAllText(configPath));
@@ -60,7 +60,7 @@ public class Classes(ZombieSharp core, DatabaseMain database, ILogger<ZombieShar
 
                 DefaultHuman = ClassesConfig[uniqueName];
 
-                _logger.LogInformation("[ClassesOnMapStart] Classes {0} is default class for human", DefaultHuman.Name);
+                _logger.LogInformation("[ClassesOnMapStart] Default human class: {0}", DefaultHuman.Name);
             }
 
             if(!string.IsNullOrEmpty(GameSettings.Settings.DefaultZombieBuffer))
@@ -74,7 +74,7 @@ public class Classes(ZombieSharp core, DatabaseMain database, ILogger<ZombieShar
 
                 DefaultZombie = ClassesConfig[uniqueName];
 
-                _logger.LogInformation("[ClassesOnMapStart] Classes {0} is default class for zombie", DefaultZombie.Name);
+                _logger.LogInformation("[ClassesOnMapStart] Default zombie class: {0}", DefaultZombie.Name);
             }
 
             if(!string.IsNullOrEmpty(GameSettings.Settings.MotherZombieBuffer))
@@ -88,7 +88,7 @@ public class Classes(ZombieSharp core, DatabaseMain database, ILogger<ZombieShar
 
                 MotherZombie = ClassesConfig[uniqueName];
 
-                _logger.LogInformation("[ClassesOnMapStart] Classes {0} is mother zombie classes.", MotherZombie.Name);
+                _logger.LogInformation("[ClassesOnMapStart] Mother zombie class: {0}", MotherZombie.Name);
             }
 
             if(DefaultHuman == null)
@@ -103,7 +103,7 @@ public class Classes(ZombieSharp core, DatabaseMain database, ILogger<ZombieShar
 
             if(MotherZombie == null)
             {
-                _logger.LogInformation("[ClassesOnMapStart] Mother Zombie class from GameSettings is empty or null, when player infect will use their selected zombie class instead.");
+                _logger.LogInformation("[ClassesOnMapStart] Mother Zombie class not configured, will use selected zombie class for mother zombies.");
             }
         }
     } 
@@ -145,13 +145,13 @@ public class Classes(ZombieSharp core, DatabaseMain database, ILogger<ZombieShar
 
                 Task.Run(async () => 
                 { 
-                    _logger.LogInformation("[ClassesOnClientPutInServer] Getting data of {0}", steamid.Value);
+                    _logger.LogInformation("[ClassesOnClientPutInServer] Loading player data for SteamID {0}", steamid.Value);
                     var data = await _database.GetPlayerClassData(steamid.Value);
 
                     if(data == null)
                     {
                         await _database.InsertPlayerClassData(steamid.Value, PlayerData.PlayerClassesData[client]);
-                        _logger.LogInformation("[ClassesOnClientPutInServer] Client {0} data is null, initialize a new one.", steamid.Value);
+                        _logger.LogInformation("[ClassesOnClientPutInServer] Creating new data entry for SteamID {0}", steamid.Value);
                     }
 
                     else
@@ -167,10 +167,10 @@ public class Classes(ZombieSharp core, DatabaseMain database, ILogger<ZombieShar
         }
 
         if(PlayerData.PlayerClassesData?[client].HumanClass == null)
-            _logger.LogInformation("[ClassesOnClientPutInServer] {0} is not null, but client got null anyway.", DefaultHuman?.Name);
+            _logger.LogWarning("[ClassesOnClientPutInServer] Human class is null for {0}", client.PlayerName);
 
         if(PlayerData.PlayerClassesData?[client].ZombieClass == null)
-            _logger.LogInformation("[ClassesOnClientPutInServer] {0} is not null, but client got null anyway.", DefaultZombie?.Name);
+            _logger.LogWarning("[ClassesOnClientPutInServer] Zombie class is null for {0}", client.PlayerName);
     }
 
     public void ClassesApplyToPlayer(CCSPlayerController client, ClassAttribute? data)
@@ -187,62 +187,143 @@ public class Classes(ZombieSharp core, DatabaseMain database, ILogger<ZombieShar
             return;
         }
 
-        var playerPawn = client.PlayerPawn.Value;
-
-        if(playerPawn == null)
+        if(!Utils.IsPlayerAlive(client))
         {
-            _logger.LogError("[ClassesApplyToPlayer] Player Pawn is null!");
+            _logger.LogError("[ClassesApplyToPlayer] Player {name} is not alive!", client.PlayerName);
             return;
         }
 
+        var playerPawn = client.PlayerPawn.Value;
+
+        if(playerPawn == null || !playerPawn.IsValid)
+        {
+            _logger.LogError("[ClassesApplyToPlayer] Player Pawn is null or invalid!");
+            return;
+        }
+
+        // Apply model changes immediately
         Server.NextWorldUpdate(() => 
         {
-            // if the model is not empty string and model path is not same as current model we have.
-            if(!string.IsNullOrEmpty(data.Model) && playerPawn.IsValid)
-            {
-                // set it.
-                if(data.Model != "default")
-                    playerPawn.SetModel(data.Model);
+            if(!Utils.IsPlayerAlive(client) || playerPawn == null || !playerPawn.IsValid)
+                return;
 
-                // change to cs2 default model blyat
-                else
+            // Apply model if specified
+            if(!string.IsNullOrEmpty(data.Model))
+            {
+                try
                 {
-                    if(data.Team == 0)
-                        playerPawn.SetModel("characters/models/tm_phoenix/tm_phoenix.vmdl");
-                    
+                    if(data.Model != "default")
+                    {
+                        playerPawn.SetModel(data.Model);
+                        _logger.LogDebug("[ClassesApplyToPlayer] Applied model {model} to {name}", data.Model, client.PlayerName);
+                    }
                     else
-                        playerPawn.SetModel("characters/models/ctm_sas/ctm_sas.vmdl");
+                    {
+                        // Use default CS2 models
+                        if(data.Team == 0) // Zombie team
+                            playerPawn.SetModel("characters/models/tm_phoenix/tm_phoenix.vmdl");
+                        else // Human team
+                            playerPawn.SetModel("characters/models/ctm_sas/ctm_sas.vmdl");
+                    }
+                }
+                catch(Exception ex)
+                {
+                    _logger.LogError("[ClassesApplyToPlayer] Failed to set model for {name}: {error}", client.PlayerName, ex.Message);
                 }
             }
 
+            // Remove armor for zombies immediately
             if(data.Team == 0)
             {
                 playerPawn.ArmorValue = 0;
                 client.PawnHasHelmet = false;
+                Utilities.SetStateChanged(playerPawn, "CBaseEntity", "m_ArmorValue");
             }
         });
 
-        _core.AddTimer(0.3f, () => 
+        // Apply health, armor, and regeneration with a delay to ensure proper application
+        _core.AddTimer(0.1f, () => 
         {
-            if(!Utils.IsPlayerAlive(client))
+            if(!Utils.IsPlayerAlive(client) || playerPawn == null || !playerPawn.IsValid)
                 return;
 
-            playerPawn.Health = data.Health;
-            Utilities.SetStateChanged(playerPawn, "CBaseEntity", "m_iHealth");
-            if(data.Team == 0)
+            try
             {
-                playerPawn.ArmorValue = 0;
-                client.PawnHasHelmet = false;
-            }
+                // Set health
+                playerPawn.Health = data.Health;
+                Utilities.SetStateChanged(playerPawn, "CBaseEntity", "m_iHealth");
+                
+                // Double-check armor removal for zombies
+                if(data.Team == 0)
+                {
+                    playerPawn.ArmorValue = 0;
+                    client.PawnHasHelmet = false;
+                    Utilities.SetStateChanged(playerPawn, "CBaseEntity", "m_ArmorValue");
+                }
 
-            HealthRegen.RegenOnApplyClass(client, data);
+                // Apply regeneration settings
+                HealthRegen.RegenOnApplyClass(client, data);
+                
+                _logger.LogDebug("[ClassesApplyToPlayer] Applied health ({health}) to {name}", data.Health, client.PlayerName);
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError("[ClassesApplyToPlayer] Failed to apply health/armor to {name}: {error}", client.PlayerName, ex.Message);
+            }
         });
 
-        // set speed 
-        playerPawn.VelocityModifier = data.Speed / 250f;
+        // Apply speed with multiple attempts to ensure it sticks
+        var speedApplyAttempts = 0;
+        var maxSpeedAttempts = 3;
+        
+        Action applySpeed = null!;
+        applySpeed = () => 
+        {
+            if(!Utils.IsPlayerAlive(client) || playerPawn == null || !playerPawn.IsValid)
+                return;
 
-        // set active player data.
-        PlayerData.PlayerClassesData![client].ActiveClass = data;
+            try
+            {
+                var targetSpeed = data.Speed / 250f;
+                playerPawn.VelocityModifier = targetSpeed;
+                Utilities.SetStateChanged(playerPawn, "CBaseEntity", "m_flVelocityModifier");
+                
+                _logger.LogDebug("[ClassesApplyToPlayer] Applied speed ({speed}) to {name} (attempt {attempt})", 
+                    data.Speed, client.PlayerName, speedApplyAttempts + 1);
+                
+                // Verify speed was applied correctly and retry if needed
+                _core.AddTimer(0.1f, () => 
+                {
+                    if(Utils.IsPlayerAlive(client) && playerPawn != null && playerPawn.IsValid)
+                    {
+                        var currentSpeed = playerPawn.VelocityModifier;
+                        if(Math.Abs(currentSpeed - targetSpeed) > 0.01f && speedApplyAttempts < maxSpeedAttempts - 1)
+                        {
+                            speedApplyAttempts++;
+                            _logger.LogWarning("[ClassesApplyToPlayer] Speed application retry for {name} - expected: {expected}, actual: {actual}", 
+                                client.PlayerName, targetSpeed, currentSpeed);
+                            applySpeed();
+                        }
+                    }
+                });
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError("[ClassesApplyToPlayer] Failed to apply speed to {name}: {error}", client.PlayerName, ex.Message);
+            }
+        };
+
+        // Initial speed application
+        _core.AddTimer(0.05f, applySpeed);
+
+        // Set active player data
+        if(PlayerData.PlayerClassesData != null && PlayerData.PlayerClassesData.ContainsKey(client))
+        {
+            PlayerData.PlayerClassesData[client].ActiveClass = data;
+        }
+
+        _logger.LogInformation("[ClassesApplyToPlayer] Successfully applied class {className} to {playerName}", 
+            data.Name ?? "Unknown", client.PlayerName);
     }
 
     public void ClassesOnPlayerSpawn(CCSPlayerController? client)
