@@ -202,7 +202,7 @@ public class Weapons(ZombieSharp core, ILogger<ZombieSharp> logger)
         }
 
         // if is zombie
-        if(Infect.IsClientInfect(client))
+        if(Infect.IsClientZombie(client))
         {
             client.PrintToChat($" {_core.Localizer["Prefix"]} {_core.Localizer["Core.MustBeHuman"]}");
             return;

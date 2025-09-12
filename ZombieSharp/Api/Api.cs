@@ -14,6 +14,14 @@ public class ZombieSharpInterface : IZombieSharpAPI
         return OnClientInfect?.Invoke(client, attacker, motherzombie, force);
     }
 
+    public void Hook_OnInfectClient(Func<CCSPlayerController, CCSPlayerController?, bool, bool, bool, HookResult> handler)
+    {
+        OnClientInfect += (client, attacker, motherzombie, force) =>
+        {
+            return handler(client, attacker, motherzombie, force, false);
+        };
+    }
+
     public HookResult? ZS_OnClientHumanize(CCSPlayerController client, bool force)
     {
         return OnClientHumanize?.Invoke(client, force);
@@ -24,9 +32,9 @@ public class ZombieSharpInterface : IZombieSharpAPI
         return Infect.IsClientHuman(client);
     }
 
-    public bool ZS_IsClientInfect(CCSPlayerController client)
+    public bool ZS_IsClientZombie(CCSPlayerController controller)
     {
-        return Infect.IsClientInfect(client);
+        return Infect.IsClientZombie(controller);
     }
 
     public void ZS_RespawnClient(CCSPlayerController client)

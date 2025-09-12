@@ -6,6 +6,7 @@ using CounterStrikeSharp.API.Modules.Memory;
 using CounterStrikeSharp.API.Modules.Memory.DynamicFunctions;
 using CounterStrikeSharp.API.Modules.Utils;
 using Microsoft.Extensions.Logging;
+using static CounterStrikeSharp.API.Core.Listeners;
 
 namespace ZombieSharp.Plugin;
 
@@ -43,7 +44,7 @@ public class Hook(ZombieSharp core, Weapons weapons, Respawn respawn, ILogger<Zo
             return HookResult.Continue;
 
         // if client is infect and weapon is not a knife.
-        if(Infect.IsClientInfect(client) && !weapon.Name.Contains("knife"))
+        if(Infect.IsClientZombie(client) && !weapon.Name.Contains("knife"))
         {
             hook.SetReturn(AcquireResult.NotAllowedByProhibition);
             return HookResult.Handled;
@@ -124,7 +125,7 @@ public class Hook(ZombieSharp core, Weapons weapons, Respawn respawn, ILogger<Zo
                 return HookResult.Handled;
 
             // if zombie step on it then we make them walking slow.
-            else if(Infect.IsClientInfect(client))
+            else if(Infect.IsClientZombie(client))
                 Utils.SetStamina(client, 40.0f);
         }
 
@@ -134,9 +135,22 @@ public class Hook(ZombieSharp core, Weapons weapons, Respawn respawn, ILogger<Zo
         }
 
         // prevent death from backstabing.
-        if(Infect.IsClientInfect(attacker) && Infect.IsClientHuman(client))
-            info.Damage = 1;
+        if (Infect.IsClientZombie(attacker) && Infect.IsClientHuman(client))
+        {
+            if (Infect.IsTestMode)
+            {
+                return HookResult.Handled;
+            }
+            var distance = Utils.GetPlayerDistance(client, attacker);
 
+            // if distance is not null but player is too far for knife range, then we blocked it.
+            if (distance != null && distance.Value > GameSettings.Settings?.MaxKnifeRange)
+            {
+                return HookResult.Handled; 
+            }  
+            info.Damage = 1;
+        }
+            
         return HookResult.Continue;
     }
 
@@ -146,26 +160,46 @@ public class Hook(ZombieSharp core, Weapons weapons, Respawn respawn, ILogger<Zo
         if(client == null)
             return HookResult.Continue;
 
-        //Server.PrintToChatAll($"{client.PlayerName} is doing {info.GetArg(0)} {info.GetArg(1)}");
-
         var team = (CsTeam)int.Parse(info.GetArg(1));
 
         // for spectator case we allow this 
         if(team == CsTeam.Spectator || team == CsTeam.None)
         {
+            
             if(Utils.IsPlayerAlive(client))
                 client.CommitSuicide(false, true);
 
             client.SwitchTeam(CsTeam.Spectator);
+            return HookResult.Handled;
         }
-
         else
         {
+            // If infection has started, prevent manual team switching
+            if(Infect.InfectHasStarted())
+            {
+                _logger.LogWarning("[OnClientJoinTeam] {0} attempting team switch during infection - enforcing zombie status", client.PlayerName);
+                
+                // Force the team assignment based on zombie status
+                _core.AddTimer(0.05f, () => {
+                    if(client == null || !client.IsValid)
+                        return;
+                        
+                    bool isZombie = Infect.IsClientZombie(client);
+                    CsTeam targetTeam = isZombie ? CsTeam.Terrorist : CsTeam.CounterTerrorist;
+                    
+                    if(client.Team != targetTeam)
+                        client.SwitchTeam(targetTeam);
+                });
+                return HookResult.Handled;
+            }
+            
+
+            
             if((GameSettings.Settings?.RespawnEnable ?? true) && (GameSettings.Settings?.AllowRespawnJoinLate ?? true))
             {
                 if(team == client.Team)
                 {
-                    client.PrintToChat("You're choosing the same team!");
+                    //client.PrintToChat("You're choosing the same team!");
                     return HookResult.Continue;
                 }
 

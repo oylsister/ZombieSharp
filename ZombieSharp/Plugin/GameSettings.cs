@@ -24,7 +24,7 @@ public class GameSettings(ILogger<ZombieSharp> logger)
             return;
         }
 
-        _logger.LogInformation("[GameSettingsOnMapStart] Load Game settings file.");
+        _logger.LogInformation("[GameSettingsOnMapStart] Loading Game settings file.");
         Settings = JsonConvert.DeserializeObject<GameConfigs>(File.ReadAllText(configPath));
     }
 }

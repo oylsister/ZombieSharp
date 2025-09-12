@@ -73,7 +73,7 @@ public class HealthRegen
         // search for the player in the dictionary
         if (!PlayerData.PlayerRegenData.ContainsKey(client))
         {
-            _logger?.LogInformation("[RegenKillTimer] Player {name} not found in PlayerRegenData, but add a new one anyway.", client.PlayerName);
+            _logger?.LogWarning("[RegenKillTimer] Player {name} not found in PlayerRegenData, creating new entry", client.PlayerName);
             PlayerData.PlayerRegenData.Add(client, null);
         }
 

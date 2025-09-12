@@ -1,4 +1,4 @@
-﻿using CounterStrikeSharp.API;
+﻿﻿using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Capabilities;
 using Microsoft.Extensions.Logging;
@@ -13,8 +13,8 @@ namespace ZombieSharp;
 public partial class ZombieSharp : BasePlugin
 {
     public override string ModuleName => "ZombieSharp";
-    public override string ModuleVersion => "2.2.0";
-    public override string ModuleAuthor => "Oylsister";
+    public override string ModuleVersion => "2.3.0";
+    public override string ModuleAuthor => "Oylsister, +SyntX";
     public override string ModuleDescription => "Infection/survival style gameplay for CS2 in C#";
 
     private Events? _event;
@@ -51,6 +51,7 @@ public partial class ZombieSharp : BasePlugin
         PlayerData.PlayerPurchaseCount = [];
         PlayerData.PlayerBurnData = [];
         PlayerData.PlayerRegenData = [];
+        PlayerData.PlayerSpawnData = [];
 
         api = new ZombieSharpInterface();
 
@@ -87,6 +88,9 @@ public partial class ZombieSharp : BasePlugin
         Server.ExecuteCommand("sv_predictable_damage_tag_ticks 0");
         Server.ExecuteCommand("mp_ignore_round_win_conditions 1");
         Server.ExecuteCommand("mp_give_player_c4 0");
+        Server.ExecuteCommand("mp_autoteambalance 0");
+        Server.ExecuteCommand("mp_limitteams 0");
+        Server.ExecuteCommand("mp_teammates_are_enemies 0");
 
         // initial
         _infect.InfectOnLoad();
@@ -103,15 +107,86 @@ public partial class ZombieSharp : BasePlugin
 
     public override void Unload(bool hotReload)
     {
-        PlayerData.ZombiePlayerData = null;
-        PlayerData.PlayerClassesData = null;
-        PlayerData.PlayerPurchaseCount = null;
-        PlayerData.PlayerRegenData = null;
-        PlayerData.PlayerBurnData = null;
+        _logger.LogInformation("[Unload] Starting plugin unload process (hotReload: {hotReload})", hotReload);
+        
+        // Dispose of timers first
+        try
+        {
+            _infect?.InfectKillInfectionTimer();
+            RoundEnd.RoundEndKillTimer();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "[Unload] Error disposing timers");
+        }
+        
+        // Clear dictionaries properly with memory leak prevention
+        try
+        {
+            if (PlayerData.ZombiePlayerData != null)
+            {
+                PlayerData.ZombiePlayerData.Clear();
+                PlayerData.ZombiePlayerData = null;
+            }
+            
+            if (PlayerData.PlayerClassesData != null)
+            {
+                PlayerData.PlayerClassesData.Clear();
+                PlayerData.PlayerClassesData = null;
+            }
+            
+            if (PlayerData.PlayerPurchaseCount != null)
+            {
+                PlayerData.PlayerPurchaseCount.Clear();
+                PlayerData.PlayerPurchaseCount = null;
+            }
+            
+            if (PlayerData.PlayerBurnData != null)
+            {
+                PlayerData.PlayerBurnData.Clear();
+                PlayerData.PlayerBurnData = null;
+            }
+            
+            if (PlayerData.PlayerRegenData != null)
+            {
+                // Dispose any active regen timers to prevent memory leaks
+                foreach (var regenTimer in PlayerData.PlayerRegenData.Values)
+                {
+                    regenTimer?.Kill();
+                }
+                PlayerData.PlayerRegenData.Clear();
+                PlayerData.PlayerRegenData = null;
+            }
+            
+            if (PlayerData.PlayerSpawnData != null)
+            {
+                PlayerData.PlayerSpawnData.Clear();
+                PlayerData.PlayerSpawnData = null;
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "[Unload] Error clearing player data dictionaries");
+        }
 
-        _event?.EventOnUnload();
-        _hook?.HookOnUnload();
-        _database?.DatabaseOnUnload();
+        // Unload event handlers and hooks
+        try
+        {
+            _event?.EventOnUnload();
+            _hook?.HookOnUnload();
+            _database?.DatabaseOnUnload();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "[Unload] Error unloading modules");
+        }
+        
+        // Force garbage collection to prevent memory leaks
+        GC.Collect();
+        GC.WaitForPendingFinalizers();
+        GC.Collect();
+        
+        _logger.LogInformation("[Unload] Plugin unload completed successfully");
     }
 
     public static string ConfigPath = Path.Combine(Application.RootDirectory, "configs/zombiesharp/");

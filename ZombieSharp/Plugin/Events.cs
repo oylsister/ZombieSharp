@@ -88,6 +88,8 @@ public class Events(ZombieSharp core, Infect infect, GameSettings settings, Clas
         PlayerData.PlayerSpawnData?.Remove(client);
         PlayerData.PlayerBurnData?.Remove(client);
         HealthRegen.RegenOnClientDisconnect(client);
+
+        _infect?.CleanupPlayerData(client);
     }
 
     // if reload a plugin this part won't be executed until you change map;
@@ -103,6 +105,9 @@ public class Events(ZombieSharp core, Infect infect, GameSettings settings, Clas
         Server.ExecuteCommand("sv_predictable_damage_tag_ticks 0");
         Server.ExecuteCommand("mp_ignore_round_win_conditions 1");
         Server.ExecuteCommand("mp_give_player_c4 0");
+        Server.ExecuteCommand("mp_autoteambalance 0");
+        Server.ExecuteCommand("mp_limitteams 0");
+        Server.ExecuteCommand("mp_teammates_are_enemies 0");
     }
 
     public void OnPrecahceResources(ResourceManifest manifest)
@@ -155,7 +160,7 @@ public class Events(ZombieSharp core, Infect infect, GameSettings settings, Clas
         if(client == null)
             return HookResult.Continue;
 
-        if(Infect.IsClientInfect(client))
+        if(Infect.IsClientZombie(client))
             Utils.EmitSound(client, "zr.amb.zombie_die");
 
         _respawn.RespawnOnPlayerDeath(client);
@@ -168,42 +173,59 @@ public class Events(ZombieSharp core, Infect infect, GameSettings settings, Clas
     {
         var client = @event.Userid;
 
-        if(client == null)
+        if (client == null)
             return HookResult.Continue;
 
-        // when player join server this automatically trigger so we have to prevent this so they can switch team later.
-        if(client.Team == CsTeam.None || client.Team == CsTeam.Spectator)
+        if (client.Team == CsTeam.None || client.Team == CsTeam.Spectator)
             return HookResult.Continue;
 
         _classes.ClassesOnPlayerSpawn(client);
 
+        if(Infect.IsTestMode)
+        {
+            _infect.HumanizeClient(client);
+            return HookResult.Continue;
+        }
+
+        // Apply appropriate class based on infection status
         if(Infect.InfectHasStarted())
         {
             var team = GameSettings.Settings?.RespawTeam ?? 0;
 
-            if(team == 0)
-                _infect.InfectClient(client);
-
-            else if(team == 1)
-                _infect.HumanizeClient(client);
-
-            // get the player team
-            else
+            if(team == 0) // Force zombie
             {
-                // not zombie
-                if(!PlayerData.ZombiePlayerData?[client].Zombie ?? false)
-                    _infect.HumanizeClient(client);
-
-                // human
-                else
+                _infect.InfectClient(client);
+            }
+            else if(team == 1) // Force human
+            {
+                _infect.HumanizeClient(client);
+            }
+            else // Keep previous team (2)
+            {
+                // Check if player was zombie before
+                if(PlayerData.ZombiePlayerData?[client].Zombie ?? false)
+                {
                     _infect.InfectClient(client);
+                }
+                else
+                {
+                    _infect.HumanizeClient(client);
+                }
+            }
+        }
+        else
+        {
+            // Before infection starts, everyone is human
+            _infect.HumanizeClient(client);
+            
+            // Apply human class attributes immediately
+            var humanClass = PlayerData.PlayerClassesData?[client].HumanClass;
+            if(humanClass != null)
+            {
+                _core.AddTimer(0.2f, () => _classes.ClassesApplyToPlayer(client, humanClass));
             }
         }
 
-        else
-            _infect.HumanizeClient(client);
-
-        // refresh purchase count here.
         Utils.RefreshPurchaseCount(client);
         _core.AddTimer(0.2f, () => _teleport.TeleportOnPlayerSpawn(client));
 
