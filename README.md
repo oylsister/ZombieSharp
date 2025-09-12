@@ -46,7 +46,7 @@ Zombie-Sharp is a Zombie Mode plugin for CS2 referencing the features and functi
 1. Install [.NET 8.0 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/8.0) and [Git](https://git-scm.com/downloads).
 2. Open up Windows Powershell and follow these command
 ```shell
-git clone https://github.com/SyntX34/ZombieSharp
+git clone https://github.com/oylsister/ZombieSharp
 cd ZombieSharp
 dotnet build
 ```
