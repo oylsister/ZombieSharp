@@ -2,7 +2,6 @@
 
 ### Notice 07/13/2025
 
-[Oylsister](https://github.com/oylsister) has decided to discontinue this project due to serveral reasons and according to him:
 1. CounterStrikeSharp's capability lacking a feature that I want to expand the feature.
 2. Performanace issues, I take a measure after testing with 64 players comparing with CS2Fixes zombie reborn, ZombieSharp is worse.
 3. In real life stuff, I'm hunting for a job right now lol.
