@@ -2,11 +2,17 @@
 
 ### Notice 07/13/2025
 
-I decided to discontinue this project due to serveral reason.
+[Oylsister](https://github.com/oylsister) has decided to discontinue this project due to serveral reasons and according to him:
 1. CounterStrikeSharp's capability lacking a feature that I want to expand the feature.
 2. Performanace issues, I take a measure after testing with 64 players comparing with CS2Fixes zombie reborn, ZombieSharp is worse.
 3. In real life stuff, I'm hunting for a job right now lol.
 4. Incoming of ModSharp (even it could take to 2035).
+
+## Notes:
+
+**The plugin forces a player to become a zombie by calling InfectClient() which drops all weapons except knife, switches them to Terrorist team, and applies zombie class attributes (health, speed calculated as data.Speed / 250f, knockback, etc.) through ClassesApplyToPlayer() with a verification system that retries multiple times to ensure successful application.**
+
+**This is a temporary fix to restore functionality after CS2 updates. While stable for gameplay, some features may require further refinement as the CS2 API evolves. Please report any issues and contribute improvements to help maintain this essential zombie mod for the CS2 community.**
 
 ### I TESTED RUNNING THIS PLUGIN WITH CS2FIXES. AS LONG AS YOU DON'T ENABLE ZOMBIE:REBORN, YOU CAN USE CS2FIXES ALONG WITH ZOMBIESHARP PLUGIN.
 
